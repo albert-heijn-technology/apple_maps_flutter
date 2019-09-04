@@ -17,6 +17,8 @@ import 'place_polygon.dart';
 import 'place_polyline.dart';
 import 'scrolling_map.dart';
 
+import 'package:apple_maps_flutter/apple_maps_flutter.dart';
+
 final List<Page> _allPages = <Page>[
   MapUiPage(),
   MapCoordinatesPage(),
@@ -45,12 +47,17 @@ class MapsDemo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('AppleMaps examples')),
-      body: ListView.builder(
-        itemCount: _allPages.length,
-        itemBuilder: (_, int index) => ListTile(
-          leading: _allPages[index].leading,
-          title: Text(_allPages[index].title),
-          onTap: () => _pushPage(context, _allPages[index]),
+      // body: ListView.builder(
+      //   itemCount: _allPages.length,
+      //   itemBuilder: (_, int index) => ListTile(
+      //     leading: _allPages[index].leading,
+      //     title: Text(_allPages[index].title),
+      //     onTap: () => _pushPage(context, _allPages[index]),
+      //   ),
+      // ),
+      body: SizedBox.expand(
+        child: AppleMap(
+          initialCameraPosition: CameraPosition(target: LatLng(40.1, 33.0)),
         ),
       ),
     );

@@ -22,7 +22,7 @@ class AppleMapController {
     assert(id != null);
     final MethodChannel channel =
         MethodChannel('plugins.flutter.io/apple_maps_$id');
-    await channel.invokeMethod<void>('map#waitForMap');
+    // await channel.invokeMethod<void>('map#waitForMap');
     return AppleMapController._(
       channel,
       initialCameraPosition,
