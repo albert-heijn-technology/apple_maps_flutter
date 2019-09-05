@@ -34,20 +34,20 @@ class MapUiBodyState extends State<MapUiBody> {
 
   static final CameraPosition _kInitialPosition = const CameraPosition(
     target: LatLng(-33.852, 151.211),
-    zoom: 11.0,
+    distance: 11.0,
   );
 
   CameraPosition _position = _kInitialPosition;
   bool _isMapCreated = false;
   bool _isMoving = false;
   bool _compassEnabled = true;
+  bool _trafficEnabled = false;
   bool _mapToolbarEnabled = true;
   CameraTargetBounds _cameraTargetBounds = CameraTargetBounds.unbounded;
-  MinMaxZoomPreference _minMaxZoomPreference = MinMaxZoomPreference.unbounded;
-  MapType _mapType = MapType.normal;
+  MapType _mapType = MapType.standard;
   bool _rotateGesturesEnabled = true;
   bool _scrollGesturesEnabled = true;
-  bool _tiltGesturesEnabled = true;
+  bool _pitchGesturesEnabled = true;
   bool _zoomGesturesEnabled = true;
   bool _indoorViewEnabled = true;
   bool _myLocationEnabled = true;
@@ -104,21 +104,6 @@ class MapUiBodyState extends State<MapUiBody> {
     );
   }
 
-  Widget _zoomBoundsToggler() {
-    return FlatButton(
-      child: Text(_minMaxZoomPreference.minZoom == null
-          ? 'bound zoom'
-          : 'release zoom'),
-      onPressed: () {
-        setState(() {
-          _minMaxZoomPreference = _minMaxZoomPreference.minZoom == null
-              ? const MinMaxZoomPreference(12.0, 16.0)
-              : MinMaxZoomPreference.unbounded;
-        });
-      },
-    );
-  }
-
   Widget _mapTypeCycler() {
     final MapType nextType =
         MapType.values[(_mapType.index + 1) % MapType.values.length];
@@ -156,10 +141,10 @@ class MapUiBodyState extends State<MapUiBody> {
 
   Widget _tiltToggler() {
     return FlatButton(
-      child: Text('${_tiltGesturesEnabled ? 'disable' : 'enable'} tilt'),
+      child: Text('${_pitchGesturesEnabled ? 'disable' : 'enable'} tilt'),
       onPressed: () {
         setState(() {
-          _tiltGesturesEnabled = !_tiltGesturesEnabled;
+          _pitchGesturesEnabled = !_pitchGesturesEnabled;
         });
       },
     );
@@ -247,13 +232,11 @@ class MapUiBodyState extends State<MapUiBody> {
       onMapCreated: onMapCreated,
       initialCameraPosition: _kInitialPosition,
       compassEnabled: _compassEnabled,
-      mapToolbarEnabled: _mapToolbarEnabled,
       cameraTargetBounds: _cameraTargetBounds,
-      minMaxZoomPreference: _minMaxZoomPreference,
       mapType: _mapType,
       rotateGesturesEnabled: _rotateGesturesEnabled,
       scrollGesturesEnabled: _scrollGesturesEnabled,
-      tiltGesturesEnabled: _tiltGesturesEnabled,
+      pitchGesturesEnabled: _pitchGesturesEnabled,
       zoomGesturesEnabled: _zoomGesturesEnabled,
       indoorViewEnabled: _indoorViewEnabled,
       myLocationEnabled: _myLocationEnabled,
@@ -279,18 +262,17 @@ class MapUiBodyState extends State<MapUiBody> {
         Expanded(
           child: ListView(
             children: <Widget>[
-              Text('camera bearing: ${_position.bearing}'),
+              Text('camera bearing: ${_position.heading}'),
               Text(
                   'camera target: ${_position.target.latitude.toStringAsFixed(4)},'
                   '${_position.target.longitude.toStringAsFixed(4)}'),
-              Text('camera zoom: ${_position.zoom}'),
-              Text('camera tilt: ${_position.tilt}'),
+              Text('camera zoom: ${_position.distance}'),
+              Text('camera tilt: ${_position.pitch}'),
               Text(_isMoving ? '(Camera moving)' : '(Camera idle)'),
               _compassToggler(),
               _mapToolbarToggler(),
               _latLngBoundsToggler(),
               _mapTypeCycler(),
-              _zoomBoundsToggler(),
               _rotateToggler(),
               _scrollToggler(),
               _tiltToggler(),

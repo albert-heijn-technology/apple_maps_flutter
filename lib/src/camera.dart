@@ -6,36 +6,29 @@ part of apple_maps_flutter;
 
 /// The position of the map "camera", the view point from which the world is
 /// shown in the map view. Aggregates the camera's [target] geographical
-/// location, its [zoom] level, [tilt] angle, and [bearing].
+/// location, its [distance] level, [pitch] angle, and [heading].
 class CameraPosition {
   const CameraPosition({
-    this.bearing = 0.0,
     @required this.target,
-    this.tilt = 0.0,
-    this.zoom = 0.0,
-  })  : assert(bearing != null),
-        assert(target != null),
-        assert(tilt != null),
-        assert(zoom != null);
+    this.heading = 0.0,
+    this.pitch = 0.0,
+    this.distance = 100000.0,
+  })  : assert(target != null),
+        assert(heading != null),
+        assert(pitch != null),
+        assert(distance != null);
 
   /// The camera's bearing in degrees, measured clockwise from north.
   ///
   /// A bearing of 0.0, the default, means the camera points north.
   /// A bearing of 90.0 means the camera points east.
-  final double bearing;
+  final double heading;
 
   /// The geographical location that the camera is pointing at.
   final LatLng target;
 
-  /// The angle, in degrees, of the camera angle from the nadir.
-  ///
-  /// A tilt of 0.0, the default and minimum supported value, means the camera
-  /// is directly facing the Earth.
-  ///
-  /// The maximum tilt value depends on the current zoom level. Values beyond
-  /// the supported range are allowed, but on applying them to a map they will
-  /// be silently clamped to the supported range.
-  final double tilt;
+  // In degrees where 0 is looking straight down. Pitch may be clamped to an appropriate value.
+  final double pitch;
 
   /// The zoom level of the camera.
   ///
@@ -49,13 +42,13 @@ class CameraPosition {
   /// The supported zoom level range depends on the map data and device. Values
   /// beyond the supported range are allowed, but on applying them to a map they
   /// will be silently clamped to the supported range.
-  final double zoom;
+  final double distance;
 
   dynamic _toMap() => <String, dynamic>{
-        'bearing': bearing,
         'target': target._toJson(),
-        'tilt': tilt,
-        'zoom': zoom,
+        'heading': heading,
+        'pitch': pitch,
+        'distance': distance,
       };
 
   @visibleForTesting
@@ -64,10 +57,10 @@ class CameraPosition {
       return null;
     }
     return CameraPosition(
-      bearing: json['bearing'],
+      heading: json['heading'],
       target: LatLng._fromJson(json['target']),
-      tilt: json['tilt'],
-      zoom: json['zoom'],
+      pitch: json['pitch'],
+      distance: json['distance'],
     );
   }
 
@@ -76,18 +69,18 @@ class CameraPosition {
     if (identical(this, other)) return true;
     if (runtimeType != other.runtimeType) return false;
     final CameraPosition typedOther = other;
-    return bearing == typedOther.bearing &&
+    return heading == typedOther.heading &&
         target == typedOther.target &&
-        tilt == typedOther.tilt &&
-        zoom == typedOther.zoom;
+        pitch == typedOther.pitch &&
+        distance == typedOther.distance;
   }
 
   @override
-  int get hashCode => hashValues(bearing, target, tilt, zoom);
+  int get hashCode => hashValues(heading, target, pitch, distance);
 
   @override
   String toString() =>
-      'CameraPosition(bearing: $bearing, target: $target, tilt: $tilt, zoom: $zoom)';
+      'CameraPosition(bearing: $heading, target: $target, tilt: $pitch, zoom: $distance)';
 }
 
 /// Defines a camera move, supporting absolute moves as well as moves relative

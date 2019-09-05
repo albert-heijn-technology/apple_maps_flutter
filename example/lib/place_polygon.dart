@@ -155,7 +155,7 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
             child: AppleMap(
               initialCameraPosition: const CameraPosition(
                 target: LatLng(52.4478, -3.5402),
-                zoom: 7.0,
+                distance: 7.0,
               ),
               polygons: Set<Polygon>.of(polygons.values),
               onMapCreated: _onMapCreated,

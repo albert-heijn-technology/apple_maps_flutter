@@ -9,20 +9,25 @@ part of apple_maps_flutter;
 // the Android platform API, see
 // <https://developers.google.com/android/reference/com/google/android/gms/maps/AppleMap.html#MAP_TYPE_NORMAL>
 enum MapType {
-  /// Do not display map tiles.
-  none,
-
   /// Normal tiles (traffic and labels, subtle terrain information).
-  normal,
+  standard,
 
   /// Satellite imaging tiles (aerial photos)
   satellite,
 
-  /// Terrain tiles (indicates type and height of terrain)
-  terrain,
-
   /// Hybrid tiles (satellite images with some labels/overlays)
   hybrid,
+}
+
+enum TrackingMode {
+  // the user's location is not followed
+  none,
+
+  // the map follows the user's location
+  follow,
+
+  // the map follows the user's location and heading
+  followWithHeading,
 }
 
 /// Bounds for the map camera target.
@@ -58,43 +63,6 @@ class CameraTargetBounds {
   @override
   String toString() {
     return 'CameraTargetBounds(bounds: $bounds)';
-  }
-}
-
-/// Preferred bounds for map camera zoom level.
-// Used with [AppleMapOptions] to wrap min and max zoom. This allows
-// distinguishing between specifying unbounded zooming (null `minZoom` and
-// `maxZoom`) from not specifying anything (null `MinMaxZoomPreference`).
-class MinMaxZoomPreference {
-  const MinMaxZoomPreference(this.minZoom, this.maxZoom)
-      : assert(minZoom == null || maxZoom == null || minZoom <= maxZoom);
-
-  /// The preferred minimum zoom level or null, if unbounded from below.
-  final double minZoom;
-
-  /// The preferred maximum zoom level or null, if unbounded from above.
-  final double maxZoom;
-
-  /// Unbounded zooming.
-  static const MinMaxZoomPreference unbounded =
-      MinMaxZoomPreference(null, null);
-
-  dynamic _toJson() => <dynamic>[minZoom, maxZoom];
-
-  @override
-  bool operator ==(dynamic other) {
-    if (identical(this, other)) return true;
-    if (runtimeType != other.runtimeType) return false;
-    final MinMaxZoomPreference typedOther = other;
-    return minZoom == typedOther.minZoom && maxZoom == typedOther.maxZoom;
-  }
-
-  @override
-  int get hashCode => hashValues(minZoom, maxZoom);
-
-  @override
-  String toString() {
-    return 'MinMaxZoomPreference(minZoom: $minZoom, maxZoom: $maxZoom)';
   }
 }
 

@@ -7,8 +7,10 @@ import 'package:flutter/widgets.dart';
 import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 import 'page.dart';
 
-const CameraPosition _kInitialPosition =
-    CameraPosition(target: LatLng(-33.852, 151.211), zoom: 11.0);
+const CameraPosition _kInitialPosition = CameraPosition(
+  target: LatLng(-33.852, 151.211),
+  distance: 11.0,
+);
 
 class MapCoordinatesPage extends Page {
   MapCoordinatesPage() : super(const Icon(Icons.map), 'Map coordinates');

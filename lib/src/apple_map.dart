@@ -21,14 +21,14 @@ class AppleMap extends StatefulWidget {
     this.onMapCreated,
     this.gestureRecognizers,
     this.compassEnabled = true,
-    this.mapToolbarEnabled = true,
+    this.trafficEnabled = false,
     this.cameraTargetBounds = CameraTargetBounds.unbounded,
-    this.mapType = MapType.normal,
-    this.minMaxZoomPreference = MinMaxZoomPreference.unbounded,
+    this.mapType = MapType.standard,
+    this.trackingMode = TrackingMode.none,
     this.rotateGesturesEnabled = true,
     this.scrollGesturesEnabled = true,
     this.zoomGesturesEnabled = true,
-    this.tiltGesturesEnabled = true,
+    this.pitchGesturesEnabled = true,
     this.myLocationEnabled = false,
     this.myLocationButtonEnabled = true,
 
@@ -55,8 +55,8 @@ class AppleMap extends StatefulWidget {
   /// True if the map should show a compass when rotated.
   final bool compassEnabled;
 
-  /// True if the map should show a toolbar when you interact with the map. Android only.
-  final bool mapToolbarEnabled;
+  /// True if the map should display the current traffic.
+  final bool trafficEnabled;
 
   /// Geographical bounding box for the camera target.
   final CameraTargetBounds cameraTargetBounds;
@@ -64,10 +64,8 @@ class AppleMap extends StatefulWidget {
   /// Type of map tiles to be rendered.
   final MapType mapType;
 
-  /// Preferred bounds for the camera zoom level.
-  ///
-  /// Actual bounds depend on map data and device.
-  final MinMaxZoomPreference minMaxZoomPreference;
+  /// The mode used to track the user location.
+  final TrackingMode trackingMode;
 
   /// True if the map view should respond to rotate gestures.
   final bool rotateGesturesEnabled;
@@ -79,7 +77,7 @@ class AppleMap extends StatefulWidget {
   final bool zoomGesturesEnabled;
 
   /// True if the map view should respond to tilt gestures.
-  final bool tiltGesturesEnabled;
+  final bool pitchGesturesEnabled;
 
   /// Padding to be set on map. See https://developers.google.com/maps/documentation/android-sdk/map#map_padding for more details.
   final EdgeInsets padding;
@@ -342,14 +340,13 @@ class _AppleMapState extends State<AppleMap> {
 class _AppleMapOptions {
   _AppleMapOptions({
     this.compassEnabled,
-    this.mapToolbarEnabled,
     this.cameraTargetBounds,
+    this.trafficEnabled,
     this.mapType,
-    this.minMaxZoomPreference,
     this.rotateGesturesEnabled,
     this.scrollGesturesEnabled,
-    this.tiltGesturesEnabled,
-    this.trackCameraPosition,
+    this.pitchGesturesEnabled,
+    this.trackingMode,
     this.zoomGesturesEnabled,
     this.myLocationEnabled,
     this.myLocationButtonEnabled,
@@ -360,14 +357,13 @@ class _AppleMapOptions {
   static _AppleMapOptions fromWidget(AppleMap map) {
     return _AppleMapOptions(
       compassEnabled: map.compassEnabled,
-      mapToolbarEnabled: map.mapToolbarEnabled,
       cameraTargetBounds: map.cameraTargetBounds,
+      trafficEnabled: map.trafficEnabled,
       mapType: map.mapType,
-      minMaxZoomPreference: map.minMaxZoomPreference,
       rotateGesturesEnabled: map.rotateGesturesEnabled,
       scrollGesturesEnabled: map.scrollGesturesEnabled,
-      tiltGesturesEnabled: map.tiltGesturesEnabled,
-      trackCameraPosition: map.onCameraMove != null,
+      pitchGesturesEnabled: map.pitchGesturesEnabled,
+      trackingMode: map.trackingMode,
       zoomGesturesEnabled: map.zoomGesturesEnabled,
       myLocationEnabled: map.myLocationEnabled,
       myLocationButtonEnabled: map.myLocationButtonEnabled,
@@ -378,21 +374,19 @@ class _AppleMapOptions {
 
   final bool compassEnabled;
 
-  final bool mapToolbarEnabled;
-
   final CameraTargetBounds cameraTargetBounds;
 
-  final MapType mapType;
+  final bool trafficEnabled;
 
-  final MinMaxZoomPreference minMaxZoomPreference;
+  final MapType mapType;
 
   final bool rotateGesturesEnabled;
 
   final bool scrollGesturesEnabled;
 
-  final bool tiltGesturesEnabled;
+  final bool pitchGesturesEnabled;
 
-  final bool trackCameraPosition;
+  final TrackingMode trackingMode;
 
   final bool zoomGesturesEnabled;
 
@@ -414,15 +408,13 @@ class _AppleMapOptions {
     }
 
     addIfNonNull('compassEnabled', compassEnabled);
-    addIfNonNull('mapToolbarEnabled', mapToolbarEnabled);
-    addIfNonNull('cameraTargetBounds', cameraTargetBounds?._toJson());
+    addIfNonNull('trafficEnabled', trafficEnabled);
     addIfNonNull('mapType', mapType?.index);
-    addIfNonNull('minMaxZoomPreference', minMaxZoomPreference?._toJson());
     addIfNonNull('rotateGesturesEnabled', rotateGesturesEnabled);
     addIfNonNull('scrollGesturesEnabled', scrollGesturesEnabled);
-    addIfNonNull('tiltGesturesEnabled', tiltGesturesEnabled);
+    addIfNonNull('pitchGesturesEnabled', pitchGesturesEnabled);
     addIfNonNull('zoomGesturesEnabled', zoomGesturesEnabled);
-    addIfNonNull('trackCameraPosition', trackCameraPosition);
+    addIfNonNull('trackingMode', trackingMode?.index);
     addIfNonNull('myLocationEnabled', myLocationEnabled);
     addIfNonNull('myLocationButtonEnabled', myLocationButtonEnabled);
     addIfNonNull('padding', <double>[

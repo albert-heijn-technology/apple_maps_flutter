@@ -35,7 +35,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
       onMapCreated: _onMapCreated,
       initialCameraPosition: const CameraPosition(
         target: _kMapCenter,
-        zoom: 7.0,
+        distance: 7.0,
       ),
       padding: _padding,
     );

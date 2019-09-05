@@ -43,7 +43,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
             child: AppleMap(
               initialCameraPosition: const CameraPosition(
                 target: _kMapCenter,
-                zoom: 7.0,
+                distance: 7.0,
               ),
               markers: _createMarker(),
               onMapCreated: _onMapCreated,

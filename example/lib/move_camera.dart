@@ -41,8 +41,9 @@ class MoveCameraState extends State<MoveCamera> {
             height: 200.0,
             child: AppleMap(
               onMapCreated: _onMapCreated,
-              initialCameraPosition:
-                  const CameraPosition(target: LatLng(0.0, 0.0)),
+              initialCameraPosition: const CameraPosition(
+                target: LatLng(0.0, 0.0),
+              ),
             ),
           ),
         ),
@@ -56,10 +57,10 @@ class MoveCameraState extends State<MoveCamera> {
                     mapController.moveCamera(
                       CameraUpdate.newCameraPosition(
                         const CameraPosition(
-                          bearing: 270.0,
+                          heading: 270.0,
                           target: LatLng(51.5160895, -0.1294527),
-                          tilt: 30.0,
-                          zoom: 17.0,
+                          pitch: 30.0,
+                          distance: 17.0,
                         ),
                       ),
                     );

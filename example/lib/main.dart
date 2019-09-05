@@ -57,7 +57,19 @@ class MapsDemo extends StatelessWidget {
       // ),
       body: SizedBox.expand(
         child: AppleMap(
-          initialCameraPosition: CameraPosition(target: LatLng(40.1, 33.0)),
+          initialCameraPosition: CameraPosition(
+            target: LatLng(50.1, 10.2),
+            distance: 10000,
+            pitch: 80,
+            heading: 20,
+          ),
+          mapType: MapType.hybrid,
+          compassEnabled: false,
+          myLocationEnabled: true,
+          zoomGesturesEnabled: false,
+          scrollGesturesEnabled: false,
+          rotateGesturesEnabled: false,
+          pitchGesturesEnabled: false,
         ),
       ),
     );
