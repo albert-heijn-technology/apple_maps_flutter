@@ -34,27 +34,22 @@ class MapUiBodyState extends State<MapUiBody> {
 
   static final CameraPosition _kInitialPosition = const CameraPosition(
     target: LatLng(-33.852, 151.211),
-    distance: 11.0,
+    distance: 500.0,
+    pitch: 40,
   );
 
   CameraPosition _position = _kInitialPosition;
   bool _isMapCreated = false;
   bool _isMoving = false;
   bool _compassEnabled = true;
-  bool _trafficEnabled = false;
-  bool _mapToolbarEnabled = true;
-  CameraTargetBounds _cameraTargetBounds = CameraTargetBounds.unbounded;
+  bool _myLocationButtonEnabled = true;
   MapType _mapType = MapType.standard;
   bool _rotateGesturesEnabled = true;
   bool _scrollGesturesEnabled = true;
   bool _pitchGesturesEnabled = true;
   bool _zoomGesturesEnabled = true;
-  bool _indoorViewEnabled = true;
   bool _myLocationEnabled = true;
-  bool _myLocationButtonEnabled = true;
   AppleMapController _controller;
-  bool _nightMode = false;
-
   @override
   void initState() {
     super.initState();
@@ -71,34 +66,6 @@ class MapUiBodyState extends State<MapUiBody> {
       onPressed: () {
         setState(() {
           _compassEnabled = !_compassEnabled;
-        });
-      },
-    );
-  }
-
-  Widget _mapToolbarToggler() {
-    return FlatButton(
-      child: Text('${_mapToolbarEnabled ? 'disable' : 'enable'} map toolbar'),
-      onPressed: () {
-        setState(() {
-          _mapToolbarEnabled = !_mapToolbarEnabled;
-        });
-      },
-    );
-  }
-
-  Widget _latLngBoundsToggler() {
-    return FlatButton(
-      child: Text(
-        _cameraTargetBounds.bounds == null
-            ? 'bound camera target'
-            : 'release camera target',
-      ),
-      onPressed: () {
-        setState(() {
-          _cameraTargetBounds = _cameraTargetBounds.bounds == null
-              ? CameraTargetBounds(sydneyBounds)
-              : CameraTargetBounds.unbounded;
         });
       },
     );
@@ -161,21 +128,10 @@ class MapUiBodyState extends State<MapUiBody> {
     );
   }
 
-  Widget _indoorViewToggler() {
-    return FlatButton(
-      child: Text('${_indoorViewEnabled ? 'disable' : 'enable'} indoor'),
-      onPressed: () {
-        setState(() {
-          _indoorViewEnabled = !_indoorViewEnabled;
-        });
-      },
-    );
-  }
-
   Widget _myLocationToggler() {
     return FlatButton(
       child: Text(
-          '${_myLocationButtonEnabled ? 'disable' : 'enable'} my location button'),
+          '${_myLocationEnabled ? 'disable' : 'enable'} my location marker'),
       onPressed: () {
         setState(() {
           _myLocationEnabled = !_myLocationEnabled;
@@ -200,45 +156,43 @@ class MapUiBodyState extends State<MapUiBody> {
     return await rootBundle.loadString(path);
   }
 
-  void _setMapStyle(String mapStyle) {
-    setState(() {
-      _nightMode = true;
-      _controller.setMapStyle(mapStyle);
-    });
-  }
+  // void _setMapStyle(String mapStyle) {
+  //   setState(() {
+  //     _nightMode = true;
+  //     _controller.setMapStyle(mapStyle);
+  //   });
+  // }
 
-  Widget _nightModeToggler() {
-    if (!_isMapCreated) {
-      return null;
-    }
-    return FlatButton(
-      child: Text('${_nightMode ? 'disable' : 'enable'} night mode'),
-      onPressed: () {
-        if (_nightMode) {
-          setState(() {
-            _nightMode = false;
-            _controller.setMapStyle(null);
-          });
-        } else {
-          _getFileData('assets/night_mode.json').then(_setMapStyle);
-        }
-      },
-    );
-  }
+  // Widget _nightModeToggler() {
+  //   if (!_isMapCreated) {
+  //     return null;
+  //   }
+  //   return FlatButton(
+  //     child: Text('${_nightMode ? 'disable' : 'enable'} night mode'),
+  //     onPressed: () {
+  //       if (_nightMode) {
+  //         setState(() {
+  //           _nightMode = false;
+  //           _controller.setMapStyle(null);
+  //         });
+  //       } else {
+  //         _getFileData('assets/night_mode.json').then(_setMapStyle);
+  //       }
+  //     },
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
-    final AppleMap googleMap = AppleMap(
+    final AppleMap appleMap = AppleMap(
       onMapCreated: onMapCreated,
       initialCameraPosition: _kInitialPosition,
       compassEnabled: _compassEnabled,
-      cameraTargetBounds: _cameraTargetBounds,
       mapType: _mapType,
       rotateGesturesEnabled: _rotateGesturesEnabled,
       scrollGesturesEnabled: _scrollGesturesEnabled,
       pitchGesturesEnabled: _pitchGesturesEnabled,
       zoomGesturesEnabled: _zoomGesturesEnabled,
-      indoorViewEnabled: _indoorViewEnabled,
       myLocationEnabled: _myLocationEnabled,
       myLocationButtonEnabled: _myLocationButtonEnabled,
       onCameraMove: _updateCameraPosition,
@@ -251,7 +205,7 @@ class MapUiBodyState extends State<MapUiBody> {
           child: SizedBox(
             width: 300.0,
             height: 200.0,
-            child: googleMap,
+            child: appleMap,
           ),
         ),
       ),
@@ -266,21 +220,17 @@ class MapUiBodyState extends State<MapUiBody> {
               Text(
                   'camera target: ${_position.target.latitude.toStringAsFixed(4)},'
                   '${_position.target.longitude.toStringAsFixed(4)}'),
-              Text('camera zoom: ${_position.distance}'),
+              Text('camera distance: ${_position.distance}'),
               Text('camera tilt: ${_position.pitch}'),
               Text(_isMoving ? '(Camera moving)' : '(Camera idle)'),
               _compassToggler(),
-              _mapToolbarToggler(),
-              _latLngBoundsToggler(),
               _mapTypeCycler(),
               _rotateToggler(),
               _scrollToggler(),
               _tiltToggler(),
               _zoomToggler(),
-              _indoorViewToggler(),
               _myLocationToggler(),
               _myLocationButtonToggler(),
-              _nightModeToggler(),
             ],
           ),
         ),

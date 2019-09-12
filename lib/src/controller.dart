@@ -89,12 +89,12 @@ class AppleMapController {
   /// The returned [Future] completes after listeners have been notified.
   Future<void> _updateMapOptions(Map<String, dynamic> optionsUpdate) async {
     assert(optionsUpdate != null);
-    // await channel.invokeMethod<void>(
-    //   'map#update',
-    //   <String, dynamic>{
-    //     'options': optionsUpdate,
-    //   },
-    // );
+    await channel.invokeMethod<void>(
+      'map#update',
+      <String, dynamic>{
+        'options': optionsUpdate,
+      },
+    );
   }
 
   /// Updates marker configuration.
@@ -105,10 +105,10 @@ class AppleMapController {
   /// The returned [Future] completes after listeners have been notified.
   Future<void> _updateMarkers(_MarkerUpdates markerUpdates) async {
     assert(markerUpdates != null);
-    // await channel.invokeMethod<void>(
-    //   'markers#update',
-    //   markerUpdates._toMap(),
-    // )
+    await channel.invokeMethod<void>(
+      'markers#update',
+      markerUpdates._toMap(),
+    );
   }
 
   /// Updates polygon configuration.

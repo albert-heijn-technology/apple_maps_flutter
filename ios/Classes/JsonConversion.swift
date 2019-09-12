@@ -17,4 +17,8 @@ class JsonConversion{
         return int.intValue
     }
     
+    static func toDouble(jsonDouble double: NSNumber) -> Double {
+        return double.doubleValue
+    }
+    
 }

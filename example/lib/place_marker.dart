@@ -58,8 +58,8 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
         }
         selectedMarker = markerId;
         final Marker newMarker = tappedMarker.copyWith(
-          iconParam: BitmapDescriptor.defaultMarkerWithHue(
-            BitmapDescriptor.hueGreen,
+          iconParam: BitmapDescriptor.defaultMarkerWithColor(
+            AnnatationColor.GREEN,
           ),
         );
         markers[markerId] = newMarker;
@@ -264,7 +264,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
               onMapCreated: _onMapCreated,
               initialCameraPosition: const CameraPosition(
                 target: LatLng(-33.852, 151.211),
-                distance: 11.0,
+                distance: 20000,
               ),
               // TODO(iskakaushik): Remove this when collection literals makes it to stable.
               // https://github.com/flutter/flutter/issues/28312

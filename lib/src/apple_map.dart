@@ -225,9 +225,9 @@ class _AppleMapState extends State<AppleMap> {
     super.didUpdateWidget(oldWidget);
     _updateOptions();
     _updateMarkers();
-    _updatePolygons();
-    _updatePolylines();
-    _updateCircles();
+    // _updatePolygons();
+    // _updatePolylines();
+    // _updateCircles();
   }
 
   void _updateOptions() async {

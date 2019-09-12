@@ -47,29 +47,12 @@ class MapsDemo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('AppleMaps examples')),
-      // body: ListView.builder(
-      //   itemCount: _allPages.length,
-      //   itemBuilder: (_, int index) => ListTile(
-      //     leading: _allPages[index].leading,
-      //     title: Text(_allPages[index].title),
-      //     onTap: () => _pushPage(context, _allPages[index]),
-      //   ),
-      // ),
-      body: SizedBox.expand(
-        child: AppleMap(
-          initialCameraPosition: CameraPosition(
-            target: LatLng(50.1, 10.2),
-            distance: 10000,
-            pitch: 80,
-            heading: 20,
-          ),
-          mapType: MapType.hybrid,
-          compassEnabled: false,
-          myLocationEnabled: true,
-          zoomGesturesEnabled: false,
-          scrollGesturesEnabled: false,
-          rotateGesturesEnabled: false,
-          pitchGesturesEnabled: false,
+      body: ListView.builder(
+        itemCount: _allPages.length,
+        itemBuilder: (_, int index) => ListTile(
+          leading: _allPages[index].leading,
+          title: Text(_allPages[index].title),
+          onTap: () => _pushPage(context, _allPages[index]),
         ),
       ),
     );

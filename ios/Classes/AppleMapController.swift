@@ -31,11 +31,12 @@ public class AppleMapViewFactory: NSObject, FlutterPlatformViewFactory {
 }
 
 
-public class AppleMapController :NSObject,FlutterPlatformView {
+public class AppleMapController :NSObject, FlutterPlatformView, MKMapViewDelegate, UIGestureRecognizerDelegate {
     @IBOutlet var mapView: MKMapView!
     fileprivate let locationManager:CLLocationManager = CLLocationManager()
     var registrar: FlutterPluginRegistrar
     var channel: FlutterMethodChannel
+    var annotationController :AnnotationController
     
     let mapTypes: Array<MKMapType> = [
         MKMapType.standard,
@@ -53,21 +54,22 @@ public class AppleMapController :NSObject,FlutterPlatformView {
         self.registrar = registrar
         self.mapView = MKMapView(frame: frame)
         channel = FlutterMethodChannel(name: "plugins.flutter.io/apple_maps_\(id)", binaryMessenger: registrar.messenger())
+        annotationController = AnnotationController(mapView: mapView, channel: channel)
         super.init()
-//        let annotation = MKPointAnnotation()
-//        annotation.coordinate = userCoordinate
-//        mapView.addAnnotation(annotation)
         
-
+        if let annotationsToAdd :NSArray = args["markersToAdd"] as? NSArray {
+            annotationController.annotationsToAdd(annotations: annotationsToAdd)
+        }
+        initialiseTapGestureRecognizers()
         if #available(iOS 9.0, *) {
             mapView.setCamera(cameraPosition(positionData: args["initialCameraPosition"]! as! Dictionary<String, Any>)!, animated: false)
             interprateOptions(options: args["options"] as! Dictionary<String, Any>)
         } else {
             // Fallback on earlier versions
         }
-
-        print(args)
+        mapView.delegate = self
     }
+    
     
     @available(iOS 9.0, *)
     private func cameraPosition(positionData: Dictionary<String, Any>) -> MKMapCamera? {
@@ -82,48 +84,219 @@ public class AppleMapController :NSObject,FlutterPlatformView {
     
     @available(iOS 9.0, *)
     private func interprateOptions(options: Dictionary<String, Any>) {
-        print(options)
-        let isCompassEnabled :Bool = JsonConversion.toBool(jsonBool: options["compassEnabled"] as! NSNumber)
-        mapView.showsCompass = isCompassEnabled
+        if let isCompassEnabled :Any = options["compassEnabled"]  {
+            let _isCompassEnabled :Bool = JsonConversion.toBool(jsonBool: isCompassEnabled as! NSNumber)
+            mapView.showsCompass = _isCompassEnabled
+        }
         
-        let mapType :Int = JsonConversion.toInt(jsonInt : options["mapType"] as! NSNumber)
-        mapView.mapType = mapTypes[mapType]
+        if let mapType :Any = options["mapType"] {
+            let _mapType :Int = JsonConversion.toInt(jsonInt : mapType as! NSNumber)
+            mapView.mapType = mapTypes[_mapType]
+        }
         
-        let trafficEnabled :Bool = JsonConversion.toBool(jsonBool: options["trafficEnabled"] as! NSNumber)
-        mapView.showsTraffic = trafficEnabled
+        if let trafficEnabled :Any = options["trafficEnabled"] {
+            let _trafficEnabled :Bool = JsonConversion.toBool(jsonBool: trafficEnabled as! NSNumber)
+            mapView.showsTraffic = _trafficEnabled
+            
+        }
         
-        let rotateGesturesEnabled :Bool = JsonConversion.toBool(jsonBool: options["rotateGesturesEnabled"] as! NSNumber)
-        mapView.isRotateEnabled = rotateGesturesEnabled
+        if let rotateGesturesEnabled :Any = options["rotateGesturesEnabled"] {
+            let _rotateGesturesEnabled :Bool = JsonConversion.toBool(jsonBool: rotateGesturesEnabled as! NSNumber)
+            mapView.isRotateEnabled = _rotateGesturesEnabled
+        }
         
-        let scrollGesturesEnabled :Bool = JsonConversion.toBool(jsonBool: options["scrollGesturesEnabled"] as! NSNumber)
-        mapView.isScrollEnabled = scrollGesturesEnabled
+        if let scrollGesturesEnabled :Any = options["scrollGesturesEnabled"] {
+            let _scrollGesturesEnabled :Bool = JsonConversion.toBool(jsonBool:scrollGesturesEnabled as! NSNumber)
+            mapView.isScrollEnabled = _scrollGesturesEnabled
+        }
         
-        let pitchGesturesEnabled :Bool = JsonConversion.toBool(jsonBool: options["pitchGesturesEnabled"] as! NSNumber)
-        mapView.isPitchEnabled = pitchGesturesEnabled
+        if let pitchGesturesEnabled :Any = options["pitchGesturesEnabled"] {
+            let _pitchGesturesEnabled :Bool = JsonConversion.toBool(jsonBool: pitchGesturesEnabled as! NSNumber)
+            mapView.isPitchEnabled = _pitchGesturesEnabled
+        }
         
-        let zoomGesturesEnabled :Bool = JsonConversion.toBool(jsonBool: options["zoomGesturesEnabled"] as! NSNumber)
-        mapView.isZoomEnabled = zoomGesturesEnabled
+        if let zoomGesturesEnabled :Any = options["zoomGesturesEnabled"] {
+            let _zoomGesturesEnabled :Bool = JsonConversion.toBool(jsonBool: zoomGesturesEnabled as! NSNumber)
+            mapView.isZoomEnabled = _zoomGesturesEnabled
+        }
         
-        let myLocationEnabled :Bool = JsonConversion.toBool(jsonBool: options["myLocationEnabled"] as! NSNumber)
-        setUserLocation(myLocationEnabled: myLocationEnabled)
         
-        let userTackingMode :Int = JsonConversion.toInt(jsonInt: options["trackingMode"] as! NSNumber)
-        mapView.setUserTrackingMode(userTrackingModes[userTackingMode], animated: false)
+        if let myLocationEnabled :Any = options["myLocationEnabled"] {
+            let _myLocationEnabled :Bool = JsonConversion.toBool(jsonBool: myLocationEnabled as! NSNumber)
+            setUserLocation(myLocationEnabled: _myLocationEnabled)
+        }
+        
+        if let myLocationButtonEnabled :Any = options["myLocationButtonEnabled"] {
+            let _myLocationButtonEnabled :Bool = JsonConversion.toBool(jsonBool: myLocationButtonEnabled as! NSNumber)
+            mapTrackingButton(isVisible: _myLocationButtonEnabled)
+        }
+        
+        if let userTackingMode :Any = options["trackingMode"] {
+            let _userTackingMode :Int = JsonConversion.toInt(jsonInt: userTackingMode as! NSNumber)
+            mapView.setUserTrackingMode(userTrackingModes[_userTackingMode], animated: false)
+        }
     }
     
     public func setUserLocation(myLocationEnabled :Bool) {
-        if (myLocationEnabled) {
+        if CLLocationManager.authorizationStatus() == .notDetermined {
             locationManager.requestWhenInUseAuthorization()
-            locationManager.desiredAccuracy = kCLLocationAccuracyBest
-            locationManager.distanceFilter = kCLDistanceFilterNone
-            locationManager.startUpdatingLocation()
-            
+        } else if CLLocationManager.authorizationStatus() ==   .authorizedWhenInUse {
+            if (myLocationEnabled) {
+                locationManager.requestWhenInUseAuthorization()
+                locationManager.desiredAccuracy = kCLLocationAccuracyBest
+                locationManager.distanceFilter = kCLDistanceFilterNone
+                locationManager.startUpdatingLocation()
+            } else {
+                locationManager.stopUpdatingLocation()
+            }
             mapView.showsUserLocation = myLocationEnabled
         }
     }
- 
+    
+    
+    // on idle? check for animation
+    public func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+        channel.invokeMethod("camera#onIdle", arguments: "")
+    }
+    
+    // onMoveStarted
+    public func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
+        channel.invokeMethod("camera#onMoveStarted", arguments: "")
+    }
+    
+    
+    public func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView)  {
+        if let annotation = view.annotation  {
+            annotationController.onAnnotationClick(annotation: annotation)
+        }
+    }
+    
+    public func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        if annotation is MKUserLocation {
+            return nil
+        } else if let flutterAnnotation = annotation as? FlutterAnnotation {
+            let identifier :String = flutterAnnotation.id
+            var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier)
+            
+            if annotationView == nil {
+                annotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+                annotationView!.canShowCallout = true
+            } else {
+                annotationView!.annotation = annotation
+            }
+            annotationView!.alpha = CGFloat(flutterAnnotation.alpha ?? 1.00)
+            annotationView!.isDraggable = flutterAnnotation.isDraggable ?? false
+            // annotationView!.isEnabled = false
+            return annotationView
+        }
+        return nil
+    }
+    
+    
+    
+    private func initialiseTapGestureRecognizers() {
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(onMapGesture))
+        panGesture.maximumNumberOfTouches = 2
+        panGesture.delegate = self
+        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(onMapGesture))
+        pinchGesture.delegate = self
+        let rotateGesture = UIRotationGestureRecognizer(target: self, action: #selector(onMapGesture))
+        rotateGesture.delegate = self
+        let tiltGesture = UISwipeGestureRecognizer(target: self, action: #selector(onMapGesture))
+        tiltGesture.numberOfTouchesRequired = 2
+        tiltGesture.direction = .up
+        tiltGesture.direction = .down
+        let longTapGesture = UILongPressGestureRecognizer(target: self, action: #selector(longTap))
+        let doubleTapGesture = UITapGestureRecognizer(target: self, action: nil)
+        doubleTapGesture.numberOfTapsRequired = 2
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onTap))
+        tapGesture.require(toFail: doubleTapGesture)  // Make sure to not detect double taps, as they are used for zooming.
+        mapView.addGestureRecognizer(panGesture)
+        mapView.addGestureRecognizer(pinchGesture)
+        mapView.addGestureRecognizer(rotateGesture)
+        mapView.addGestureRecognizer(tiltGesture)
+        mapView.addGestureRecognizer(longTapGesture)
+        mapView.addGestureRecognizer(doubleTapGesture)
+        mapView.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func onMapGesture(sender: UIGestureRecognizer) {
+        let locationInView = sender.location(in: mapView)
+        let locationOnMap = mapView.convert(locationInView, toCoordinateFrom: mapView)
+        let distance = mapView.camera.altitude
+        let pitch = mapView.camera.pitch
+        let heading = mapView.camera.heading
+        channel.invokeMethod("camera#onMove", arguments: ["position": ["heading": heading, "target":  [locationOnMap.latitude, locationOnMap.longitude], "pitch": pitch, "distance": distance]])
+    }
+
+    @objc func longTap(sender: UIGestureRecognizer){
+        if sender.state == .began {
+            let locationInView = sender.location(in: mapView)
+            let locationOnMap = mapView.convert(locationInView, toCoordinateFrom: mapView)
+            
+            channel.invokeMethod("map#onLongPress", arguments: ["position": [locationOnMap.latitude, locationOnMap.longitude]])
+        }
+    }
+    
+    @objc func onTap(sender: UIGestureRecognizer){
+        let locationInView = sender.location(in: mapView)
+        let locationOnMap = mapView.convert(locationInView, toCoordinateFrom: mapView)
+        
+        channel.invokeMethod("map#onTap", arguments: ["position": [locationOnMap.latitude, locationOnMap.longitude]])
+    }
+    
+    func mapTrackingButton(isVisible visible: Bool){
+        if (visible) {
+            let image = UIImage(named: "outline_near_me")
+            let locationButton = UIButton(type: UIButtonType.custom) as UIButton
+            locationButton.tag = 100
+            locationButton.layer.cornerRadius = 5
+            locationButton.frame = CGRect(origin: CGPoint(x: 300 - 45, y: 5), size: CGSize(width: 40, height: 40))
+            locationButton.setImage(image, for: .normal)
+            locationButton.backgroundColor = .white
+            locationButton.addTarget(self, action: #selector(centerMapOnUserButtonClicked), for:.touchUpInside)
+            mapView.addSubview(locationButton)
+        } else {
+            if let _locationButton = mapView.viewWithTag(100) {
+                _locationButton.removeFromSuperview()
+            }
+        }
+       
+    }
+    
+   
+    @objc func centerMapOnUserButtonClicked() {
+        self.mapView.setUserTrackingMode( MKUserTrackingMode.follow, animated: true)
+    }
     
     public func view() -> UIView {
+        channel.setMethodCallHandler({(call: FlutterMethodCall, result: FlutterResult) -> Void in
+            let args :Dictionary<String, Any> = call.arguments as! Dictionary<String,Any>
+            switch(call.method){
+            case "markers#update":
+                self.annotationController.annotationsToAdd(annotations: args["markersToAdd"]! as! NSArray)
+                self.annotationController.annotationsToChange(annotations: args["markersToChange"] as! NSArray)
+                self.annotationController.annotationsIdsToRemove(annotationIds: args["markerIdsToRemove"] as! NSArray)
+            case "map#setStyle":
+                print("styyyyyle")
+            case "map#update":
+                if #available(iOS 9.0, *) {
+                    self.interprateOptions(options: args["options"] as! Dictionary<String, Any>)
+                } else {
+                    result(FlutterError(code: "404", message: "Only available on iOS 9 or newer s", details: ""))
+                }
+            default:
+                result(FlutterMethodNotImplemented)
+                return
+            }
+        })
         return mapView
+    }
+    
+    // Always allow multiple gestureRecognizers
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer,
+                                  shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer)
+        -> Bool {
+            return true
     }
 }
