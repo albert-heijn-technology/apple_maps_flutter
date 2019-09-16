@@ -166,7 +166,7 @@ public class AppleMapController :NSObject, FlutterPlatformView, MKMapViewDelegat
     
     
     public func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView)  {
-        if let annotation = view.annotation  {
+        if let annotation :FlutterAnnotation = view.annotation as? FlutterAnnotation  {
             annotationController.onAnnotationClick(annotation: annotation)
         }
     }
@@ -175,21 +175,24 @@ public class AppleMapController :NSObject, FlutterPlatformView, MKMapViewDelegat
         if annotation is MKUserLocation {
             return nil
         } else if let flutterAnnotation = annotation as? FlutterAnnotation {
-            let identifier :String = flutterAnnotation.id
-            var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier)
-            
-            if annotationView == nil {
-                annotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
-                annotationView!.canShowCallout = true
-            } else {
-                annotationView!.annotation = annotation
-            }
-            annotationView!.alpha = CGFloat(flutterAnnotation.alpha ?? 1.00)
-            annotationView!.isDraggable = flutterAnnotation.isDraggable ?? false
-            // annotationView!.isEnabled = false
-            return annotationView
+            return getAnnotationView(annotation: flutterAnnotation)
         }
         return nil
+    }
+    
+    private func getAnnotationView(annotation: FlutterAnnotation) -> MKAnnotationView{
+        let identifier :String = annotation.id
+        var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier)
+        
+        if annotationView == nil {
+            annotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+            annotationView!.canShowCallout = true
+        } else {
+            annotationView!.annotation = annotation
+        }
+        annotationView!.alpha = CGFloat(annotation.alpha ?? 1.00)
+        annotationView!.isDraggable = annotation.isDraggable ?? false
+        return annotationView!
     }
     
     

@@ -57,6 +57,10 @@ class AppleMapController {
       case 'marker#onTap':
         _appleMapState.onMarkerTap(call.arguments['markerId']);
         break;
+      case 'marker#onDragEnd':
+        _appleMapState.onMarkerDragEnd(call.arguments['markerId'],
+            LatLng._fromJson(call.arguments['position']));
+        break;
       case 'infoWindow#onTap':
         _appleMapState.onInfoWindowTap(call.arguments['markerId']);
         break;
