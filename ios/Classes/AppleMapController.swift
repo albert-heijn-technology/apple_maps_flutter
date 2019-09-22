@@ -21,7 +21,7 @@ public class AppleMapViewFactory: NSObject, FlutterPlatformViewFactory {
     public func create(withFrame frame: CGRect, viewIdentifier viewId: Int64, arguments args: Any?) -> FlutterPlatformView {
         let argsDictionary =  args as! Dictionary<String, Any>
         
-        return AppleMapController(withFrame: CGRect(x: 0, y: 0,width: 0, height: 0), withRegistrar: registrar!, withargs: argsDictionary ,withId: viewId)
+        return AppleMapController(withFrame: frame, withRegistrar: registrar!, withargs: argsDictionary ,withId: viewId)
         
     }
     
@@ -31,12 +31,15 @@ public class AppleMapViewFactory: NSObject, FlutterPlatformViewFactory {
 }
 
 
-public class AppleMapController :NSObject, FlutterPlatformView, MKMapViewDelegate, UIGestureRecognizerDelegate {
+public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelegate, UIGestureRecognizerDelegate {
     @IBOutlet var mapView: MKMapView!
     fileprivate let locationManager:CLLocationManager = CLLocationManager()
     var registrar: FlutterPluginRegistrar
     var channel: FlutterMethodChannel
     var annotationController :AnnotationController
+    var initialCameraPosition :Dictionary<String, Any>
+    var options :Dictionary<String, Any>
+    var initialLaunch :Bool
     
     let mapTypes: Array<MKMapType> = [
         MKMapType.standard,
@@ -50,43 +53,67 @@ public class AppleMapController :NSObject, FlutterPlatformView, MKMapViewDelegat
         MKUserTrackingMode.followWithHeading,
     ]
     
-    public init(withFrame frame: CGRect, withRegistrar registrar: FlutterPluginRegistrar, withargs args: Dictionary<String, Any> ,withId id: Int64){
+    public init(withFrame frame: CGRect, withRegistrar registrar: FlutterPluginRegistrar, withargs args: Dictionary<String, Any> ,withId id: Int64) {
         self.registrar = registrar
         self.mapView = MKMapView(frame: frame)
         channel = FlutterMethodChannel(name: "plugins.flutter.io/apple_maps_\(id)", binaryMessenger: registrar.messenger())
         annotationController = AnnotationController(mapView: mapView, channel: channel)
+        initialCameraPosition = args["initialCameraPosition"]! as! Dictionary<String, Any>
+        options = args["options"] as! Dictionary<String, Any>
+        initialLaunch = true
         super.init()
-        
+        initialiseTapGestureRecognizers()
+        interprateOptions(options: options)
         if let annotationsToAdd :NSArray = args["markersToAdd"] as? NSArray {
             annotationController.annotationsToAdd(annotations: annotationsToAdd)
-        }
-        initialiseTapGestureRecognizers()
-        if #available(iOS 9.0, *) {
-            mapView.setCamera(cameraPosition(positionData: args["initialCameraPosition"]! as! Dictionary<String, Any>)!, animated: false)
-            interprateOptions(options: args["options"] as! Dictionary<String, Any>)
-        } else {
-            // Fallback on earlier versions
         }
         mapView.delegate = self
     }
     
-    
-    @available(iOS 9.0, *)
-    private func cameraPosition(positionData: Dictionary<String, Any>) -> MKMapCamera? {
-        let targetList :Array<CLLocationDegrees> = positionData["target"]! as! Array<CLLocationDegrees>
-        let distance :CLLocationDistance =  positionData["distance"]! as! CLLocationDistance
-        let pitch :CGFloat = positionData["pitch"]! as! CGFloat
-        let heading :CLLocationDirection = positionData["heading"]! as! CLLocationDirection
-        let userCoordinate :CLLocationCoordinate2D = CLLocationCoordinate2D(latitude:  targetList[0], longitude: targetList[1])
-        let mapCamera = MKMapCamera(lookingAtCenter: userCoordinate, fromDistance: distance, pitch: pitch, heading: heading)
-        return mapCamera
+    // workaround for initial camera position, because the zoom factor can only be
+    // determined by the width and height of the map, which is auto layed out
+    public func mapViewDidFinishLoadingMap(_ mapView: MKMapView) {
+        if (initialLaunch) {
+            mapView.setCenterCoordinate(initialCameraPosition, animated: false)
+            interprateOptions(options: options)
+            initialLaunch = false
+        }
     }
     
-    @available(iOS 9.0, *)
+    // on idle? check for animation
+    public func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+        channel.invokeMethod("camera#onIdle", arguments: "")
+    }
+    
+    // onMoveStarted
+    public func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
+        channel.invokeMethod("camera#onMoveStarted", arguments: "")
+    }
+    
+    
+    public func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView)  {
+        if let annotation :FlutterAnnotation = view.annotation as? FlutterAnnotation  {
+            annotationController.onAnnotationClick(annotation: annotation)
+        }
+    }
+    
+    public func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        if annotation is MKUserLocation {
+            return nil
+        } else if let flutterAnnotation = annotation as? FlutterAnnotation {
+            return getAnnotationView(annotation: flutterAnnotation)
+        }
+        return nil
+    }
+    
     private func interprateOptions(options: Dictionary<String, Any>) {
         if let isCompassEnabled :Any = options["compassEnabled"]  {
             let _isCompassEnabled :Bool = JsonConversion.toBool(jsonBool: isCompassEnabled as! NSNumber)
-            mapView.showsCompass = _isCompassEnabled
+            if #available(iOS 9.0, *) {
+                mapView.showsCompass = _isCompassEnabled
+            } else {
+                // not sure if theres a simple solution
+            }
         }
         
         if let mapType :Any = options["mapType"] {
@@ -96,8 +123,11 @@ public class AppleMapController :NSObject, FlutterPlatformView, MKMapViewDelegat
         
         if let trafficEnabled :Any = options["trafficEnabled"] {
             let _trafficEnabled :Bool = JsonConversion.toBool(jsonBool: trafficEnabled as! NSNumber)
-            mapView.showsTraffic = _trafficEnabled
-            
+            if #available(iOS 9.0, *) {
+                mapView.showsTraffic = _trafficEnabled
+            } else {
+                // do nothing
+            }
         }
         
         if let rotateGesturesEnabled :Any = options["rotateGesturesEnabled"] {
@@ -154,32 +184,6 @@ public class AppleMapController :NSObject, FlutterPlatformView, MKMapViewDelegat
     }
     
     
-    // on idle? check for animation
-    public func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
-        channel.invokeMethod("camera#onIdle", arguments: "")
-    }
-    
-    // onMoveStarted
-    public func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
-        channel.invokeMethod("camera#onMoveStarted", arguments: "")
-    }
-    
-    
-    public func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView)  {
-        if let annotation :FlutterAnnotation = view.annotation as? FlutterAnnotation  {
-            annotationController.onAnnotationClick(annotation: annotation)
-        }
-    }
-    
-    public func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        if annotation is MKUserLocation {
-            return nil
-        } else if let flutterAnnotation = annotation as? FlutterAnnotation {
-            return getAnnotationView(annotation: flutterAnnotation)
-        }
-        return nil
-    }
-    
     private func getAnnotationView(annotation: FlutterAnnotation) -> MKAnnotationView{
         let identifier :String = annotation.id
         var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier)
@@ -195,8 +199,7 @@ public class AppleMapController :NSObject, FlutterPlatformView, MKMapViewDelegat
         return annotationView!
     }
     
-    
-    
+    // Functions used for GestureRecognition
     private func initialiseTapGestureRecognizers() {
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(onMapGesture))
         panGesture.maximumNumberOfTouches = 2
@@ -226,10 +229,10 @@ public class AppleMapController :NSObject, FlutterPlatformView, MKMapViewDelegat
     @objc func onMapGesture(sender: UIGestureRecognizer) {
         let locationInView = sender.location(in: mapView)
         let locationOnMap = mapView.convert(locationInView, toCoordinateFrom: mapView)
-        let distance = mapView.camera.altitude
+        let zoom = mapView.zoomLevel
         let pitch = mapView.camera.pitch
         let heading = mapView.camera.heading
-        channel.invokeMethod("camera#onMove", arguments: ["position": ["heading": heading, "target":  [locationOnMap.latitude, locationOnMap.longitude], "pitch": pitch, "distance": distance]])
+        channel.invokeMethod("camera#onMove", arguments: ["position": ["heading": heading, "target":  [locationOnMap.latitude, locationOnMap.longitude], "pitch": pitch, "zoom": zoom]])
     }
 
     @objc func longTap(sender: UIGestureRecognizer){
@@ -248,15 +251,17 @@ public class AppleMapController :NSObject, FlutterPlatformView, MKMapViewDelegat
         channel.invokeMethod("map#onTap", arguments: ["position": [locationOnMap.latitude, locationOnMap.longitude]])
     }
     
+    // Functions used for the mapTrackingButton
     func mapTrackingButton(isVisible visible: Bool){
         if (visible) {
             let image = UIImage(named: "outline_near_me")
             let locationButton = UIButton(type: UIButtonType.custom) as UIButton
             locationButton.tag = 100
             locationButton.layer.cornerRadius = 5
-            locationButton.frame = CGRect(origin: CGPoint(x: 300 - 45, y: 5), size: CGSize(width: 40, height: 40))
+            locationButton.frame = CGRect(origin: CGPoint(x: mapView.bounds.width - 45, y: mapView.bounds.height - 45), size: CGSize(width: 40, height: 40))
             locationButton.setImage(image, for: .normal)
             locationButton.backgroundColor = .white
+            locationButton.alpha = 0.8
             locationButton.addTarget(self, action: #selector(centerMapOnUserButtonClicked), for:.touchUpInside)
             mapView.addSubview(locationButton)
         } else {
@@ -264,33 +269,77 @@ public class AppleMapController :NSObject, FlutterPlatformView, MKMapViewDelegat
                 _locationButton.removeFromSuperview()
             }
         }
-       
     }
     
-   
     @objc func centerMapOnUserButtonClicked() {
         self.mapView.setUserTrackingMode( MKUserTrackingMode.follow, animated: true)
     }
     
+    private func toPositionData(data: Array<Any>) -> Dictionary<String, Any> {
+        var positionData: Dictionary<String, Any> = [:]
+        if let update: String = data[0] as? String {
+            switch(update) {
+            case "newCameraPosition":
+                if let _positionData : Dictionary<String, Any> = data[1] as? Dictionary<String, Any> {
+                    positionData = _positionData
+                }
+            case "newLatLng":
+                if let _positionData : Array<Any> = data[1] as? Array<Any> {
+                    positionData = ["target": _positionData]
+                }
+            case "newLatLngZoom":
+                if let _positionData: Array<Any> = data[1] as? Array<Any> {
+                    let zoom: UInt = data[2] as? UInt ?? 0
+                    positionData = ["target": _positionData, "zoom": zoom]
+                }
+            case "zoomBy":
+                if let zoomBy: Int = data[1] as? Int {
+                    print(zoomBy)
+                }
+            case "zoomTo":
+                if let zoomTo: Int = data[1] as? Int {
+                    mapView.zoomLevel = Int(zoomTo)
+                }
+            case "zoomIn":
+                mapView.zoomIn()
+            case "zoomOut":
+                mapView.zoomOut()
+            default:
+                positionData = [:]
+            }
+            return positionData
+        }
+        return [:]
+    }
+    
+    // Setup of the view and MethodChannels
     public func view() -> UIView {
         channel.setMethodCallHandler({(call: FlutterMethodCall, result: FlutterResult) -> Void in
-            let args :Dictionary<String, Any> = call.arguments as! Dictionary<String,Any>
-            switch(call.method){
-            case "markers#update":
-                self.annotationController.annotationsToAdd(annotations: args["markersToAdd"]! as! NSArray)
-                self.annotationController.annotationsToChange(annotations: args["markersToChange"] as! NSArray)
-                self.annotationController.annotationsIdsToRemove(annotationIds: args["markerIdsToRemove"] as! NSArray)
-            case "map#setStyle":
-                print("styyyyyle")
-            case "map#update":
-                if #available(iOS 9.0, *) {
+            if let args :Dictionary<String, Any> = call.arguments as? Dictionary<String,Any> {
+                switch(call.method){
+                case "markers#update":
+                    self.annotationController.annotationsToAdd(annotations: args["markersToAdd"]! as! NSArray)
+                    self.annotationController.annotationsToChange(annotations: args["markersToChange"] as! NSArray)
+                    self.annotationController.annotationsIdsToRemove(annotationIds: args["markerIdsToRemove"] as! NSArray)
+                case "map#update":
                     self.interprateOptions(options: args["options"] as! Dictionary<String, Any>)
-                } else {
-                    result(FlutterError(code: "404", message: "Only available on iOS 9 or newer s", details: ""))
+                case "camera#animate":
+                    //print("animate")
+                    //print(call.arguments!)
+                    let positionData :Dictionary<String, Any> = self.toPositionData(data: args["cameraUpdate"] as! Array<Any>)
+                    if (!positionData.isEmpty) {
+                        self.mapView.setCenterCoordinate(positionData, animated: true)
+                    }
+                case "camera#move":
+                    let positionData :Dictionary<String, Any> = self.toPositionData(data: args["cameraUpdate"] as! Array<Any>)
+                    if (!positionData.isEmpty) {
+                        self.mapView.setCenterCoordinate(positionData, animated: false)
+                        print("calculated zoom: \(self.mapView.zoomLevel)")
+                    }
+                default:
+                    result(FlutterMethodNotImplemented)
+                    return
                 }
-            default:
-                result(FlutterMethodNotImplemented)
-                return
             }
         })
         return mapView

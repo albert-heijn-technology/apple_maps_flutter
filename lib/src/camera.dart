@@ -6,17 +6,17 @@ part of apple_maps_flutter;
 
 /// The position of the map "camera", the view point from which the world is
 /// shown in the map view. Aggregates the camera's [target] geographical
-/// location, its [distance] level, [pitch] angle, and [heading].
+/// location, its [zoom] level, [pitch] angle, and [heading].
 class CameraPosition {
   const CameraPosition({
     @required this.target,
     this.heading = 0.0,
     this.pitch = 0.0,
-    this.distance = 100000.0,
+    this.zoom = 17.0,
   })  : assert(target != null),
         assert(heading != null),
         assert(pitch != null),
-        assert(distance != null);
+        assert(zoom != null);
 
   /// The camera's bearing in degrees, measured clockwise from north.
   ///
@@ -42,13 +42,13 @@ class CameraPosition {
   /// The supported zoom level range depends on the map data and device. Values
   /// beyond the supported range are allowed, but on applying them to a map they
   /// will be silently clamped to the supported range.
-  final double distance;
+  final double zoom;
 
   dynamic _toMap() => <String, dynamic>{
         'target': target._toJson(),
         'heading': heading,
         'pitch': pitch,
-        'distance': distance,
+        'zoom': zoom,
       };
 
   @visibleForTesting
@@ -60,7 +60,7 @@ class CameraPosition {
       heading: json['heading'],
       target: LatLng._fromJson(json['target']),
       pitch: json['pitch'],
-      distance: json['distance'],
+      zoom: json['zoom'],
     );
   }
 
@@ -72,15 +72,15 @@ class CameraPosition {
     return heading == typedOther.heading &&
         target == typedOther.target &&
         pitch == typedOther.pitch &&
-        distance == typedOther.distance;
+        zoom == typedOther.zoom;
   }
 
   @override
-  int get hashCode => hashValues(heading, target, pitch, distance);
+  int get hashCode => hashValues(heading, target, pitch, zoom);
 
   @override
   String toString() =>
-      'CameraPosition(bearing: $heading, target: $target, tilt: $pitch, zoom: $distance)';
+      'CameraPosition(bearing: $heading, target: $target, tilt: $pitch, zoom: $zoom)';
 }
 
 /// Defines a camera move, supporting absolute moves as well as moves relative
@@ -122,7 +122,7 @@ class CameraUpdate {
   }
 
   /// Returns a camera update that moves the camera target the specified screen
-  /// distance.
+  /// zoom.
   ///
   /// For a camera with bearing 0.0 (pointing north), scrolling by 50,75 moves
   /// the camera's target to a geographical location that is 50 to the east and

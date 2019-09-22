@@ -9,7 +9,7 @@ import 'page.dart';
 
 const CameraPosition _kInitialPosition = CameraPosition(
   target: LatLng(-33.852, 151.211),
-  distance: 11.0,
+  zoom: 11.0,
 );
 
 class MapCoordinatesPage extends Page {

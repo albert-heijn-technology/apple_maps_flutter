@@ -34,8 +34,7 @@ class MapUiBodyState extends State<MapUiBody> {
 
   static final CameraPosition _kInitialPosition = const CameraPosition(
     target: LatLng(-33.852, 151.211),
-    distance: 500.0,
-    pitch: 40,
+    zoom: 11.0,
   );
 
   CameraPosition _position = _kInitialPosition;
@@ -220,7 +219,7 @@ class MapUiBodyState extends State<MapUiBody> {
               Text(
                   'camera target: ${_position.target.latitude.toStringAsFixed(4)},'
                   '${_position.target.longitude.toStringAsFixed(4)}'),
-              Text('camera distance: ${_position.distance}'),
+              Text('camera zoom: ${_position.zoom}'),
               Text('camera tilt: ${_position.pitch}'),
               Text(_isMoving ? '(Camera moving)' : '(Camera idle)'),
               _compassToggler(),
