@@ -264,7 +264,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
               onMapCreated: _onMapCreated,
               initialCameraPosition: const CameraPosition(
                 target: LatLng(-33.852, 151.211),
-                zoom: 11.0,
+                zoom: 11,
               ),
               // TODO(iskakaushik): Remove this when collection literals makes it to stable.
               // https://github.com/flutter/flutter/issues/28312

@@ -60,7 +60,7 @@ class MoveCameraState extends State<MoveCamera> {
                           heading: 270.0,
                           target: LatLng(51.5160895, -0.1294527),
                           pitch: 30.0,
-                          zoom: 18.0,
+                          zoom: 17,
                         ),
                       ),
                     );

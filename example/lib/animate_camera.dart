@@ -61,7 +61,7 @@ class AnimateCameraState extends State<AnimateCamera> {
                           heading: 270.0,
                           target: LatLng(51.5160895, -0.1294527),
                           pitch: 30.0,
-                          zoom: 17.0,
+                          zoom: 17,
                         ),
                       ),
                     );

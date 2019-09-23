@@ -44,7 +44,7 @@ class ScrollingMapBody extends StatelessWidget {
                     child: AppleMap(
                       initialCameraPosition: CameraPosition(
                         target: center,
-                        zoom: 11.0,
+                        zoom: 11,
                       ),
                       gestureRecognizers:
                           // TODO(iskakaushik): Remove this when collection literals makes it to stable.
@@ -80,7 +80,7 @@ class ScrollingMapBody extends StatelessWidget {
                     child: AppleMap(
                       initialCameraPosition: CameraPosition(
                         target: center,
-                        zoom: 11.0,
+                        zoom: 11,
                       ),
                       markers:
                           // TODO(iskakaushik): Remove this when collection literals makes it to stable.

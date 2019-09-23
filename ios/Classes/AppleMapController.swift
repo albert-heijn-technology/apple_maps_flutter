@@ -39,7 +39,6 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
     var annotationController :AnnotationController
     var initialCameraPosition :Dictionary<String, Any>
     var options :Dictionary<String, Any>
-    var initialLaunch :Bool
     
     let mapTypes: Array<MKMapType> = [
         MKMapType.standard,
@@ -60,24 +59,14 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
         annotationController = AnnotationController(mapView: mapView, channel: channel)
         initialCameraPosition = args["initialCameraPosition"]! as! Dictionary<String, Any>
         options = args["options"] as! Dictionary<String, Any>
-        initialLaunch = true
         super.init()
         initialiseTapGestureRecognizers()
         interprateOptions(options: options)
+        mapView.setCenterCoordinate(initialCameraPosition, animated: false)
         if let annotationsToAdd :NSArray = args["markersToAdd"] as? NSArray {
             annotationController.annotationsToAdd(annotations: annotationsToAdd)
         }
         mapView.delegate = self
-    }
-    
-    // workaround for initial camera position, because the zoom factor can only be
-    // determined by the width and height of the map, which is auto layed out
-    public func mapViewDidFinishLoadingMap(_ mapView: MKMapView) {
-        if (initialLaunch) {
-            mapView.setCenterCoordinate(initialCameraPosition, animated: false)
-            interprateOptions(options: options)
-            initialLaunch = false
-        }
     }
     
     // on idle? check for animation
@@ -89,7 +78,6 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
     public func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
         channel.invokeMethod("camera#onMoveStarted", arguments: "")
     }
-    
     
     public func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView)  {
         if let annotation :FlutterAnnotation = view.annotation as? FlutterAnnotation  {
@@ -289,7 +277,7 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
                 }
             case "newLatLngZoom":
                 if let _positionData: Array<Any> = data[1] as? Array<Any> {
-                    let zoom: UInt = data[2] as? UInt ?? 0
+                    let zoom: Int = data[2] as? Int ?? 0
                     positionData = ["target": _positionData, "zoom": zoom]
                 }
             case "zoomBy":

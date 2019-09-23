@@ -147,7 +147,7 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
             child: AppleMap(
               initialCameraPosition: const CameraPosition(
                 target: LatLng(52.4478, -3.5402),
-                zoom: 7.0,
+                zoom: 7,
               ),
               circles: Set<Circle>.of(circles.values),
               onMapCreated: _onMapCreated,
