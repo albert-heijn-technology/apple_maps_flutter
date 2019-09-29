@@ -220,6 +220,7 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
         let zoom = mapView.zoomLevel
         let pitch = mapView.camera.pitch
         let heading = mapView.camera.heading
+        mapView.updateCameraValues()
         channel.invokeMethod("camera#onMove", arguments: ["position": ["heading": heading, "target":  [locationOnMap.latitude, locationOnMap.longitude], "pitch": pitch, "zoom": zoom]])
     }
 
@@ -263,7 +264,7 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
         self.mapView.setUserTrackingMode( MKUserTrackingMode.follow, animated: true)
     }
     
-    private func toPositionData(data: Array<Any>) -> Dictionary<String, Any> {
+    private func toPositionData(data: Array<Any>, animated: Bool) -> Dictionary<String, Any> {
         var positionData: Dictionary<String, Any> = [:]
         if let update: String = data[0] as? String {
             switch(update) {
@@ -286,12 +287,12 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
                 }
             case "zoomTo":
                 if let zoomTo: Int = data[1] as? Int {
-                    mapView.zoomLevel = Int(zoomTo)
+                    mapView.zoomTo(zoomLevel: zoomTo, animated: animated)
                 }
             case "zoomIn":
-                mapView.zoomIn()
+                mapView.zoomIn(animated: animated)
             case "zoomOut":
-                mapView.zoomOut()
+                mapView.zoomOut(animated: animated)
             default:
                 positionData = [:]
             }
@@ -314,15 +315,14 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
                 case "camera#animate":
                     //print("animate")
                     //print(call.arguments!)
-                    let positionData :Dictionary<String, Any> = self.toPositionData(data: args["cameraUpdate"] as! Array<Any>)
+                    let positionData :Dictionary<String, Any> = self.toPositionData(data: args["cameraUpdate"] as! Array<Any>, animated: true)
                     if (!positionData.isEmpty) {
                         self.mapView.setCenterCoordinate(positionData, animated: true)
                     }
                 case "camera#move":
-                    let positionData :Dictionary<String, Any> = self.toPositionData(data: args["cameraUpdate"] as! Array<Any>)
+                    let positionData :Dictionary<String, Any> = self.toPositionData(data: args["cameraUpdate"] as! Array<Any>, animated: false)
                     if (!positionData.isEmpty) {
                         self.mapView.setCenterCoordinate(positionData, animated: false)
-                        print("calculated zoom: \(self.mapView.zoomLevel)")
                     }
                 default:
                     result(FlutterMethodNotImplemented)

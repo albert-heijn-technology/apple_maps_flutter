@@ -18,6 +18,7 @@ public extension MKMapView {
         static var _desiredZoomLevel = Int(0)
         static var _desiredPitch = CGFloat(0)
         static var _desiredHeading = CLLocationDirection(0)
+        static var _oldBounds = CGRect()
     }
     
     // To calculate the displayed region we have to get the layout bounds.
@@ -25,7 +26,11 @@ public extension MKMapView {
     // setCenterCoordinate after the mapView was layed out.
     override func layoutSubviews() {
         super.layoutSubviews()
-        self.setCenterCoordinate(centerCoordinate: centerCoordinate, zoomLevel: Holder._desiredZoomLevel, animated: false)
+        // Only update the centerCoordinate in layoutSubviews if the bounds changed
+        if (self.bounds != Holder._oldBounds) {
+            self.setCenterCoordinate(centerCoordinate: centerCoordinate, zoomLevel: Holder._desiredZoomLevel, animated: false)
+        }
+        Holder._oldBounds = self.bounds
     }
   
     var zoomLevel: Int {
@@ -41,13 +46,12 @@ public extension MKMapView {
 
             let zoomExponent = self.logC(val: zoomScale, forBase: 2)
 
-            let zoomLevel = round(21 - zoomExponent)
+            let zoomLevel = round(20 - zoomExponent)
           
             return Int(zoomLevel)
         }
         set (newZoomLevel) {
             Holder._desiredZoomLevel = newZoomLevel
-            self.setCenterCoordinate(centerCoordinate: centerCoordinate, zoomLevel: newZoomLevel, animated: false)
         }
     }
     
@@ -62,7 +66,11 @@ public extension MKMapView {
             Holder._desiredHeading = heading
         }
         let centerCoordinate :CLLocationCoordinate2D = CLLocationCoordinate2D(latitude:  targetList[0], longitude: targetList[1])
-        self.setCenterCoordinate(centerCoordinate: centerCoordinate, zoomLevel: zoom, animated: animated)
+        if #available(iOS 9.0, *) {
+            self.setCenterCoordinateWithAltitude(centerCoordinate: centerCoordinate, zoomLevel: zoom, animated: animated)
+        } else {
+            self.setCenterCoordinate(centerCoordinate: centerCoordinate, zoomLevel: zoom, animated: animated)
+        }
     }
     
     func longitudeToPixelSpaceX(longitude: Double) -> Double {
@@ -117,7 +125,7 @@ public extension MKMapView {
         return log(val)/log(base)
     }
     
-    func setCenterCoordinate(centerCoordinate: CLLocationCoordinate2D, zoomLevel: Int, animated: Bool){
+    func setCenterCoordinate(centerCoordinate: CLLocationCoordinate2D, zoomLevel: Int, animated: Bool) {
         // clamp large numbers to 28
         let zoomL = min(zoomLevel, 28);
     
@@ -127,15 +135,66 @@ public extension MKMapView {
         
         // set the region like normal
         self.setRegion(region, animated: animated)
-        self.camera.pitch = Holder._desiredPitch
-        self.camera.heading = Holder._desiredHeading
+        
+        // Setting the pitch/heading doesn't work while animating yet.
+        // The animation will stop if the you change camera properties while it's running.
+        if (!animated) {
+            self.camera.pitch = Holder._desiredPitch
+            self.camera.heading = Holder._desiredHeading
+        }
     }
     
-    func zoomIn() {
+    @available(iOS 9.0, *)
+    func setCenterCoordinateWithAltitude(centerCoordinate: CLLocationCoordinate2D, zoomLevel: Int, animated: Bool) {
+        // clamp large numbers to 28
+        let zoomL = min(zoomLevel, 28);
+    
+        // let c = Float(Double.pi * 2 * 6378137)
+        
+        // let altitude = Float(6378137) + ( c * cosf(Float(centerCoordinate.latitude)) / powf(2, Float(zoomL)))
+        // let altitude = Int(591657550.500000 / 2)^(zoomL-1)
+        //this equation is a transformation of the angular size equation solving for D. See: http://en.wikipedia.org/wiki/Forced_perspective
+        let firstPartOfEq = (0.05 * ((591657550.5/(powf(2,(Float(zoomL-1)))))/2)) //amount displayed is .05 meters and map scale =591657550.5/(Math.pow(2,(mapzoom-1))))
+        //this bit ^ essentially gets the h value in the angular size eq then divides it by 2
+        let altitude = firstPartOfEq * (cosf(deg2rad(85.362/2))) / sinf(deg2rad(85.362/2))  //85.362 is angle which google maps displays on a 5cm wide screen
+        self.setCamera(MKMapCamera(lookingAtCenter: centerCoordinate, fromDistance: CLLocationDistance(altitude), pitch: Holder._desiredPitch, heading: Holder._desiredHeading), animated: animated)
+    }
+    
+    func deg2rad(_ number: Double) -> Float {
+        return Float(number * .pi / 180)
+    }
+    
+    
+    
+    func zoomIn(animated: Bool) {
         zoomLevel += 1
+        if #available(iOS 9.0, *) {
+            self.setCenterCoordinateWithAltitude(centerCoordinate: centerCoordinate, zoomLevel: Holder._desiredZoomLevel, animated: animated)
+        } else {
+            self.setCenterCoordinate(centerCoordinate: centerCoordinate, zoomLevel: Holder._desiredZoomLevel, animated: animated)
+        }
     }
     
-    func zoomOut() {
+    func zoomOut(animated: Bool) {
         zoomLevel -= 1
+        if #available(iOS 9.0, *) {
+            self.setCenterCoordinateWithAltitude(centerCoordinate: centerCoordinate, zoomLevel: Holder._desiredZoomLevel, animated: animated)
+        } else {
+            self.setCenterCoordinate(centerCoordinate: centerCoordinate, zoomLevel: Holder._desiredZoomLevel, animated: animated)
+        }
+    }
+    
+    func zoomTo(zoomLevel: Int, animated: Bool) {
+         if #available(iOS 9.0, *) {
+                   self.setCenterCoordinateWithAltitude(centerCoordinate: centerCoordinate, zoomLevel: zoomLevel, animated: animated)
+               } else {
+                   self.setCenterCoordinate(centerCoordinate: centerCoordinate, zoomLevel: zoomLevel, animated: animated)
+               }
+    }
+    
+    func updateCameraValues() {
+        Holder._desiredZoomLevel = zoomLevel
+        Holder._desiredPitch = camera.pitch
+        Holder._desiredHeading = camera.heading
     }
 }
