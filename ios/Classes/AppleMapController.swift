@@ -291,10 +291,11 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
             case "zoomBy":
                 if let zoomBy: Int = data[1] as? Int {
                     // TODO: Implement zoomBy
+                    print("zoomBy not yet implemented.")
                 }
             case "zoomTo":
                 if let zoomTo: Int = data[1] as? Int {
-                    mapView.zoomTo(zoomLevel: zoomTo, animated: animated)
+                    mapView.zoomTo(newZoomLevel: zoomTo, animated: animated)
                 }
             case "zoomIn":
                 mapView.zoomIn(animated: animated)
