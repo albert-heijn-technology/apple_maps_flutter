@@ -149,16 +149,10 @@ class Marker {
   const Marker({
     @required this.markerId,
     this.alpha = 1.0,
-    this.anchor = const Offset(0.5, 1.0),
-    this.consumeTapEvents = false,
     this.draggable = false,
-    this.flat = false,
     this.icon = BitmapDescriptor.defaultMarker,
     this.infoWindow = InfoWindow.noText,
     this.position = const LatLng(0.0, 0.0),
-    this.rotation = 0.0,
-    this.visible = true,
-    this.zIndex = 0.0,
     this.onTap,
     this.onDragEnd,
   }) : assert(alpha == null || (0.0 <= alpha && alpha <= 1.0));
@@ -171,24 +165,8 @@ class Marker {
   /// 0.0 means fully transparent, 1.0 means fully opaque.
   final double alpha;
 
-  /// The icon image point that will be placed at the [position] of the marker.
-  ///
-  /// The image point is specified in normalized coordinates: An anchor of
-  /// (0.0, 0.0) means the top left corner of the image. An anchor
-  /// of (1.0, 1.0) means the bottom right corner of the image.
-  final Offset anchor;
-
-  /// True if the marker icon consumes tap events. If not, the map will perform
-  /// default tap handling by centering the map on the marker and displaying its
-  /// info window.
-  final bool consumeTapEvents;
-
   /// True if the marker is draggable by user touch events.
   final bool draggable;
-
-  /// True if the marker is rendered flatly against the surface of the Earth, so
-  /// that it will rotate and tilt along with map camera movements.
-  final bool flat;
 
   /// A description of the bitmap used to draw the marker icon.
   final BitmapDescriptor icon;
@@ -200,19 +178,6 @@ class Marker {
 
   /// Geographical location of the marker.
   final LatLng position;
-
-  /// Rotation of the marker image in degrees clockwise from the [anchor] point.
-  final double rotation;
-
-  /// True if the marker is visible.
-  final bool visible;
-
-  /// The z-index of the marker, used to determine relative drawing order of
-  /// map overlays.
-  ///
-  /// Overlays are drawn in order of z-index, so that lower values means drawn
-  /// earlier, and thus appearing to be closer to the surface of the Earth.
-  final double zIndex;
 
   /// Callbacks to receive tap events for markers placed on this map.
   final VoidCallback onTap;
@@ -239,16 +204,10 @@ class Marker {
     return Marker(
       markerId: markerId,
       alpha: alphaParam ?? alpha,
-      anchor: anchorParam ?? anchor,
-      consumeTapEvents: consumeTapEventsParam ?? consumeTapEvents,
       draggable: draggableParam ?? draggable,
-      flat: flatParam ?? flat,
       icon: iconParam ?? icon,
       infoWindow: infoWindowParam ?? infoWindow,
       position: positionParam ?? position,
-      rotation: rotationParam ?? rotation,
-      visible: visibleParam ?? visible,
-      zIndex: zIndexParam ?? zIndex,
       onTap: onTapParam ?? onTap,
       onDragEnd: onDragEndParam ?? onDragEnd,
     );
@@ -265,16 +224,10 @@ class Marker {
 
     addIfPresent('markerId', markerId.value);
     addIfPresent('alpha', alpha);
-    addIfPresent('anchor', _offsetToJson(anchor));
-    addIfPresent('consumeTapEvents', consumeTapEvents);
     addIfPresent('draggable', draggable);
-    addIfPresent('flat', flat);
     addIfPresent('icon', icon?._toJson());
     addIfPresent('infoWindow', infoWindow?._toJson());
     addIfPresent('position', position?._toJson());
-    addIfPresent('rotation', rotation);
-    addIfPresent('visible', visible);
-    addIfPresent('zIndex', zIndex);
     return json;
   }
 
@@ -291,10 +244,8 @@ class Marker {
 
   @override
   String toString() {
-    return 'Marker{markerId: $markerId, alpha: $alpha, anchor: $anchor, '
-        'consumeTapEvents: $consumeTapEvents, draggable: $draggable, flat: $flat, '
-        'icon: $icon, infoWindow: $infoWindow, position: $position, rotation: $rotation, '
-        'visible: $visible, zIndex: $zIndex, onTap: $onTap}';
+    return 'Marker{markerId: $markerId, alpha: $alpha, draggable: $draggable,'
+        'icon: $icon, infoWindow: $infoWindow, position: $position onTap: $onTap}';
   }
 }
 

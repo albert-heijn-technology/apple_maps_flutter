@@ -28,20 +28,6 @@ class BitmapDescriptor {
     return BitmapDescriptor._(<dynamic>['defaultMarker', color.index]);
   }
 
-  /// Creates a BitmapDescriptor using the name of a bitmap image in the assets
-  /// directory.
-  ///
-  /// Use [fromAssetImage]. This method does not respect the screen dpi when
-  /// picking an asset image.
-  @Deprecated("Use fromAssetImage instead")
-  static BitmapDescriptor fromAsset(String assetName, {String package}) {
-    if (package == null) {
-      return BitmapDescriptor._(<dynamic>['fromAsset', assetName]);
-    } else {
-      return BitmapDescriptor._(<dynamic>['fromAsset', assetName, package]);
-    }
-  }
-
   /// Creates a [BitmapDescriptor] from an asset image.
   ///
   /// Asset images in flutter are stored per:
@@ -70,12 +56,6 @@ class BitmapDescriptor {
       assetBundleImageKey.name,
       assetBundleImageKey.scale,
     ]);
-  }
-
-  /// Creates a BitmapDescriptor using an array of bytes that must be encoded
-  /// as PNG.
-  static BitmapDescriptor fromBytes(Uint8List byteData) {
-    return BitmapDescriptor._(<dynamic>['fromBytes', byteData]);
   }
 
   final dynamic _json;

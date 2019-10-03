@@ -120,17 +120,6 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     });
   }
 
-  void _changeAnchor() {
-    final Marker marker = markers[selectedMarker];
-    final Offset currentAnchor = marker.anchor;
-    final Offset newAnchor = Offset(1.0 - currentAnchor.dy, currentAnchor.dx);
-    setState(() {
-      markers[selectedMarker] = marker.copyWith(
-        anchorParam: newAnchor,
-      );
-    });
-  }
-
   Future<void> _changeInfoAnchor() async {
     final Marker marker = markers[selectedMarker];
     final Offset currentAnchor = marker.infoWindow.anchor;
@@ -149,15 +138,6 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     setState(() {
       markers[selectedMarker] = marker.copyWith(
         draggableParam: !marker.draggable,
-      );
-    });
-  }
-
-  Future<void> _toggleFlat() async {
-    final Marker marker = markers[selectedMarker];
-    setState(() {
-      markers[selectedMarker] = marker.copyWith(
-        flatParam: !marker.flat,
       );
     });
   }
@@ -184,72 +164,6 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     });
   }
 
-  Future<void> _changeRotation() async {
-    final Marker marker = markers[selectedMarker];
-    final double current = marker.rotation;
-    setState(() {
-      markers[selectedMarker] = marker.copyWith(
-        rotationParam: current == 330.0 ? 0.0 : current + 30.0,
-      );
-    });
-  }
-
-  Future<void> _toggleVisible() async {
-    final Marker marker = markers[selectedMarker];
-    setState(() {
-      markers[selectedMarker] = marker.copyWith(
-        visibleParam: !marker.visible,
-      );
-    });
-  }
-
-  Future<void> _changeZIndex() async {
-    final Marker marker = markers[selectedMarker];
-    final double current = marker.zIndex;
-    setState(() {
-      markers[selectedMarker] = marker.copyWith(
-        zIndexParam: current == 12.0 ? 0.0 : current + 1.0,
-      );
-    });
-  }
-
-// A breaking change to the ImageStreamListener API affects this sample.
-// I've updates the sample to use the new API, but as we cannot use the new
-// API before it makes it to stable I'm commenting out this sample for now
-// TODO(amirh): uncomment this one the ImageStream API change makes it to stable.
-// https://github.com/flutter/flutter/issues/33438
-//
-//  void _setMarkerIcon(BitmapDescriptor assetIcon) {
-//    if (selectedMarker == null) {
-//      return;
-//    }
-//
-//    final Marker marker = markers[selectedMarker];
-//    setState(() {
-//      markers[selectedMarker] = marker.copyWith(
-//        iconParam: assetIcon,
-//      );
-//    });
-//  }
-//
-//  Future<BitmapDescriptor> _getAssetIcon(BuildContext context) async {
-//    final Completer<BitmapDescriptor> bitmapIcon =
-//        Completer<BitmapDescriptor>();
-//    final ImageConfiguration config = createLocalImageConfiguration(context);
-//
-//    const AssetImage('assets/red_square.png')
-//        .resolve(config)
-//        .addListener(ImageStreamListener((ImageInfo image, bool sync) async {
-//      final ByteData bytes =
-//          await image.image.toByteData(format: ImageByteFormat.png);
-//      final BitmapDescriptor bitmap =
-//          BitmapDescriptor.fromBytes(bytes.buffer.asUint8List());
-//      bitmapIcon.complete(bitmap);
-//    }));
-//
-//    return await bitmapIcon.future;
-//  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -266,9 +180,6 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
                 target: LatLng(-33.852, 151.211),
                 zoom: 11,
               ),
-              // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-              // https://github.com/flutter/flutter/issues/28312
-              // ignore: prefer_collection_literals
               markers: Set<Marker>.of(markers.values),
             ),
           ),
@@ -294,10 +205,6 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
                           child: const Text('change info'),
                           onPressed: _changeInfo,
                         ),
-                        FlatButton(
-                          child: const Text('change info anchor'),
-                          onPressed: _changeInfoAnchor,
-                        ),
                       ],
                     ),
                     Column(
@@ -307,49 +214,21 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
                           onPressed: _changeAlpha,
                         ),
                         FlatButton(
-                          child: const Text('change anchor'),
-                          onPressed: _changeAnchor,
-                        ),
-                        FlatButton(
                           child: const Text('toggle draggable'),
                           onPressed: _toggleDraggable,
-                        ),
-                        FlatButton(
-                          child: const Text('toggle flat'),
-                          onPressed: _toggleFlat,
                         ),
                         FlatButton(
                           child: const Text('change position'),
                           onPressed: _changePosition,
                         ),
                         FlatButton(
-                          child: const Text('change rotation'),
-                          onPressed: _changeRotation,
+                          onPressed: () {
+                            controller.moveCamera(
+                              CameraUpdate.zoomOut(),
+                            );
+                          },
+                          child: const Text('zoomOut'),
                         ),
-                        FlatButton(
-                          child: const Text('toggle visible'),
-                          onPressed: _toggleVisible,
-                        ),
-                        FlatButton(
-                          child: const Text('change zIndex'),
-                          onPressed: _changeZIndex,
-                        ),
-                        // A breaking change to the ImageStreamListener API affects this sample.
-                        // I've updates the sample to use the new API, but as we cannot use the new
-                        // API before it makes it to stable I'm commenting out this sample for now
-                        // TODO(amirh): uncomment this one the ImageStream API change makes it to stable.
-                        // https://github.com/flutter/flutter/issues/33438
-                        //
-                        // FlatButton(
-                        //   child: const Text('set marker icon'),
-                        //   onPressed: () {
-                        //     _getAssetIcon(context).then(
-                        //       (BitmapDescriptor icon) {
-                        //         _setMarkerIcon(icon);
-                        //       },
-                        //     );
-                        //   },
-                        // ),
                       ],
                     ),
                   ],

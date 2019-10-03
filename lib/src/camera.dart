@@ -101,35 +101,11 @@ class CameraUpdate {
     return CameraUpdate._(<dynamic>['newLatLng', latLng._toJson()]);
   }
 
-  /// Returns a camera update that transforms the camera so that the specified
-  /// geographical bounding box is centered in the map view at the greatest
-  /// possible zoom level. A non-zero [padding] insets the bounding box from the
-  /// map view's edges. The camera's new tilt and bearing will both be 0.0.
-  static CameraUpdate newLatLngBounds(LatLngBounds bounds, double padding) {
-    return CameraUpdate._(<dynamic>[
-      'newLatLngBounds',
-      bounds._toList(),
-      padding,
-    ]);
-  }
-
   /// Returns a camera update that moves the camera target to the specified
   /// geographical location and zoom level.
   static CameraUpdate newLatLngZoom(LatLng latLng, double zoom) {
     return CameraUpdate._(
       <dynamic>['newLatLngZoom', latLng._toJson(), zoom],
-    );
-  }
-
-  /// Returns a camera update that moves the camera target the specified screen
-  /// zoom.
-  ///
-  /// For a camera with bearing 0.0 (pointing north), scrolling by 50,75 moves
-  /// the camera's target to a geographical location that is 50 to the east and
-  /// 75 to the south of the current location, measured in screen coordinates.
-  static CameraUpdate scrollBy(double dx, double dy) {
-    return CameraUpdate._(
-      <dynamic>['scrollBy', dx, dy],
     );
   }
 
