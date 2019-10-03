@@ -56,7 +56,7 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
         self.registrar = registrar
         self.mapView = MKMapView(frame: frame)
         channel = FlutterMethodChannel(name: "plugins.flutter.io/apple_maps_\(id)", binaryMessenger: registrar.messenger())
-        annotationController = AnnotationController(mapView: mapView, channel: channel)
+        annotationController = AnnotationController(mapView: mapView, channel: channel, registrar: registrar)
         initialCameraPosition = args["initialCameraPosition"]! as! Dictionary<String, Any>
         options = args["options"] as! Dictionary<String, Any>
         super.init()
@@ -175,15 +175,22 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
     private func getAnnotationView(annotation: FlutterAnnotation) -> MKAnnotationView{
         let identifier :String = annotation.id
         var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier)
+        let oldflutterAnnoation = annotationView?.annotation as? FlutterAnnotation
         
-        if annotationView == nil {
-            annotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
-            annotationView!.canShowCallout = true
+        if annotationView == nil || oldflutterAnnoation?.icon.iconType != annotation.icon.iconType {
+            if (annotation.icon.iconType == IconType.PIN) {
+                annotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+            } else if (annotation.icon.iconType == IconType.CUSTOM) {
+                annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+                annotationView!.image = annotation.icon.image
+            }
         } else {
             annotationView!.annotation = annotation
         }
+        annotationView!.canShowCallout = true
         annotationView!.alpha = CGFloat(annotation.alpha ?? 1.00)
         annotationView!.isDraggable = annotation.isDraggable ?? false
+        
         return annotationView!
     }
     
@@ -283,7 +290,7 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
                 }
             case "zoomBy":
                 if let zoomBy: Int = data[1] as? Int {
-                    print(zoomBy)
+                    // TODO: Implement zoomBy
                 }
             case "zoomTo":
                 if let zoomTo: Int = data[1] as? Int {
@@ -313,8 +320,6 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
                 case "map#update":
                     self.interprateOptions(options: args["options"] as! Dictionary<String, Any>)
                 case "camera#animate":
-                    //print("animate")
-                    //print(call.arguments!)
                     let positionData :Dictionary<String, Any> = self.toPositionData(data: args["cameraUpdate"] as! Array<Any>, animated: true)
                     if (!positionData.isEmpty) {
                         self.mapView.setCenterCoordinate(positionData, animated: true)

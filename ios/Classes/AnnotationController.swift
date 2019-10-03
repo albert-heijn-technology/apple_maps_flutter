@@ -12,10 +12,12 @@ class AnnotationController: NSObject {
     
     let mapView: MKMapView
     let channel: FlutterMethodChannel
+    let registrar: FlutterPluginRegistrar
     
-    public init(mapView :MKMapView, channel :FlutterMethodChannel) {
+    public init(mapView :MKMapView, channel :FlutterMethodChannel, registrar: FlutterPluginRegistrar) {
         self.mapView = mapView
         self.channel = channel
+        self.registrar = registrar
     }
     
     
@@ -33,7 +35,7 @@ class AnnotationController: NSObject {
             let annotationData :Dictionary<String, Any> = annotation as! Dictionary<String, Any>
             for oldAnnotation in oldAnnotations {
                 if (oldAnnotation.id == (annotationData["markerId"] as! String)) {
-                    if (oldAnnotation.update(fromDictionary: annotationData)) {
+                    if (oldAnnotation.update(fromDictionary: annotationData, registrar: registrar)) {
                         updateAnnotationOnMap(annotation: oldAnnotation)
                     }
                 }
@@ -92,6 +94,7 @@ class FlutterAnnotation: NSObject, MKAnnotation {
     var alpha :Double?
     var isDraggable :Bool?
     var wasDragged :Bool = false
+    var icon: AnnotationIcon = AnnotationIcon.init()
     
     public init(fromDictionary annotationData: Dictionary<String, Any>) {
         let position :Array<Double> = annotationData["position"] as! Array<Double>
@@ -107,9 +110,8 @@ class FlutterAnnotation: NSObject, MKAnnotation {
         }
     }
     
-    public func update(fromDictionary updatedAnnotationData: Dictionary<String, Any>) -> Bool {
+    public func update(fromDictionary updatedAnnotationData: Dictionary<String, Any>, registrar: FlutterPluginRegistrar) -> Bool {
         var didUpdate :Bool = false
-        print(updatedAnnotationData)
         let updatedPosition :Array<Double> = updatedAnnotationData["position"] as! Array<Double>
         let lat: Double = updatedPosition[0]
         let long: Double = updatedPosition[1]
@@ -120,29 +122,90 @@ class FlutterAnnotation: NSObject, MKAnnotation {
         let updatedId = updatedAnnotationData["markerId"] as? String
         let updatedAlpha :Double = JsonConversion.toDouble(jsonDouble: updatedAnnotationData["alpha"] as! NSNumber)
         let updatedIsDraggable = JsonConversion.toBool(jsonBool: updatedAnnotationData["draggable"] as! NSNumber)
+        let iconData: Array<Any> = updatedAnnotationData["icon"] as! Array<Any>
+        let updatedIcon: AnnotationIcon = getAnnotationImage(registrar: registrar, iconData: iconData, annotationId: self.id)
+        
         if (updatedTitle != self.title) {
             self.title = updatedTitle
             didUpdate = true
-        } else if (updatedSubtitle != self.subtitle) {
+        }
+        if (self.icon.iconType != updatedIcon.iconType) {
+            self.icon = updatedIcon
+            didUpdate = true
+        }
+        if (updatedSubtitle != self.subtitle) {
             self.subtitle = updatedSubtitle
             didUpdate = true
-        } else if (updatedId != self.id) {
+        }
+        if (updatedId != self.id) {
             self.id = updatedId
             didUpdate = true
-        } else if (updatedAlpha != self.alpha) {
+        }
+        if (updatedAlpha != self.alpha) {
             self.alpha = updatedAlpha
             didUpdate = true
-        } else if (self.coordinate.latitude != lat || self.coordinate.longitude != long) {
+        }
+        if (self.coordinate.latitude != lat || self.coordinate.longitude != long) {
             if (!self.wasDragged) {
                 self.coordinate = CLLocationCoordinate2D(latitude: lat, longitude: long)
                 didUpdate = true
             } else {
                 wasDragged = false
             }
-        } else if (self.isDraggable != updatedIsDraggable) {
+        }
+        if (self.isDraggable != updatedIsDraggable) {
             self.isDraggable = updatedIsDraggable
             didUpdate = true
         }
         return didUpdate
     }
+    
+    private func getAnnotationImage(registrar: FlutterPluginRegistrar, iconData: Array<Any>, annotationId: String) -> AnnotationIcon {
+        let iconTypeMap: Dictionary<String, IconType> = ["fromAssetImage": IconType.CUSTOM, "defaultMarker": IconType.PIN]
+        var icon: AnnotationIcon
+        let iconType: IconType = iconTypeMap[iconData[0] as! String] ?? .PIN
+        var scaleParam: CGFloat?
+       
+        if (iconType == .CUSTOM) {
+            let assetPath: String = iconData[1] as! String
+            scaleParam = CGFloat(iconData[2] as? Double ?? 1.0)
+            icon = AnnotationIcon(named: registrar.lookupKey(forAsset: assetPath), iconType: iconType, id: annotationId, iconScale: scaleParam)
+        } else {
+            icon = AnnotationIcon(named: "", iconType: iconType, id: annotationId)
+        }
+        return icon
+    }
+}
+
+enum IconType {
+    case PIN, STANDARD, CUSTOM
+}
+
+class AnnotationIcon {
+    
+    var iconType: IconType
+    var id: String
+    var image: UIImage?
+    
+    public init(named name: String, iconType type: IconType? = .PIN, id: String, iconScale: CGFloat? = 1.0) {
+        if (type == .CUSTOM) {
+            if let uiImage: UIImage =  UIImage.init(named: name) {
+                if let cgImage: CGImage = uiImage.cgImage {
+                    if (iconScale != nil && iconScale! - 1 > 0.001){
+                        let scaledImage: UIImage = UIImage.init(cgImage: cgImage, scale: (iconScale! + 1) * CGFloat(uiImage.scale), orientation: uiImage.imageOrientation)
+                        self.image = scaledImage
+                    }
+                } else {
+                    self.image = uiImage
+                }
+            }
+        }
+        self.iconType = type ?? .PIN
+        self.id = id
+    }
+    
+    public convenience init() {
+        self.init(named: "", id: "")
+    }
+    
 }

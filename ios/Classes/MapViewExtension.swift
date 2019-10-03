@@ -149,14 +149,10 @@ public extension MKMapView {
         // clamp large numbers to 28
         let zoomL = min(zoomLevel, 28);
     
-        // let c = Float(Double.pi * 2 * 6378137)
-        
-        // let altitude = Float(6378137) + ( c * cosf(Float(centerCoordinate.latitude)) / powf(2, Float(zoomL)))
-        // let altitude = Int(591657550.500000 / 2)^(zoomL-1)
         //this equation is a transformation of the angular size equation solving for D. See: http://en.wikipedia.org/wiki/Forced_perspective
         let firstPartOfEq = (0.05 * ((591657550.5/(powf(2,(Float(zoomL-1)))))/2)) //amount displayed is .05 meters and map scale =591657550.5/(Math.pow(2,(mapzoom-1))))
         //this bit ^ essentially gets the h value in the angular size eq then divides it by 2
-        let altitude = firstPartOfEq * (cosf(deg2rad(85.362/2))) / sinf(deg2rad(85.362/2))  //85.362 is angle which google maps displays on a 5cm wide screen
+        let altitude = firstPartOfEq * (cosf(deg2rad(85.362/2))) / sinf(deg2rad(85.362/2)) 
         self.setCamera(MKMapCamera(lookingAtCenter: centerCoordinate, fromDistance: CLLocationDistance(altitude), pitch: Holder._desiredPitch, heading: Holder._desiredHeading), animated: animated)
     }
     
