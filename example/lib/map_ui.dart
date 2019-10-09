@@ -151,36 +151,6 @@ class MapUiBodyState extends State<MapUiBody> {
     );
   }
 
-  Future<String> _getFileData(String path) async {
-    return await rootBundle.loadString(path);
-  }
-
-  // void _setMapStyle(String mapStyle) {
-  //   setState(() {
-  //     _nightMode = true;
-  //     _controller.setMapStyle(mapStyle);
-  //   });
-  // }
-
-  // Widget _nightModeToggler() {
-  //   if (!_isMapCreated) {
-  //     return null;
-  //   }
-  //   return FlatButton(
-  //     child: Text('${_nightMode ? 'disable' : 'enable'} night mode'),
-  //     onPressed: () {
-  //       if (_nightMode) {
-  //         setState(() {
-  //           _nightMode = false;
-  //           _controller.setMapStyle(null);
-  //         });
-  //       } else {
-  //         _getFileData('assets/night_mode.json').then(_setMapStyle);
-  //       }
-  //     },
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
     final AppleMap appleMap = AppleMap(

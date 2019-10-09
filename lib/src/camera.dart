@@ -42,7 +42,7 @@ class CameraPosition {
   /// The supported zoom level range depends on the map data and device. Values
   /// beyond the supported range are allowed, but on applying them to a map they
   /// will be silently clamped to the supported range.
-  final int zoom;
+  final double zoom;
 
   dynamic _toMap() => <String, dynamic>{
         'target': target._toJson(),

@@ -224,7 +224,7 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
     @objc func onMapGesture(sender: UIGestureRecognizer) {
         let locationInView = sender.location(in: mapView)
         let locationOnMap = mapView.convert(locationInView, toCoordinateFrom: mapView)
-        let zoom = mapView.zoomLevel
+        let zoom = mapView.calculatedZoomLevel
         let pitch = mapView.camera.pitch
         let heading = mapView.camera.heading
         mapView.updateCameraValues()
@@ -285,7 +285,7 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
                 }
             case "newLatLngZoom":
                 if let _positionData: Array<Any> = data[1] as? Array<Any> {
-                    let zoom: Int = data[2] as? Int ?? 0
+                    let zoom: Double = data[2] as? Double ?? 0
                     positionData = ["target": _positionData, "zoom": zoom]
                 }
             case "zoomBy":
@@ -294,7 +294,7 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
                     print("zoomBy not yet implemented.")
                 }
             case "zoomTo":
-                if let zoomTo: Int = data[1] as? Int {
+                if let zoomTo: Double = data[1] as? Double {
                     mapView.zoomTo(newZoomLevel: zoomTo, animated: animated)
                 }
             case "zoomIn":
