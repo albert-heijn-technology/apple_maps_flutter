@@ -246,10 +246,8 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
                 }
             case "zoomIn":
                 mapView.zoomIn(animated: animated)
-                print("new calculated zoom: \(mapView.getZoom())")
             case "zoomOut":
                 mapView.zoomOut(animated: animated)
-                print("new calculated zoom: \(mapView.getZoom())")
             default:
                 positionData = [:]
             }
