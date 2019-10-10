@@ -5,7 +5,7 @@ This plugin was based on the [google_maps_flutter]("https://pub.dev/packages/goo
 
 # Android
 
-There does not exist an Android implementation, but there will be a package to combine apple_maps_flutter and the [google_maps_flutter]("https://pub.dev/packages/google_maps_flutter") plugin to have the typical map implementations for Android/iOS.
+There is no Android implementation, but there will be a package to combine apple_maps_flutter and the [google_maps_flutter]("https://pub.dev/packages/google_maps_flutter") plugin to have the typical map implementations for Android/iOS.
 
 # iOS
 
@@ -14,7 +14,7 @@ To use this plugin on iOS you need to opt-in for the embedded views preview by a
 ## Sample Usage
 
 ```dart
-class MoveCameraState extends StatelessWidget {
+class AppleMapsExample extends StatelessWidget {
   AppleMapController mapController;
 
   void _onMapCreated(AppleMapController controller) {
