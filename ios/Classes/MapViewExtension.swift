@@ -13,33 +13,15 @@ private let MERCATOR_OFFSET: Double = 268435456.0
 private let MERCATOR_RADIUS: Double = 85445659.44705395
 
 public extension MKMapView {
-    
     private struct Holder {
-        static var _zoomLevel = Double(0)
-        static var _pitch = CGFloat(0)
-        static var _heading = CLLocationDirection(0)
-        static var _oldBounds = CGRect()
+        static var _zoomLevel: Double = Double(0)
+        static var _pitch: CGFloat = CGFloat(0)
+        static var _heading: CLLocationDirection = CLLocationDirection(0)
     }
     
-    // To calculate the displayed region we have to get the layout bounds.
-    // Because the mapView is layed out using an auto layout we have to call
-    // setCenterCoordinate after the mapView was layed out.
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        // Only update the centerCoordinate in layoutSubviews if the bounds changed
-        if (self.bounds != Holder._oldBounds) {
-            if #available(iOS 9.0, *) {
-                self.setCenterCoordinateWithAltitude(centerCoordinate: centerCoordinate, zoomLevel: Holder._zoomLevel, animated: false)
-            } else {
-                self.setCenterCoordinateRegion(centerCoordinate: centerCoordinate, zoomLevel: Holder._zoomLevel, animated: false)
-            }
-        }
-        Holder._oldBounds = self.bounds
-    }
-    
-    override func didMoveToSuperview() {
-        if (Holder._oldBounds != CGRect.zero) {
-            Holder._oldBounds = CGRect.zero
+    var zoomLevel: Double {
+        get {
+            return Holder._zoomLevel
         }
     }
     
@@ -56,7 +38,9 @@ public extension MKMapView {
 
             let zoomExponent = self.logC(val: zoomScale, forBase: 2)
 
-            let zoomLevel = 21 - zoomExponent
+            var zoomLevel = 21 - zoomExponent
+            
+            zoomLevel = roundToTwoDecimalPlaces(number: zoomLevel)
             
             Holder._zoomLevel = zoomLevel
             
@@ -90,6 +74,11 @@ public extension MKMapView {
     
     func deg2rad(_ number: Double) -> Float {
         return Float(number * .pi / 180)
+    }
+    
+    func roundToTwoDecimalPlaces(number: Double) -> Double {
+        let doubleStr = String(format: "%.2f", ceil(number*100)/100)
+        return Double(doubleStr)!
     }
     
     func setCenterCoordinate(_ positionData: Dictionary<String, Any>, animated: Bool) {
@@ -192,7 +181,7 @@ public extension MKMapView {
     
     func zoomIn(animated: Bool) {
         if (Holder._zoomLevel < 2) {
-            Holder._zoomLevel = 1
+            Holder._zoomLevel = 2
         }
         Holder._zoomLevel += 1
         if #available(iOS 9.0, *) {
@@ -204,8 +193,8 @@ public extension MKMapView {
     
     func zoomOut(animated: Bool) {
         Holder._zoomLevel -= 1
-        if (round(Holder._zoomLevel) == 2) {
-            Holder._zoomLevel = 1
+        if (round(Holder._zoomLevel) <= 2) {
+            Holder._zoomLevel = 0
         }
         
         if #available(iOS 9.0, *) {
@@ -224,7 +213,7 @@ public extension MKMapView {
            }
     }
     
-    func updateCameraValues() {
+    func updateStoredCameraValues() {
         Holder._zoomLevel = calculatedZoomLevel
         Holder._pitch = camera.pitch
         Holder._heading = camera.heading

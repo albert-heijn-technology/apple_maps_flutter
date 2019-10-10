@@ -31,8 +31,8 @@ public class AppleMapViewFactory: NSObject, FlutterPlatformViewFactory {
 }
 
 
-public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelegate, UIGestureRecognizerDelegate {
-    @IBOutlet var mapView: MKMapView!
+public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelegate {
+    @IBOutlet var mapView: FlutterMapView!
     fileprivate let locationManager:CLLocationManager = CLLocationManager()
     var registrar: FlutterPluginRegistrar
     var channel: FlutterMethodChannel
@@ -54,13 +54,12 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
     
     public init(withFrame frame: CGRect, withRegistrar registrar: FlutterPluginRegistrar, withargs args: Dictionary<String, Any> ,withId id: Int64) {
         self.registrar = registrar
-        self.mapView = MKMapView(frame: frame)
         channel = FlutterMethodChannel(name: "plugins.flutter.io/apple_maps_\(id)", binaryMessenger: registrar.messenger())
+        self.mapView = FlutterMapView(channel: channel)
         annotationController = AnnotationController(mapView: mapView, channel: channel, registrar: registrar)
         initialCameraPosition = args["initialCameraPosition"]! as! Dictionary<String, Any>
         options = args["options"] as! Dictionary<String, Any>
         super.init()
-        initialiseTapGestureRecognizers()
         interprateOptions(options: options)
         mapView.setCenterCoordinate(initialCameraPosition, animated: false)
         if let annotationsToAdd :NSArray = args["markersToAdd"] as? NSArray {
@@ -69,7 +68,7 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
         mapView.delegate = self
     }
     
-    // on idle? check for animation
+    // onIdle
     public func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
         channel.invokeMethod("camera#onIdle", arguments: "")
     }
@@ -158,7 +157,7 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
     public func setUserLocation(myLocationEnabled :Bool) {
         if CLLocationManager.authorizationStatus() == .notDetermined {
             locationManager.requestWhenInUseAuthorization()
-        } else if CLLocationManager.authorizationStatus() ==   .authorizedWhenInUse {
+        } else if CLLocationManager.authorizationStatus() ==  .authorizedWhenInUse {
             if (myLocationEnabled) {
                 locationManager.requestWhenInUseAuthorization()
                 locationManager.desiredAccuracy = kCLLocationAccuracyBest
@@ -194,59 +193,7 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
         return annotationView!
     }
     
-    // Functions used for GestureRecognition
-    private func initialiseTapGestureRecognizers() {
-        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(onMapGesture))
-        panGesture.maximumNumberOfTouches = 2
-        panGesture.delegate = self
-        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(onMapGesture))
-        pinchGesture.delegate = self
-        let rotateGesture = UIRotationGestureRecognizer(target: self, action: #selector(onMapGesture))
-        rotateGesture.delegate = self
-        let tiltGesture = UISwipeGestureRecognizer(target: self, action: #selector(onMapGesture))
-        tiltGesture.numberOfTouchesRequired = 2
-        tiltGesture.direction = .up
-        tiltGesture.direction = .down
-        let longTapGesture = UILongPressGestureRecognizer(target: self, action: #selector(longTap))
-        let doubleTapGesture = UITapGestureRecognizer(target: self, action: nil)
-        doubleTapGesture.numberOfTapsRequired = 2
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onTap))
-        tapGesture.require(toFail: doubleTapGesture)  // Make sure to not detect double taps, as they are used for zooming.
-        mapView.addGestureRecognizer(panGesture)
-        mapView.addGestureRecognizer(pinchGesture)
-        mapView.addGestureRecognizer(rotateGesture)
-        mapView.addGestureRecognizer(tiltGesture)
-        mapView.addGestureRecognizer(longTapGesture)
-        mapView.addGestureRecognizer(doubleTapGesture)
-        mapView.addGestureRecognizer(tapGesture)
-    }
-    
-    @objc func onMapGesture(sender: UIGestureRecognizer) {
-        let locationInView = sender.location(in: mapView)
-        let locationOnMap = mapView.convert(locationInView, toCoordinateFrom: mapView)
-        let zoom = mapView.calculatedZoomLevel
-        let pitch = mapView.camera.pitch
-        let heading = mapView.camera.heading
-        mapView.updateCameraValues()
-        channel.invokeMethod("camera#onMove", arguments: ["position": ["heading": heading, "target":  [locationOnMap.latitude, locationOnMap.longitude], "pitch": pitch, "zoom": zoom]])
-    }
-
-    @objc func longTap(sender: UIGestureRecognizer){
-        if sender.state == .began {
-            let locationInView = sender.location(in: mapView)
-            let locationOnMap = mapView.convert(locationInView, toCoordinateFrom: mapView)
-            
-            channel.invokeMethod("map#onLongPress", arguments: ["position": [locationOnMap.latitude, locationOnMap.longitude]])
-        }
-    }
-    
-    @objc func onTap(sender: UIGestureRecognizer){
-        let locationInView = sender.location(in: mapView)
-        let locationOnMap = mapView.convert(locationInView, toCoordinateFrom: mapView)
-        
-        channel.invokeMethod("map#onTap", arguments: ["position": [locationOnMap.latitude, locationOnMap.longitude]])
-    }
-    
+   
     // Functions used for the mapTrackingButton
     func mapTrackingButton(isVisible visible: Bool){
         if (visible) {
@@ -268,7 +215,7 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
     }
     
     @objc func centerMapOnUserButtonClicked() {
-        self.mapView.setUserTrackingMode( MKUserTrackingMode.follow, animated: true)
+        self.mapView.setUserTrackingMode(MKUserTrackingMode.follow, animated: true)
     }
     
     private func toPositionData(data: Array<Any>, animated: Bool) -> Dictionary<String, Any> {
@@ -299,8 +246,10 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
                 }
             case "zoomIn":
                 mapView.zoomIn(animated: animated)
+                print("new calculated zoom: \(mapView.getZoom())")
             case "zoomOut":
                 mapView.zoomOut(animated: animated)
+                print("new calculated zoom: \(mapView.getZoom())")
             default:
                 positionData = [:]
             }
@@ -337,12 +286,5 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
             }
         })
         return mapView
-    }
-    
-    // Always allow multiple gestureRecognizers
-    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer,
-                                  shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer)
-        -> Bool {
-            return true
     }
 }
