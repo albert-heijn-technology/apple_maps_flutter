@@ -1,6 +1,9 @@
 # apple_maps_flutter
 
 A Flutter plugin that provides an Apple Maps widget.
+
+The plugin relies on Flutter's mechanism for embedding Android and iOS views. As that mechanism is currently in a developers preview, this plugin should also be considered a developers preview.
+
 This plugin was based on the [google_maps_flutter]("https://pub.dev/packages/google_maps_flutter") plugin. Instead of reinventing the wheel it also uses the Flutter implementation of the [google_maps_flutter]("https://pub.dev/packages/google_maps_flutter") plugin. This was also done to simplify the process of combining the [google_maps_flutter]("https://pub.dev/packages/google_maps_flutter") plugin with apple_maps_flutter to create a cross platform implementation of typical map implementations for Android/iOS (coming soon).
 
 # Android
@@ -60,16 +63,6 @@ class AppleMapsExample extends StatelessWidget {
                 FlatButton(
                   onPressed: () {
                     mapController.moveCamera(
-                      CameraUpdate.newLatLng(
-                        const LatLng(56.1725505, 10.1850512),
-                      ),
-                    );
-                  },
-                  child: const Text('newLatLng'),
-                ),
-                FlatButton(
-                  onPressed: () {
-                    mapController.moveCamera(
                       CameraUpdate.newLatLngZoom(
                         const LatLng(37.4231613, -122.087159),
                         11.0,
@@ -82,25 +75,6 @@ class AppleMapsExample extends StatelessWidget {
             ),
             Column(
               children: <Widget>[
-                FlatButton(
-                  onPressed: () {
-                    mapController.moveCamera(
-                      CameraUpdate.zoomBy(
-                        -0.5,
-                        const Offset(30.0, 20.0),
-                      ),
-                    );
-                  },
-                  child: const Text('zoomBy with focus'),
-                ),
-                FlatButton(
-                  onPressed: () {
-                    mapController.moveCamera(
-                      CameraUpdate.zoomBy(-0.5),
-                    );
-                  },
-                  child: const Text('zoomBy'),
-                ),
                 FlatButton(
                   onPressed: () {
                     mapController.moveCamera(
