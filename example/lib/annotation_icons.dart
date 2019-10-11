@@ -7,31 +7,31 @@ import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 
 import 'page.dart';
 
-class MarkerIconsPage extends Page {
-  MarkerIconsPage() : super(const Icon(Icons.image), 'Marker icons');
+class AnnotationIconsPage extends Page {
+  AnnotationIconsPage() : super(const Icon(Icons.image), 'Annotation icons');
 
   @override
   Widget build(BuildContext context) {
-    return const MarkerIconsBody();
+    return const AnnotationIconsBody();
   }
 }
 
-class MarkerIconsBody extends StatefulWidget {
-  const MarkerIconsBody();
+class AnnotationIconsBody extends StatefulWidget {
+  const AnnotationIconsBody();
 
   @override
-  State<StatefulWidget> createState() => MarkerIconsBodyState();
+  State<StatefulWidget> createState() => AnnotationIconsBodyState();
 }
 
 const LatLng _kMapCenter = LatLng(52.4478, -3.5402);
 
-class MarkerIconsBodyState extends State<MarkerIconsBody> {
+class AnnotationIconsBodyState extends State<AnnotationIconsBody> {
   AppleMapController controller;
-  BitmapDescriptor _markerIcon;
+  BitmapDescriptor _annotationIcon;
 
   @override
   Widget build(BuildContext context) {
-    _createMarkerImageFromAsset(context);
+    _createAnnotationImageFromAsset(context);
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -45,7 +45,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
                 target: _kMapCenter,
                 zoom: 7,
               ),
-              markers: _createMarker(),
+              annotations: _createAnnotation(),
               onMapCreated: _onMapCreated,
             ),
           ),
@@ -54,21 +54,21 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
     );
   }
 
-  Set<Marker> _createMarker() {
+  Set<Annotation> _createAnnotation() {
     // TODO(iskakaushik): Remove this when collection literals makes it to stable.
     // https://github.com/flutter/flutter/issues/28312
     // ignore: prefer_collection_literals
-    return <Marker>[
-      Marker(
-        markerId: MarkerId("marker_1"),
+    return <Annotation>[
+      Annotation(
+        annotationId: AnnotationId("annotation_1"),
         position: _kMapCenter,
-        icon: _markerIcon,
+        icon: _annotationIcon,
       ),
     ].toSet();
   }
 
-  Future<void> _createMarkerImageFromAsset(BuildContext context) async {
-    if (_markerIcon == null) {
+  Future<void> _createAnnotationImageFromAsset(BuildContext context) async {
+    if (_annotationIcon == null) {
       final ImageConfiguration imageConfiguration =
           createLocalImageConfiguration(context);
       BitmapDescriptor.fromAssetImage(
@@ -79,7 +79,7 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
 
   void _updateBitmap(BitmapDescriptor bitmap) {
     setState(() {
-      _markerIcon = bitmap;
+      _annotationIcon = bitmap;
     });
   }
 

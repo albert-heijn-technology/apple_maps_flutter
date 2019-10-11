@@ -30,7 +30,7 @@ class AppleMap extends StatefulWidget {
     this.pitchGesturesEnabled = true,
     this.myLocationEnabled = false,
     this.myLocationButtonEnabled = true,
-    this.markers,
+    this.annotations,
     this.onCameraMoveStarted,
     this.onCameraMove,
     this.onCameraIdle,
@@ -68,14 +68,14 @@ class AppleMap extends StatefulWidget {
   /// True if the map view should respond to tilt gestures.
   final bool pitchGesturesEnabled;
 
-  /// Markers to be placed on the map.
-  final Set<Marker> markers;
+  /// Annotations to be placed on the map.
+  final Set<Annotation> annotations;
 
   /// Called when the camera starts moving.
   ///
   /// This can be initiated by the following:
   /// 1. Non-gesture animation initiated in response to user actions.
-  ///    For example: zoom buttons, my location button, or marker clicks.
+  ///    For example: zoom buttons, my location button, or annotation clicks.
   /// 2. Programmatically initiated animation.
   /// 3. Camera motion initiated in response to user gestures on the map.
   ///    For example: pan, tilt, pinch to zoom, or rotate.
@@ -155,7 +155,7 @@ class _AppleMapState extends State<AppleMap> {
   final Completer<AppleMapController> _controller =
       Completer<AppleMapController>();
 
-  Map<MarkerId, Marker> _markers = <MarkerId, Marker>{};
+  Map<AnnotationId, Annotation> _annotations = <AnnotationId, Annotation>{};
   _AppleMapOptions _appleMapOptions;
 
   @override
@@ -163,7 +163,7 @@ class _AppleMapState extends State<AppleMap> {
     final Map<String, dynamic> creationParams = <String, dynamic>{
       'initialCameraPosition': widget.initialCameraPosition?._toMap(),
       'options': _appleMapOptions.toMap(),
-      'markersToAdd': _serializeMarkerSet(widget.markers),
+      'annotationsToAdd': _serializeAnnotationSet(widget.annotations),
     };
     if (defaultTargetPlatform == TargetPlatform.iOS) {
       return UiKitView(
@@ -182,14 +182,14 @@ class _AppleMapState extends State<AppleMap> {
   void initState() {
     super.initState();
     _appleMapOptions = _AppleMapOptions.fromWidget(widget);
-    _markers = _keyByMarkerId(widget.markers);
+    _annotations = _keyByAnnotationId(widget.annotations);
   }
 
   @override
   void didUpdateWidget(AppleMap oldWidget) {
     super.didUpdateWidget(oldWidget);
     _updateOptions();
-    _updateMarkers();
+    _updateAnnotations();
   }
 
   void _updateOptions() async {
@@ -204,11 +204,11 @@ class _AppleMapState extends State<AppleMap> {
     _appleMapOptions = newOptions;
   }
 
-  void _updateMarkers() async {
+  void _updateAnnotations() async {
     final AppleMapController controller = await _controller.future;
-    controller._updateMarkers(
-        _MarkerUpdates.from(_markers.values.toSet(), widget.markers));
-    _markers = _keyByMarkerId(widget.markers);
+    controller._updateAnnotations(_AnnotationUpdates.from(
+        _annotations.values.toSet(), widget.annotations));
+    _annotations = _keyByAnnotationId(widget.annotations);
   }
 
   Future<void> onPlatformViewCreated(int id) async {
@@ -223,27 +223,27 @@ class _AppleMapState extends State<AppleMap> {
     }
   }
 
-  void onMarkerTap(String markerIdParam) {
-    assert(markerIdParam != null);
-    final MarkerId markerId = MarkerId(markerIdParam);
-    if (_markers[markerId]?.onTap != null) {
-      _markers[markerId].onTap();
+  void onAnnotationTap(String annotationIdParam) {
+    assert(annotationIdParam != null);
+    final AnnotationId annotationId = AnnotationId(annotationIdParam);
+    if (_annotations[annotationId]?.onTap != null) {
+      _annotations[annotationId].onTap();
     }
   }
 
-  void onMarkerDragEnd(String markerIdParam, LatLng position) {
-    assert(markerIdParam != null);
-    final MarkerId markerId = MarkerId(markerIdParam);
-    if (_markers[markerId]?.onDragEnd != null) {
-      _markers[markerId].onDragEnd(position);
+  void onAnnotationDragEnd(String annotationIdParam, LatLng position) {
+    assert(annotationIdParam != null);
+    final AnnotationId annotationId = AnnotationId(annotationIdParam);
+    if (_annotations[annotationId]?.onDragEnd != null) {
+      _annotations[annotationId].onDragEnd(position);
     }
   }
 
-  void onInfoWindowTap(String markerIdParam) {
-    assert(markerIdParam != null);
-    final MarkerId markerId = MarkerId(markerIdParam);
-    if (_markers[markerId]?.infoWindow?.onTap != null) {
-      _markers[markerId].infoWindow.onTap();
+  void onInfoWindowTap(String annotationIdParam) {
+    assert(annotationIdParam != null);
+    final AnnotationId annotationId = AnnotationId(annotationIdParam);
+    if (_annotations[annotationId]?.infoWindow?.onTap != null) {
+      _annotations[annotationId].infoWindow.onTap();
     }
   }
 

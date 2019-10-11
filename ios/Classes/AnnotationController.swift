@@ -34,7 +34,7 @@ class AnnotationController: NSObject {
         for annotation in annotations {
             let annotationData :Dictionary<String, Any> = annotation as! Dictionary<String, Any>
             for oldAnnotation in oldAnnotations {
-                if (oldAnnotation.id == (annotationData["markerId"] as! String)) {
+                if (oldAnnotation.id == (annotationData["annotationId"] as! String)) {
                     if (oldAnnotation.update(fromDictionary: annotationData, registrar: registrar)) {
                         updateAnnotationOnMap(annotation: oldAnnotation)
                     }
@@ -56,7 +56,7 @@ class AnnotationController: NSObject {
     public func onAnnotationClick(annotation :MKAnnotation) {
         if let flutterAnnotation :FlutterAnnotation = annotation as? FlutterAnnotation {
             flutterAnnotation.wasDragged = true
-            channel.invokeMethod("marker#onTap", arguments: ["markerId" : flutterAnnotation.id])
+            channel.invokeMethod("annotation#onTap", arguments: ["annotationId" : flutterAnnotation.id])
         }
     }
     
@@ -104,7 +104,7 @@ class FlutterAnnotation: NSObject, MKAnnotation {
         let infoWindow :Dictionary<String, Any> = annotationData["infoWindow"] as! Dictionary<String, Any>
         self.title = infoWindow["title"] as? String
         self.subtitle = infoWindow["snippet"] as? String
-        self.id = annotationData["markerId"] as? String
+        self.id = annotationData["annotationId"] as? String
         if let alpha :NSNumber = annotationData["alpha"] as? NSNumber {
             self.alpha = JsonConversion.toDouble(jsonDouble: alpha)
         }
@@ -119,7 +119,7 @@ class FlutterAnnotation: NSObject, MKAnnotation {
         let updatedInfoWindow :Dictionary<String, Any> = updatedAnnotationData["infoWindow"] as! Dictionary<String, Any>
         let updatedTitle = updatedInfoWindow["title"] as? String
         let updatedSubtitle = updatedInfoWindow["snippet"] as? String
-        let updatedId = updatedAnnotationData["markerId"] as? String
+        let updatedId = updatedAnnotationData["annotationId"] as? String
         let updatedAlpha :Double = JsonConversion.toDouble(jsonDouble: updatedAnnotationData["alpha"] as! NSNumber)
         let updatedIsDraggable = JsonConversion.toBool(jsonBool: updatedAnnotationData["draggable"] as! NSNumber)
         let iconData: Array<Any> = updatedAnnotationData["icon"] as! Array<Any>
@@ -161,7 +161,7 @@ class FlutterAnnotation: NSObject, MKAnnotation {
     }
     
     private func getAnnotationImage(registrar: FlutterPluginRegistrar, iconData: Array<Any>, annotationId: String) -> AnnotationIcon {
-        let iconTypeMap: Dictionary<String, IconType> = ["fromAssetImage": IconType.CUSTOM, "defaultMarker": IconType.PIN]
+        let iconTypeMap: Dictionary<String, IconType> = ["fromAssetImage": IconType.CUSTOM, "defaultAnnotation": IconType.PIN]
         var icon: AnnotationIcon
         let iconType: IconType = iconTypeMap[iconData[0] as! String] ?? .PIN
         var scaleParam: CGFloat?

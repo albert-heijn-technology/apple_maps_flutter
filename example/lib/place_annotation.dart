@@ -11,32 +11,32 @@ import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 
 import 'page.dart';
 
-class PlaceMarkerPage extends Page {
-  PlaceMarkerPage() : super(const Icon(Icons.place), 'Place marker');
+class PlaceAnnotationPage extends Page {
+  PlaceAnnotationPage() : super(const Icon(Icons.place), 'Place annotation');
 
   @override
   Widget build(BuildContext context) {
-    return const PlaceMarkerBody();
+    return const PlaceAnnotationBody();
   }
 }
 
-class PlaceMarkerBody extends StatefulWidget {
-  const PlaceMarkerBody();
+class PlaceAnnotationBody extends StatefulWidget {
+  const PlaceAnnotationBody();
 
   @override
-  State<StatefulWidget> createState() => PlaceMarkerBodyState();
+  State<StatefulWidget> createState() => PlaceAnnotationBodyState();
 }
 
-typedef Marker MarkerUpdateAction(Marker marker);
+typedef Annotation AnnotationUpdateAction(Annotation annotation);
 
-class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
-  PlaceMarkerBodyState();
+class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
+  PlaceAnnotationBodyState();
   static final LatLng center = const LatLng(-33.86711, 151.1947171);
 
   AppleMapController controller;
-  Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
-  MarkerId selectedMarker;
-  int _markerIdCounter = 1;
+  Map<AnnotationId, Annotation> annotations = <AnnotationId, Annotation>{};
+  AnnotationId selectedAnnotation;
+  int _annotationIdCounter = 1;
 
   void _onMapCreated(AppleMapController controller) {
     this.controller = controller;
@@ -47,71 +47,71 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     super.dispose();
   }
 
-  void _onMarkerTapped(MarkerId markerId) {
-    final Marker tappedMarker = markers[markerId];
-    if (tappedMarker != null) {
+  void _onAnnotationTapped(AnnotationId annotationId) {
+    final Annotation tappedAnnotation = annotations[annotationId];
+    if (tappedAnnotation != null) {
       setState(() {
-        if (markers.containsKey(selectedMarker)) {
-          final Marker resetOld = markers[selectedMarker]
-              .copyWith(iconParam: BitmapDescriptor.defaultMarker);
-          markers[selectedMarker] = resetOld;
+        if (annotations.containsKey(selectedAnnotation)) {
+          final Annotation resetOld = annotations[selectedAnnotation]
+              .copyWith(iconParam: BitmapDescriptor.defaultAnnotation);
+          annotations[selectedAnnotation] = resetOld;
         }
-        selectedMarker = markerId;
-        final Marker newMarker = tappedMarker.copyWith(
-          iconParam: BitmapDescriptor.defaultMarkerWithColor(
+        selectedAnnotation = annotationId;
+        final Annotation newAnnotation = tappedAnnotation.copyWith(
+          iconParam: BitmapDescriptor.defaultAnnotationWithColor(
             AnnatationColor.GREEN,
           ),
         );
-        markers[markerId] = newMarker;
+        annotations[annotationId] = newAnnotation;
       });
     }
   }
 
   void _add() {
-    final int markerCount = markers.length;
+    final int annotationCount = annotations.length;
 
-    if (markerCount == 12) {
+    if (annotationCount == 12) {
       return;
     }
 
-    final String markerIdVal = 'marker_id_$_markerIdCounter';
-    _markerIdCounter++;
-    final MarkerId markerId = MarkerId(markerIdVal);
+    final String annotationIdVal = 'annotation_id_$_annotationIdCounter';
+    _annotationIdCounter++;
+    final AnnotationId annotationId = AnnotationId(annotationIdVal);
 
-    final Marker marker = Marker(
-      markerId: markerId,
+    final Annotation annotation = Annotation(
+      annotationId: annotationId,
       position: LatLng(
-        center.latitude + sin(_markerIdCounter * pi / 6.0) / 20.0,
-        center.longitude + cos(_markerIdCounter * pi / 6.0) / 20.0,
+        center.latitude + sin(_annotationIdCounter * pi / 6.0) / 20.0,
+        center.longitude + cos(_annotationIdCounter * pi / 6.0) / 20.0,
       ),
-      infoWindow: InfoWindow(title: markerIdVal, snippet: '*'),
+      infoWindow: InfoWindow(title: annotationIdVal, snippet: '*'),
       onTap: () {
-        _onMarkerTapped(markerId);
+        _onAnnotationTapped(annotationId);
       },
     );
 
     setState(() {
-      markers[markerId] = marker;
+      annotations[annotationId] = annotation;
     });
   }
 
   void _remove() {
     setState(() {
-      if (markers.containsKey(selectedMarker)) {
-        markers.remove(selectedMarker);
+      if (annotations.containsKey(selectedAnnotation)) {
+        annotations.remove(selectedAnnotation);
       }
     });
   }
 
   void _changePosition() {
-    final Marker marker = markers[selectedMarker];
-    final LatLng current = marker.position;
+    final Annotation annotation = annotations[selectedAnnotation];
+    final LatLng current = annotation.position;
     final Offset offset = Offset(
       center.latitude - current.latitude,
       center.longitude - current.longitude,
     );
     setState(() {
-      markers[selectedMarker] = marker.copyWith(
+      annotations[selectedAnnotation] = annotation.copyWith(
         positionParam: LatLng(
           center.latitude + offset.dy,
           center.longitude + offset.dx,
@@ -121,12 +121,12 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
   }
 
   Future<void> _changeInfoAnchor() async {
-    final Marker marker = markers[selectedMarker];
-    final Offset currentAnchor = marker.infoWindow.anchor;
+    final Annotation annotation = annotations[selectedAnnotation];
+    final Offset currentAnchor = annotation.infoWindow.anchor;
     final Offset newAnchor = Offset(1.0 - currentAnchor.dy, currentAnchor.dx);
     setState(() {
-      markers[selectedMarker] = marker.copyWith(
-        infoWindowParam: marker.infoWindow.copyWith(
+      annotations[selectedAnnotation] = annotation.copyWith(
+        infoWindowParam: annotation.infoWindow.copyWith(
           anchorParam: newAnchor,
         ),
       );
@@ -134,20 +134,20 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
   }
 
   Future<void> _toggleDraggable() async {
-    final Marker marker = markers[selectedMarker];
+    final Annotation annotation = annotations[selectedAnnotation];
     setState(() {
-      markers[selectedMarker] = marker.copyWith(
-        draggableParam: !marker.draggable,
+      annotations[selectedAnnotation] = annotation.copyWith(
+        draggableParam: !annotation.draggable,
       );
     });
   }
 
   Future<void> _changeInfo() async {
-    final Marker marker = markers[selectedMarker];
-    final String newSnippet = marker.infoWindow.snippet + '*';
+    final Annotation annotation = annotations[selectedAnnotation];
+    final String newSnippet = annotation.infoWindow.snippet + '*';
     setState(() {
-      markers[selectedMarker] = marker.copyWith(
-        infoWindowParam: marker.infoWindow.copyWith(
+      annotations[selectedAnnotation] = annotation.copyWith(
+        infoWindowParam: annotation.infoWindow.copyWith(
           snippetParam: newSnippet,
         ),
       );
@@ -155,10 +155,10 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
   }
 
   Future<void> _changeAlpha() async {
-    final Marker marker = markers[selectedMarker];
-    final double current = marker.alpha;
+    final Annotation annotation = annotations[selectedAnnotation];
+    final double current = annotation.alpha;
     setState(() {
-      markers[selectedMarker] = marker.copyWith(
+      annotations[selectedAnnotation] = annotation.copyWith(
         alphaParam: current < 0.1 ? 1.0 : current * 0.75,
       );
     });
@@ -180,7 +180,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
                 target: LatLng(-33.852, 151.211),
                 zoom: 11,
               ),
-              markers: Set<Marker>.of(markers.values),
+              annotations: Set<Annotation>.of(annotations.values),
             ),
           ),
         ),
@@ -220,14 +220,6 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
                         FlatButton(
                           child: const Text('change position'),
                           onPressed: _changePosition,
-                        ),
-                        FlatButton(
-                          onPressed: () {
-                            controller.moveCamera(
-                              CameraUpdate.zoomOut(),
-                            );
-                          },
-                          child: const Text('zoomOut'),
                         ),
                       ],
                     ),

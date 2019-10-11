@@ -62,7 +62,7 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
         super.init()
         interprateOptions(options: options)
         mapView.setCenterCoordinate(initialCameraPosition, animated: false)
-        if let annotationsToAdd :NSArray = args["markersToAdd"] as? NSArray {
+        if let annotationsToAdd :NSArray = args["annotationsToAdd"] as? NSArray {
             annotationController.annotationsToAdd(annotations: annotationsToAdd)
         }
         mapView.delegate = self
@@ -261,10 +261,10 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
         channel.setMethodCallHandler({(call: FlutterMethodCall, result: FlutterResult) -> Void in
             if let args :Dictionary<String, Any> = call.arguments as? Dictionary<String,Any> {
                 switch(call.method){
-                case "markers#update":
-                    self.annotationController.annotationsToAdd(annotations: args["markersToAdd"]! as! NSArray)
-                    self.annotationController.annotationsToChange(annotations: args["markersToChange"] as! NSArray)
-                    self.annotationController.annotationsIdsToRemove(annotationIds: args["markerIdsToRemove"] as! NSArray)
+                case "annotations#update":
+                    self.annotationController.annotationsToAdd(annotations: args["annotationsToAdd"]! as! NSArray)
+                    self.annotationController.annotationsToChange(annotations: args["annotationsToChange"] as! NSArray)
+                    self.annotationController.annotationsIdsToRemove(annotationIds: args["annotationIdsToRemove"] as! NSArray)
                 case "map#update":
                     self.interprateOptions(options: args["options"] as! Dictionary<String, Any>)
                 case "camera#animate":

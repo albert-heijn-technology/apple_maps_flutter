@@ -11,7 +11,7 @@ dynamic _offsetToJson(Offset offset) {
   return <dynamic>[offset.dx, offset.dy];
 }
 
-/// Text labels for a [Marker] info window.
+/// Text labels for a [Annotation] info window.
 class InfoWindow {
   const InfoWindow({
     this.title,
@@ -23,7 +23,7 @@ class InfoWindow {
   /// Text labels specifying that no text is to be displayed.
   static const InfoWindow noText = InfoWindow();
 
-  /// Text displayed in an info window when the user taps the marker.
+  /// Text displayed in an info window when the user taps the annotation.
   ///
   /// A null value means no title.
   final String title;
@@ -95,21 +95,21 @@ class InfoWindow {
   }
 }
 
-/// Uniquely identifies a [Marker] among [AppleMap] markers.
+/// Uniquely identifies a [Annotation] among [AppleMap] annotations.
 ///
 /// This does not have to be globally unique, only unique among the list.
 @immutable
-class MarkerId {
-  MarkerId(this.value) : assert(value != null);
+class AnnotationId {
+  AnnotationId(this.value) : assert(value != null);
 
-  /// value of the [MarkerId].
+  /// value of the [AnnotationId].
   final String value;
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
-    final MarkerId typedOther = other;
+    final AnnotationId typedOther = other;
     return value == typedOther.value;
   }
 
@@ -118,75 +118,75 @@ class MarkerId {
 
   @override
   String toString() {
-    return 'MarkerId{value: $value}';
+    return 'AnnotationId{value: $value}';
   }
 }
 
 /// Marks a geographical location on the map.
 ///
-/// A marker icon is drawn oriented against the device's screen rather than
+/// A annotation icon is drawn oriented against the device's screen rather than
 /// the map's surface; that is, it will not necessarily change orientation
 /// due to map rotations, tilting, or zooming.
 @immutable
-class Marker {
-  /// Creates a set of marker configuration options.
+class Annotation {
+  /// Creates a set of annotation configuration options.
   ///
-  /// Default marker options.
+  /// Default annotation options.
   ///
-  /// Specifies a marker that
+  /// Specifies a annotation that
   /// * is fully opaque; [alpha] is 1.0
   /// * uses icon bottom center to indicate map position; [anchor] is (0.5, 1.0)
   /// * has default tap handling; [consumeTapEvents] is false
   /// * is stationary; [draggable] is false
   /// * is drawn against the screen, not the map; [flat] is false
-  /// * has a default icon; [icon] is `BitmapDescriptor.defaultMarker`
+  /// * has a default icon; [icon] is `BitmapDescriptor.defaultAnnotation`
   /// * anchors the info window at top center; [infoWindowAnchor] is (0.5, 0.0)
   /// * has no info window text; [infoWindowText] is `InfoWindowText.noText`
   /// * is positioned at 0, 0; [position] is `LatLng(0.0, 0.0)`
   /// * has an axis-aligned icon; [rotation] is 0.0
   /// * is visible; [visible] is true
   /// * is placed at the base of the drawing order; [zIndex] is 0.0
-  const Marker({
-    @required this.markerId,
+  const Annotation({
+    @required this.annotationId,
     this.alpha = 1.0,
     this.draggable = false,
-    this.icon = BitmapDescriptor.defaultMarker,
+    this.icon = BitmapDescriptor.defaultAnnotation,
     this.infoWindow = InfoWindow.noText,
     this.position = const LatLng(0.0, 0.0),
     this.onTap,
     this.onDragEnd,
   }) : assert(alpha == null || (0.0 <= alpha && alpha <= 1.0));
 
-  /// Uniquely identifies a [Marker].
-  final MarkerId markerId;
+  /// Uniquely identifies a [Annotation].
+  final AnnotationId annotationId;
 
-  /// The opacity of the marker, between 0.0 and 1.0 inclusive.
+  /// The opacity of the annotation, between 0.0 and 1.0 inclusive.
   ///
   /// 0.0 means fully transparent, 1.0 means fully opaque.
   final double alpha;
 
-  /// True if the marker is draggable by user touch events.
+  /// True if the annotation is draggable by user touch events.
   final bool draggable;
 
-  /// A description of the bitmap used to draw the marker icon.
+  /// A description of the bitmap used to draw the annotation icon.
   final BitmapDescriptor icon;
 
   /// A Google Maps InfoWindow.
   ///
-  /// The window is displayed when the marker is tapped.
+  /// The window is displayed when the annotation is tapped.
   final InfoWindow infoWindow;
 
-  /// Geographical location of the marker.
+  /// Geographical location of the annotation.
   final LatLng position;
 
-  /// Callbacks to receive tap events for markers placed on this map.
+  /// Callbacks to receive tap events for annotations placed on this map.
   final VoidCallback onTap;
 
   final ValueChanged<LatLng> onDragEnd;
 
-  /// Creates a new [Marker] object whose values are the same as this instance,
+  /// Creates a new [Annotation] object whose values are the same as this instance,
   /// unless overwritten by the specified parameters.
-  Marker copyWith({
+  Annotation copyWith({
     double alphaParam,
     Offset anchorParam,
     bool consumeTapEventsParam,
@@ -201,8 +201,8 @@ class Marker {
     VoidCallback onTapParam,
     ValueChanged<LatLng> onDragEndParam,
   }) {
-    return Marker(
-      markerId: markerId,
+    return Annotation(
+      annotationId: annotationId,
       alpha: alphaParam ?? alpha,
       draggable: draggableParam ?? draggable,
       icon: iconParam ?? icon,
@@ -222,7 +222,7 @@ class Marker {
       }
     }
 
-    addIfPresent('markerId', markerId.value);
+    addIfPresent('annotationId', annotationId.value);
     addIfPresent('alpha', alpha);
     addIfPresent('draggable', draggable);
     addIfPresent('icon', icon?._toJson());
@@ -235,31 +235,36 @@ class Marker {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
-    final Marker typedOther = other;
-    return markerId == typedOther.markerId;
+    final Annotation typedOther = other;
+    return annotationId == typedOther.annotationId;
   }
 
   @override
-  int get hashCode => markerId.hashCode;
+  int get hashCode => annotationId.hashCode;
 
   @override
   String toString() {
-    return 'Marker{markerId: $markerId, alpha: $alpha, draggable: $draggable,'
+    return 'Annotation{annotationId: $annotationId, alpha: $alpha, draggable: $draggable,'
         'icon: $icon, infoWindow: $infoWindow, position: $position onTap: $onTap}';
   }
 }
 
-Map<MarkerId, Marker> _keyByMarkerId(Iterable<Marker> markers) {
-  if (markers == null) {
-    return <MarkerId, Marker>{};
+Map<AnnotationId, Annotation> _keyByAnnotationId(
+    Iterable<Annotation> annotations) {
+  if (annotations == null) {
+    return <AnnotationId, Annotation>{};
   }
-  return Map<MarkerId, Marker>.fromEntries(markers.map(
-      (Marker marker) => MapEntry<MarkerId, Marker>(marker.markerId, marker)));
+  return Map<AnnotationId, Annotation>.fromEntries(annotations.map(
+      (Annotation annotation) => MapEntry<AnnotationId, Annotation>(
+          annotation.annotationId, annotation)));
 }
 
-List<Map<String, dynamic>> _serializeMarkerSet(Set<Marker> markers) {
-  if (markers == null) {
+List<Map<String, dynamic>> _serializeAnnotationSet(
+    Set<Annotation> annotations) {
+  if (annotations == null) {
     return null;
   }
-  return markers.map<Map<String, dynamic>>((Marker m) => m._toJson()).toList();
+  return annotations
+      .map<Map<String, dynamic>>((Annotation m) => m._toJson())
+      .toList();
 }

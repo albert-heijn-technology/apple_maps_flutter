@@ -54,15 +54,15 @@ class AppleMapController {
           _appleMapState.widget.onCameraIdle();
         }
         break;
-      case 'marker#onTap':
-        _appleMapState.onMarkerTap(call.arguments['markerId']);
+      case 'annotation#onTap':
+        _appleMapState.onAnnotationTap(call.arguments['annotationId']);
         break;
-      case 'marker#onDragEnd':
-        _appleMapState.onMarkerDragEnd(call.arguments['markerId'],
+      case 'annotation#onDragEnd':
+        _appleMapState.onAnnotationDragEnd(call.arguments['annotationId'],
             LatLng._fromJson(call.arguments['position']));
         break;
       case 'infoWindow#onTap':
-        _appleMapState.onInfoWindowTap(call.arguments['markerId']);
+        _appleMapState.onInfoWindowTap(call.arguments['annotationId']);
         break;
       case 'map#onTap':
         _appleMapState.onTap(LatLng._fromJson(call.arguments['position']));
@@ -92,17 +92,17 @@ class AppleMapController {
     );
   }
 
-  /// Updates marker configuration.
+  /// Updates annotation configuration.
   ///
   /// Change listeners are notified once the update has been made on the
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> _updateMarkers(_MarkerUpdates markerUpdates) async {
-    assert(markerUpdates != null);
+  Future<void> _updateAnnotations(_AnnotationUpdates annotationUpdates) async {
+    assert(annotationUpdates != null);
     await channel.invokeMethod<void>(
-      'markers#update',
-      markerUpdates._toMap(),
+      'annotations#update',
+      annotationUpdates._toMap(),
     );
   }
 

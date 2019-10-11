@@ -10,22 +10,22 @@ enum AnnatationColor {
   PURPLE,
 }
 
-/// Defines a bitmap image. For a marker, this class can be used to set the
-/// image of the marker icon. For a ground overlay, it can be used to set the
+/// Defines a bitmap image. For a annotation, this class can be used to set the
+/// image of the annotation icon. For a ground overlay, it can be used to set the
 /// image to place on the surface of the earth.
 class BitmapDescriptor {
   const BitmapDescriptor._(this._json);
 
-  /// Creates a BitmapDescriptor that refers to the default marker image.
-  static const BitmapDescriptor defaultMarker =
-      BitmapDescriptor._(<dynamic>['defaultMarker']);
+  /// Creates a BitmapDescriptor that refers to the default annotation image.
+  static const BitmapDescriptor defaultAnnotation =
+      BitmapDescriptor._(<dynamic>['defaultAnnotation']);
 
   /// Creates a BitmapDescriptor that refers to a colorization of the default
-  /// marker image. For convenience, there is a predefined set of hue values.
+  /// annotation image. For convenience, there is a predefined set of hue values.
   /// See e.g. [hueYellow].
-  static BitmapDescriptor defaultMarkerWithColor(AnnatationColor color) {
+  static BitmapDescriptor defaultAnnotationWithColor(AnnatationColor color) {
     assert(color != null);
-    return BitmapDescriptor._(<dynamic>['defaultMarker', color.index]);
+    return BitmapDescriptor._(<dynamic>['defaultAnnotation', color.index]);
   }
 
   /// Creates a [BitmapDescriptor] from an asset image.
