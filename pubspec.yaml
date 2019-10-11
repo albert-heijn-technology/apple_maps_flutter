@@ -1,8 +1,8 @@
 name: apple_maps_flutter
-description: A new flutter plugin project.
+description: A widget, that provides AppleMaps to Flutter.
 version: 0.0.1
-author:
-homepage:
+author: Luis Thein
+homepage: https://github.com/LuisThein
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
