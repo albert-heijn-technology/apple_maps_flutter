@@ -37,7 +37,7 @@ class _MapClickBodyState extends State<_MapClickBody> {
 
   @override
   Widget build(BuildContext context) {
-    final AppleMap googleMap = AppleMap(
+    final AppleMap appleMap = AppleMap(
       onMapCreated: onMapCreated,
       initialCameraPosition: _kInitialPosition,
       onTap: (LatLng pos) {
@@ -59,7 +59,7 @@ class _MapClickBodyState extends State<_MapClickBody> {
           child: SizedBox(
             width: 300.0,
             height: 200.0,
-            child: googleMap,
+            child: appleMap,
           ),
         ),
       ),

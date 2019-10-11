@@ -171,7 +171,7 @@ class Annotation {
   /// A description of the bitmap used to draw the annotation icon.
   final BitmapDescriptor icon;
 
-  /// A Google Maps InfoWindow.
+  /// An Apple Maps InfoWindow.
   ///
   /// The window is displayed when the annotation is tapped.
   final InfoWindow infoWindow;

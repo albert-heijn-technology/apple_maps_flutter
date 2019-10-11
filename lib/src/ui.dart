@@ -5,9 +5,6 @@
 part of apple_maps_flutter;
 
 /// Type of map tiles to display.
-// Enum constants must be indexed to match the corresponding int constants of
-// the Android platform API, see
-// <https://developers.google.com/android/reference/com/google/android/gms/maps/AppleMap.html#MAP_TYPE_NORMAL>
 enum MapType {
   /// Normal tiles (traffic and labels, subtle terrain information).
   standard,

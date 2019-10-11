@@ -8,7 +8,7 @@ typedef void MapCreatedCallback(AppleMapController controller);
 
 /// Callback that receives updates to the camera position.
 ///
-/// This callback is triggered when the platform Google Map
+/// This callback is triggered when the platform Apple Map
 /// registers a camera movement.
 ///
 /// This is used in [AppleMap.onCameraMove].
