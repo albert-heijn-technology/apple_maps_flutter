@@ -234,9 +234,8 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
                     positionData = ["target": _positionData, "zoom": zoom]
                 }
             case "zoomBy":
-                if let zoomBy: Int = data[1] as? Int {
-                    // TODO: Implement zoomBy
-                    print("zoomBy not yet implemented.")
+                if let zoomBy: Double = data[1] as? Double {
+                    mapView.zoomBy(zoomBy: zoomBy, animated: animated)
                 }
             case "zoomTo":
                 if let zoomTo: Double = data[1] as? Double {
