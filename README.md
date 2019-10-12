@@ -117,16 +117,16 @@ class AppleMapsExample extends StatelessWidget {
 
 ## TODO'S:
 
-[x] Add zoomLevelBounds
-[x] Add zoomBy functionality
-[ ] Add ability to set LatLngBounds to map
-[ ] Add ability to add padding to the map
-[ ] Add scrollBy functionality 
-[ ] Add a getter for the visible map region
-[ ] Add ability to place a polyline 
-[ ] Add ability to place a polygon
-[ ] Add ability to place a circle  
-[ ] . . .
+- [x] Add zoomLevelBounds
+- [x] Add zoomBy functionality
+- [ ] Add ability to set LatLngBounds to map
+- [ ] Add ability to add padding to the map
+- [ ] Add scrollBy functionality 
+- [ ] Add a getter for the visible map region
+- [ ] Add ability to place a polyline 
+- [ ] Add ability to place a polygon
+- [ ] Add ability to place a circle  
+- [ ] . . .
 
 Suggestions and PR's to make this plugin better are always welcome.
 
