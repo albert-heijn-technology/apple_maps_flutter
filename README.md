@@ -8,7 +8,7 @@ This plugin was based on the [google_maps_flutter]("https://pub.dev/packages/goo
 
 # Screenshots
 
-![image](images.githubusercontent.com/42840534/66707309-d17e9580-ed3e-11e9-990c-c69a527f72c2.png)![image](images.githubusercontent.com/42840534/66707329-0a1e6f00-ed3f-11e9-8b9a-6a71e911da48.png)
+![Example 1](https://github.com/LuisThein/apple_maps_flutter/blob/master/resources/example_img01.png)![Example 2](https://github.com/LuisThein/apple_maps_flutter/blob/master/resources/example_img02.png)
 
 # iOS
 
