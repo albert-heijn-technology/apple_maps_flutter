@@ -105,8 +105,8 @@ class FlutterAnnotation: NSObject, MKAnnotation {
         self.title = infoWindow["title"] as? String
         self.subtitle = infoWindow["snippet"] as? String
         self.id = annotationData["annotationId"] as? String
-        if let alpha :NSNumber = annotationData["alpha"] as? NSNumber {
-            self.alpha = JsonConversion.toDouble(jsonDouble: alpha)
+        if let alpha :Double = annotationData["alpha"] as? Double {
+            self.alpha = alpha
         }
     }
     
@@ -120,8 +120,8 @@ class FlutterAnnotation: NSObject, MKAnnotation {
         let updatedTitle = updatedInfoWindow["title"] as? String
         let updatedSubtitle = updatedInfoWindow["snippet"] as? String
         let updatedId = updatedAnnotationData["annotationId"] as? String
-        let updatedAlpha :Double = JsonConversion.toDouble(jsonDouble: updatedAnnotationData["alpha"] as! NSNumber)
-        let updatedIsDraggable = JsonConversion.toBool(jsonBool: updatedAnnotationData["draggable"] as! NSNumber)
+        let updatedAlpha: Double = updatedAnnotationData["alpha"] as! Double
+        let updatedIsDraggable: Bool = updatedAnnotationData["draggable"] as! Bool
         let iconData: Array<Any> = updatedAnnotationData["icon"] as! Array<Any>
         let updatedIcon: AnnotationIcon = getAnnotationImage(registrar: registrar, iconData: iconData, annotationId: self.id)
         

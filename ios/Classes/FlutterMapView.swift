@@ -144,7 +144,7 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
     
     public func updateCameraValues() {
         if (oldBounds != nil && oldBounds != CGRect.zero) {
-            self.updateStoredCameraValues()
+            self.updateStoredCameraValues(newZoomLevel: calculatedZoomLevel, newPitch: camera.pitch, newHeading: actualHeading)
         }
     }
     

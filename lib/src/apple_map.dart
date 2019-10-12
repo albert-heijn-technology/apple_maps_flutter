@@ -23,6 +23,7 @@ class AppleMap extends StatefulWidget {
     this.compassEnabled = true,
     this.trafficEnabled = false,
     this.mapType = MapType.standard,
+    this.minMaxZoomPreference = MinMaxZoomPreference.unbounded,
     this.trackingMode = TrackingMode.none,
     this.rotateGesturesEnabled = true,
     this.scrollGesturesEnabled = true,
@@ -55,6 +56,11 @@ class AppleMap extends StatefulWidget {
 
   /// The mode used to track the user location.
   final TrackingMode trackingMode;
+
+  /// Preferred bounds for the camera zoom level.
+  ///
+  /// Actual bounds depend on map data and device.
+  final MinMaxZoomPreference minMaxZoomPreference;
 
   /// True if the map view should respond to rotate gestures.
   final bool rotateGesturesEnabled;
@@ -271,6 +277,7 @@ class _AppleMapOptions {
     this.compassEnabled,
     this.trafficEnabled,
     this.mapType,
+    this.minMaxZoomPreference,
     this.rotateGesturesEnabled,
     this.scrollGesturesEnabled,
     this.pitchGesturesEnabled,
@@ -285,6 +292,7 @@ class _AppleMapOptions {
       compassEnabled: map.compassEnabled,
       trafficEnabled: map.trafficEnabled,
       mapType: map.mapType,
+      minMaxZoomPreference: map.minMaxZoomPreference,
       rotateGesturesEnabled: map.rotateGesturesEnabled,
       scrollGesturesEnabled: map.scrollGesturesEnabled,
       pitchGesturesEnabled: map.pitchGesturesEnabled,
@@ -300,6 +308,8 @@ class _AppleMapOptions {
   final bool trafficEnabled;
 
   final MapType mapType;
+
+  final MinMaxZoomPreference minMaxZoomPreference;
 
   final bool rotateGesturesEnabled;
 
@@ -327,6 +337,7 @@ class _AppleMapOptions {
     addIfNonNull('compassEnabled', compassEnabled);
     addIfNonNull('trafficEnabled', trafficEnabled);
     addIfNonNull('mapType', mapType?.index);
+    addIfNonNull('minMaxZoomPreference', minMaxZoomPreference?._toJson());
     addIfNonNull('rotateGesturesEnabled', rotateGesturesEnabled);
     addIfNonNull('scrollGesturesEnabled', scrollGesturesEnabled);
     addIfNonNull('pitchGesturesEnabled', pitchGesturesEnabled);

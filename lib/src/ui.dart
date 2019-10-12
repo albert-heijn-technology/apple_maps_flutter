@@ -63,6 +63,39 @@ class CameraTargetBounds {
   }
 }
 
+class MinMaxZoomPreference {
+  const MinMaxZoomPreference(this.minZoom, this.maxZoom)
+      : assert(minZoom == null || maxZoom == null || minZoom <= maxZoom);
+
+  /// The preferred minimum zoom level or null, if unbounded from below.
+  final double minZoom;
+
+  /// The preferred maximum zoom level or null, if unbounded from above.
+  final double maxZoom;
+
+  /// Unbounded zooming.
+  static const MinMaxZoomPreference unbounded =
+      MinMaxZoomPreference(null, null);
+
+  dynamic _toJson() => <dynamic>[minZoom, maxZoom];
+
+  @override
+  bool operator ==(dynamic other) {
+    if (identical(this, other)) return true;
+    if (runtimeType != other.runtimeType) return false;
+    final MinMaxZoomPreference typedOther = other;
+    return minZoom == typedOther.minZoom && maxZoom == typedOther.maxZoom;
+  }
+
+  @override
+  int get hashCode => hashValues(minZoom, maxZoom);
+
+  @override
+  String toString() {
+    return 'MinMaxZoomPreference(minZoom: $minZoom, maxZoom: $maxZoom)';
+  }
+}
+
 /// Exception when a map style is invalid or was unable to be set.
 ///
 /// See also: `setStyle` on [AppleMapController] for why this exception

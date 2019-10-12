@@ -42,6 +42,7 @@ class MapUiBodyState extends State<MapUiBody> {
   bool _isMoving = false;
   bool _compassEnabled = true;
   bool _myLocationButtonEnabled = true;
+  MinMaxZoomPreference _minMaxZoomPreference = MinMaxZoomPreference.unbounded;
   MapType _mapType = MapType.standard;
   bool _rotateGesturesEnabled = true;
   bool _scrollGesturesEnabled = true;
@@ -65,6 +66,21 @@ class MapUiBodyState extends State<MapUiBody> {
       onPressed: () {
         setState(() {
           _compassEnabled = !_compassEnabled;
+        });
+      },
+    );
+  }
+
+  Widget _zoomBoundsToggler() {
+    return FlatButton(
+      child: Text(_minMaxZoomPreference.minZoom == null
+          ? 'bound zoom'
+          : 'release zoom'),
+      onPressed: () {
+        setState(() {
+          _minMaxZoomPreference = _minMaxZoomPreference.minZoom == null
+              ? const MinMaxZoomPreference(12.0, 16.0)
+              : MinMaxZoomPreference.unbounded;
         });
       },
     );
@@ -157,6 +173,7 @@ class MapUiBodyState extends State<MapUiBody> {
       onMapCreated: onMapCreated,
       initialCameraPosition: _kInitialPosition,
       compassEnabled: _compassEnabled,
+      minMaxZoomPreference: _minMaxZoomPreference,
       mapType: _mapType,
       rotateGesturesEnabled: _rotateGesturesEnabled,
       scrollGesturesEnabled: _scrollGesturesEnabled,
@@ -194,6 +211,7 @@ class MapUiBodyState extends State<MapUiBody> {
               Text(_isMoving ? '(Camera moving)' : '(Camera idle)'),
               _compassToggler(),
               _mapTypeCycler(),
+              _zoomBoundsToggler(),
               _rotateToggler(),
               _scrollToggler(),
               _tiltToggler(),

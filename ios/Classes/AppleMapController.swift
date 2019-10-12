@@ -94,63 +94,61 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
     }
     
     private func interprateOptions(options: Dictionary<String, Any>) {
-        if let isCompassEnabled :Any = options["compassEnabled"]  {
-            let _isCompassEnabled :Bool = JsonConversion.toBool(jsonBool: isCompassEnabled as! NSNumber)
+        if let isCompassEnabled: Bool = options["compassEnabled"] as? Bool {
             if #available(iOS 9.0, *) {
-                mapView.showsCompass = _isCompassEnabled
+                mapView.showsCompass = isCompassEnabled
             } else {
                 // not sure if theres a simple solution
             }
         }
         
-        if let mapType :Any = options["mapType"] {
-            let _mapType :Int = JsonConversion.toInt(jsonInt : mapType as! NSNumber)
-            mapView.mapType = mapTypes[_mapType]
+        if let mapType: Int = options["mapType"] as? Int {
+            mapView.mapType = mapTypes[mapType]
         }
         
-        if let trafficEnabled :Any = options["trafficEnabled"] {
-            let _trafficEnabled :Bool = JsonConversion.toBool(jsonBool: trafficEnabled as! NSNumber)
+        if let trafficEnabled: Bool = options["trafficEnabled"] as? Bool {
             if #available(iOS 9.0, *) {
-                mapView.showsTraffic = _trafficEnabled
+                mapView.showsTraffic = trafficEnabled
             } else {
                 // do nothing
             }
         }
         
-        if let rotateGesturesEnabled :Any = options["rotateGesturesEnabled"] {
-            let _rotateGesturesEnabled :Bool = JsonConversion.toBool(jsonBool: rotateGesturesEnabled as! NSNumber)
-            mapView.isRotateEnabled = _rotateGesturesEnabled
+        if let rotateGesturesEnabled: Bool = options["rotateGesturesEnabled"] as? Bool {
+            mapView.isRotateEnabled = rotateGesturesEnabled
         }
         
-        if let scrollGesturesEnabled :Any = options["scrollGesturesEnabled"] {
-            let _scrollGesturesEnabled :Bool = JsonConversion.toBool(jsonBool:scrollGesturesEnabled as! NSNumber)
-            mapView.isScrollEnabled = _scrollGesturesEnabled
+        if let scrollGesturesEnabled: Bool = options["scrollGesturesEnabled"] as? Bool {
+            mapView.isScrollEnabled = scrollGesturesEnabled
         }
         
-        if let pitchGesturesEnabled :Any = options["pitchGesturesEnabled"] {
-            let _pitchGesturesEnabled :Bool = JsonConversion.toBool(jsonBool: pitchGesturesEnabled as! NSNumber)
-            mapView.isPitchEnabled = _pitchGesturesEnabled
+        if let pitchGesturesEnabled: Bool = options["pitchGesturesEnabled"] as? Bool {
+            mapView.isPitchEnabled = pitchGesturesEnabled
         }
         
-        if let zoomGesturesEnabled :Any = options["zoomGesturesEnabled"] {
-            let _zoomGesturesEnabled :Bool = JsonConversion.toBool(jsonBool: zoomGesturesEnabled as! NSNumber)
-            mapView.isZoomEnabled = _zoomGesturesEnabled
+        if let zoomGesturesEnabled: Bool = options["zoomGesturesEnabled"] as? Bool{
+            mapView.isZoomEnabled = zoomGesturesEnabled
         }
         
-        
-        if let myLocationEnabled :Any = options["myLocationEnabled"] {
-            let _myLocationEnabled :Bool = JsonConversion.toBool(jsonBool: myLocationEnabled as! NSNumber)
-            setUserLocation(myLocationEnabled: _myLocationEnabled)
+        if let myLocationEnabled: Bool = options["myLocationEnabled"] as? Bool {
+            setUserLocation(myLocationEnabled: myLocationEnabled)
         }
         
-        if let myLocationButtonEnabled :Any = options["myLocationButtonEnabled"] {
-            let _myLocationButtonEnabled :Bool = JsonConversion.toBool(jsonBool: myLocationButtonEnabled as! NSNumber)
-            mapTrackingButton(isVisible: _myLocationButtonEnabled)
+        if let myLocationButtonEnabled: Bool = options["myLocationButtonEnabled"] as? Bool {
+            mapTrackingButton(isVisible: myLocationButtonEnabled)
         }
         
-        if let userTackingMode :Any = options["trackingMode"] {
-            let _userTackingMode :Int = JsonConversion.toInt(jsonInt: userTackingMode as! NSNumber)
-            mapView.setUserTrackingMode(userTrackingModes[_userTackingMode], animated: false)
+        if let userTackingMode: Int = options["trackingMode"] as? Int {
+            mapView.setUserTrackingMode(userTrackingModes[userTackingMode], animated: false)
+        }
+        
+        if let minMaxZoom: Array<Any> = options["minMaxZoomPreference"] as? Array<Any>{
+            if let _minZoom: Double = minMaxZoom[0] as? Double {
+                mapView.minZoomLevel = _minZoom
+            }
+            if let _maxZoom: Double = minMaxZoom[1] as? Double {
+                mapView.maxZoomLevel = _maxZoom
+            }
         }
     }
     
