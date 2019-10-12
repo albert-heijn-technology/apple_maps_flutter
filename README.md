@@ -6,13 +6,17 @@ The plugin relies on Flutter's mechanism for embedding Android and iOS views. As
 
 This plugin was based on the [google_maps_flutter]("https://pub.dev/packages/google_maps_flutter") plugin. Instead of reinventing the wheel it also uses the Flutter implementation of the [google_maps_flutter]("https://pub.dev/packages/google_maps_flutter") plugin. This was also done to simplify the process of combining the [google_maps_flutter]("https://pub.dev/packages/google_maps_flutter") plugin with apple_maps_flutter to create a cross platform implementation of typical map implementations for Android/iOS (coming soon).
 
-# Android
+# Screenshots
 
-There is no Android implementation, but there will be a package to combine apple_maps_flutter and the [google_maps_flutter]("https://pub.dev/packages/google_maps_flutter") plugin to have the typical map implementations for Android/iOS.
+![image](images.githubusercontent.com/42840534/66707309-d17e9580-ed3e-11e9-990c-c69a527f72c2.png)![image](images.githubusercontent.com/42840534/66707329-0a1e6f00-ed3f-11e9-8b9a-6a71e911da48.png)
 
 # iOS
 
 To use this plugin on iOS you need to opt-in for the embedded views preview by adding a boolean property to the app's Info.plist file, with the key io.flutter.embedded_views_preview and the value YES. You will also have to add the key Privacy - Location When In Use Usage Description with the value of your usage description.
+
+# Android
+
+There is no Android implementation, but there will be a package to combine apple_maps_flutter and the [google_maps_flutter]("https://pub.dev/packages/google_maps_flutter") plugin to have the typical map implementations for Android/iOS (coming soon).
 
 ## Sample Usage
 
@@ -108,3 +112,20 @@ class AppleMapsExample extends StatelessWidget {
   }
 }
 ```
+
+## TODO'S:
+
+[x] Add zoomLevelBounds
+[x] Add zoomBy functionality
+[ ] Add ability to set LatLngBounds to map
+[ ] Add ability to add padding to the map
+[ ] Add scrollBy functionality 
+[ ] Add a getter for the visible map region
+[ ] Add ability to place a polyline 
+[ ] Add ability to place a polygon
+[ ] Add ability to place a circle  
+[ ] . . .
+
+Suggestions and PR's to make this plugin better are always welcome.
+
+
