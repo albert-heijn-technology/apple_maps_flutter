@@ -257,23 +257,35 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
     public func view() -> UIView {
         channel.setMethodCallHandler({(call: FlutterMethodCall, result: FlutterResult) -> Void in
             if let args :Dictionary<String, Any> = call.arguments as? Dictionary<String,Any> {
-                switch(call.method){
+                switch(call.method) {
                 case "annotations#update":
                     self.annotationController.annotationsToAdd(annotations: args["annotationsToAdd"]! as! NSArray)
                     self.annotationController.annotationsToChange(annotations: args["annotationsToChange"] as! NSArray)
                     self.annotationController.annotationsIdsToRemove(annotationIds: args["annotationIdsToRemove"] as! NSArray)
+                    result(nil)
                 case "map#update":
                     self.interprateOptions(options: args["options"] as! Dictionary<String, Any>)
+                    //result(mapView.centerCoordinate) implement result for camera update
                 case "camera#animate":
                     let positionData :Dictionary<String, Any> = self.toPositionData(data: args["cameraUpdate"] as! Array<Any>, animated: true)
                     if (!positionData.isEmpty) {
                         self.mapView.setCenterCoordinate(positionData, animated: true)
                     }
+                    result(nil)
                 case "camera#move":
                     let positionData :Dictionary<String, Any> = self.toPositionData(data: args["cameraUpdate"] as! Array<Any>, animated: false)
                     if (!positionData.isEmpty) {
                         self.mapView.setCenterCoordinate(positionData, animated: false)
                     }
+                    result(nil)
+                default:
+                    result(FlutterMethodNotImplemented)
+                    return
+                }
+            } else {
+                switch call.method {
+                case "map#getVisibleRegion":
+                    result(self.mapView.getVisibleRegion())
                 default:
                     result(FlutterMethodNotImplemented)
                     return

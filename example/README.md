@@ -1,16 +1,95 @@
-# apple_maps_flutter_example
+# Example usage:
 
-Demonstrates how to use the apple_maps_flutter plugin.
+```dart
+class AppleMapsExample extends StatelessWidget {
+  AppleMapController mapController;
 
-## Getting Started
+  void _onMapCreated(AppleMapController controller) {
+    mapController = controller;
+  }
 
-This project is a starting point for a Flutter application.
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        Expanded(
+          child: Container(
+            child: AppleMap(
+              onMapCreated: _onMapCreated,
+              initialCameraPosition: const CameraPosition(
+                target: LatLng(0.0, 0.0),
+              ),
+            ),
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            Column(
+              children: <Widget>[
+                FlatButton(
+                  onPressed: () {
+                    mapController.moveCamera(
+                      CameraUpdate.newCameraPosition(
+                        const CameraPosition(
+                          heading: 270.0,
+                          target: LatLng(51.5160895, -0.1294527),
+                          pitch: 30.0,
+                          zoom: 17,
+                        ),
+                      ),
+                    );
+                  },
+                  child: const Text('newCameraPosition'),
+                ),
+                FlatButton(
+                  onPressed: () {
+                    mapController.moveCamera(
+                      CameraUpdate.newLatLngZoom(
+                        const LatLng(37.4231613, -122.087159),
+                        11.0,
+                      ),
+                    );
+                  },
+                  child: const Text('newLatLngZoom'),
+                ),
+              ],
+            ),
+            Column(
+              children: <Widget>[
+                FlatButton(
+                  onPressed: () {
+                    mapController.moveCamera(
+                      CameraUpdate.zoomIn(),
+                    );
+                  },
+                  child: const Text('zoomIn'),
+                ),
+                FlatButton(
+                  onPressed: () {
+                    mapController.moveCamera(
+                      CameraUpdate.zoomOut(),
+                    );
+                  },
+                  child: const Text('zoomOut'),
+                ),
+                FlatButton(
+                  onPressed: () {
+                    mapController.moveCamera(
+                      CameraUpdate.zoomTo(16.0),
+                    );
+                  },
+                  child: const Text('zoomTo'),
+                ),
+              ],
+            ),
+          ],
+        )
+      ],
+    );
+  }
+}
+```
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.

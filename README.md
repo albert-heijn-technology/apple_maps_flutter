@@ -14,7 +14,7 @@ This plugin was based on the [google_maps_flutter]("https://pub.dev/packages/goo
 
 # iOS
 
-To use this plugin on iOS you need to opt-in for the embedded views preview by adding a boolean property to the app's Info.plist file, with the key io.flutter.embedded_views_preview and the value YES. You will also have to add the key Privacy - Location When In Use Usage Description with the value of your usage description.
+To use this plugin on iOS you need to opt-in for the embedded views preview by adding a boolean property to the app's Info.plist file, with the key `io.flutter.embedded_views_preview` and the value `YES`. You will also have to add the key `Privacy - Location When In Use Usage Description` with the value of your usage description.
 
 # Android
 
