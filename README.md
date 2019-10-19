@@ -4,7 +4,7 @@ A Flutter plugin that provides an Apple Maps widget.
 
 The plugin relies on Flutter's mechanism for embedding Android and iOS views. As that mechanism is currently in a developers preview, this plugin should also be considered a developers preview.
 
-This plugin was based on the [google_maps_flutter]("https://pub.dev/packages/google_maps_flutter") plugin. Instead of reinventing the wheel it also uses the Flutter implementation of the [google_maps_flutter]("https://pub.dev/packages/google_maps_flutter") plugin. This was also done to simplify the process of combining the [google_maps_flutter]("https://pub.dev/packages/google_maps_flutter") plugin with apple_maps_flutter to create a cross platform implementation of typical map implementations for Android/iOS (coming soon).
+This plugin was based on the [google_maps_flutter]("https://pub.dev/packages/google_maps_flutter") plugin. Instead of reinventing the wheel it also uses the Flutter implementation of the [google_maps_flutter]("https://pub.dev/packages/google_maps_flutter") plugin. This was also done to simplify the process of combining the [google_maps_flutter]("https://pub.dev/packages/google_maps_flutter") plugin with apple_maps_flutter to create a cross platform implementation for Android/iOS called [flutter_platform_maps]("https://pub.dev/packages/platform_maps_flutter").
 
 # Screenshots
 

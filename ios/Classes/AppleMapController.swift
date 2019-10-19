@@ -98,7 +98,7 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
             if #available(iOS 9.0, *) {
                 mapView.showsCompass = isCompassEnabled
             } else {
-                // not sure if theres a simple solution
+                // not sure if there's a simple solution
             }
         }
         
