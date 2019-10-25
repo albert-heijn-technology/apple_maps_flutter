@@ -108,6 +108,28 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
                 // not sure if there's a simple solution
             }
         }
+
+        if let padding: Array<Any> = options["padding"] as? Array<Any> {
+            var margins = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
+            
+            if padding.count >= 1, let top: Double = padding[0] as? Double {
+                margins.top = CGFloat(top)
+            }
+            
+            if padding.count >= 2, let left: Double = padding[1] as? Double {
+                margins.left = CGFloat(left)
+            }
+            
+            if padding.count >= 3, let bottom: Double = padding[2] as? Double {
+                margins.bottom = CGFloat(bottom)
+            }
+            
+            if padding.count >= 4, let right: Double = padding[3] as? Double {
+                margins.right = CGFloat(right)
+            }
+            
+            mapView.layoutMargins = margins
+        }
         
         if let mapType: Int = options["mapType"] as? Int {
             mapView.mapType = mapTypes[mapType]

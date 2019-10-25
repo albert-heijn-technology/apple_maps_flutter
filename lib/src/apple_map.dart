@@ -31,6 +31,7 @@ class AppleMap extends StatefulWidget {
     this.pitchGesturesEnabled = true,
     this.myLocationEnabled = false,
     this.myLocationButtonEnabled = true,
+    this.padding = EdgeInsets.zero,
     this.annotations,
     this.polylines,
     this.onCameraMoveStarted,
@@ -147,6 +148,12 @@ class AppleMap extends StatefulWidget {
   /// When this set is empty or null, the map will only handle pointer events for gestures that
   /// were not claimed by any other gesture recognizer.
   final Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
+
+  /// The padding used on the map
+  ///
+  /// The amount of additional space (measured in screen points) used for padding for the
+  /// native controls.
+  final EdgeInsets padding;
 
   @override
   State createState() => _AppleMapState();
@@ -299,6 +306,7 @@ class _AppleMapOptions {
     this.zoomGesturesEnabled,
     this.myLocationEnabled,
     this.myLocationButtonEnabled,
+    this.padding,
   });
 
   static _AppleMapOptions fromWidget(AppleMap map) {
@@ -314,6 +322,7 @@ class _AppleMapOptions {
       zoomGesturesEnabled: map.zoomGesturesEnabled,
       myLocationEnabled: map.myLocationEnabled,
       myLocationButtonEnabled: map.myLocationButtonEnabled,
+      padding: map.padding,
     );
   }
 
@@ -339,6 +348,8 @@ class _AppleMapOptions {
 
   final bool myLocationButtonEnabled;
 
+  final EdgeInsets padding;
+
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> optionsMap = <String, dynamic>{};
 
@@ -359,6 +370,7 @@ class _AppleMapOptions {
     addIfNonNull('trackingMode', trackingMode?.index);
     addIfNonNull('myLocationEnabled', myLocationEnabled);
     addIfNonNull('myLocationButtonEnabled', myLocationButtonEnabled);
+    addIfNonNull('padding', _serializePadding(padding));
     return optionsMap;
   }
 
@@ -368,5 +380,12 @@ class _AppleMapOptions {
     return newOptions.toMap()
       ..removeWhere(
           (String key, dynamic value) => prevOptionsMap[key] == value);
+  }
+
+  List<double> _serializePadding(EdgeInsets insets) {
+    if (insets == null)
+      return null;
+
+    return [insets.top, insets.left, insets.bottom, insets.right];
   }
 }
