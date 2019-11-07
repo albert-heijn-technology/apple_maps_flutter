@@ -1,6 +1,10 @@
+## 0.0.4
+
+* Fixed error when updating Annotations on map.
+
 ## 0.0.3
 
-* Added getter for visible map region
+* Added getter for visible map region.
 
 ## 0.0.2
 
