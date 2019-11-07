@@ -30,13 +30,15 @@ class AnnotationController: NSObject {
     
     
     public func annotationsToChange(annotations: NSArray) {
-        let oldAnnotations :[FlutterAnnotation] = mapView.annotations as! [FlutterAnnotation]
+        let oldAnnotations :[MKAnnotation] = mapView.annotations
         for annotation in annotations {
             let annotationData :Dictionary<String, Any> = annotation as! Dictionary<String, Any>
             for oldAnnotation in oldAnnotations {
-                if (oldAnnotation.id == (annotationData["annotationId"] as! String)) {
-                    if (oldAnnotation.update(fromDictionary: annotationData, registrar: registrar)) {
-                        updateAnnotationOnMap(annotation: oldAnnotation)
+                if let oldFlutterAnnoation = oldAnnotation as? FlutterAnnotation {
+                    if (oldFlutterAnnoation.id == (annotationData["annotationId"] as! String)) {
+                        if (oldFlutterAnnoation.update(fromDictionary: annotationData, registrar: registrar)) {
+                            updateAnnotationOnMap(annotation: oldFlutterAnnoation)
+                        }
                     }
                 }
             }
