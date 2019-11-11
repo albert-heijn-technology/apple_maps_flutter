@@ -184,6 +184,13 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
         } else {
             annotationView!.annotation = annotation
         }
+        // If annotation is not visible set alpha to 0 and don't let the user interact with it
+        if (!annotation.isVisible!) {
+            annotationView!.canShowCallout = false
+            annotationView!.alpha = CGFloat(0.0)
+            annotationView!.isDraggable = false
+            return annotationView!
+        }
         annotationView!.canShowCallout = true
         annotationView!.alpha = CGFloat(annotation.alpha ?? 1.00)
         annotationView!.isDraggable = annotation.isDraggable ?? false

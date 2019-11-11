@@ -135,17 +135,12 @@ class Annotation {
   ///
   /// Specifies a annotation that
   /// * is fully opaque; [alpha] is 1.0
-  /// * uses icon bottom center to indicate map position; [anchor] is (0.5, 1.0)
   /// * has default tap handling; [consumeTapEvents] is false
   /// * is stationary; [draggable] is false
-  /// * is drawn against the screen, not the map; [flat] is false
-  /// * has a default icon; [icon] is `BitmapDescriptor.defaultAnnotation`
-  /// * anchors the info window at top center; [infoWindowAnchor] is (0.5, 0.0)
+  /// * has a default icon; [icon] is default Pin Annotation
   /// * has no info window text; [infoWindowText] is `InfoWindowText.noText`
   /// * is positioned at 0, 0; [position] is `LatLng(0.0, 0.0)`
-  /// * has an axis-aligned icon; [rotation] is 0.0
   /// * is visible; [visible] is true
-  /// * is placed at the base of the drawing order; [zIndex] is 0.0
   const Annotation({
     @required this.annotationId,
     this.alpha = 1.0,
@@ -154,6 +149,7 @@ class Annotation {
     this.infoWindow = InfoWindow.noText,
     this.position = const LatLng(0.0, 0.0),
     this.onTap,
+    this.visible = true,
     this.onDragEnd,
   }) : assert(alpha == null || (0.0 <= alpha && alpha <= 1.0));
 
@@ -182,22 +178,21 @@ class Annotation {
   /// Callbacks to receive tap events for annotations placed on this map.
   final VoidCallback onTap;
 
+  /// True if the annotation is visible.
+  final bool visible;
+
   final ValueChanged<LatLng> onDragEnd;
 
   /// Creates a new [Annotation] object whose values are the same as this instance,
   /// unless overwritten by the specified parameters.
   Annotation copyWith({
     double alphaParam,
-    Offset anchorParam,
     bool consumeTapEventsParam,
     bool draggableParam,
-    bool flatParam,
     BitmapDescriptor iconParam,
     InfoWindow infoWindowParam,
     LatLng positionParam,
-    double rotationParam,
     bool visibleParam,
-    double zIndexParam,
     VoidCallback onTapParam,
     ValueChanged<LatLng> onDragEndParam,
   }) {
@@ -209,6 +204,7 @@ class Annotation {
       infoWindow: infoWindowParam ?? infoWindow,
       position: positionParam ?? position,
       onTap: onTapParam ?? onTap,
+      visible: visibleParam ?? visible,
       onDragEnd: onDragEndParam ?? onDragEnd,
     );
   }
@@ -227,6 +223,7 @@ class Annotation {
     addIfPresent('draggable', draggable);
     addIfPresent('icon', icon?._toJson());
     addIfPresent('infoWindow', infoWindow?._toJson());
+    addIfPresent('visible', visible);
     addIfPresent('position', position?._toJson());
     return json;
   }
@@ -245,7 +242,7 @@ class Annotation {
   @override
   String toString() {
     return 'Annotation{annotationId: $annotationId, alpha: $alpha, draggable: $draggable,'
-        'icon: $icon, infoWindow: $infoWindow, position: $position onTap: $onTap}';
+        'icon: $icon, infoWindow: $infoWindow, position: $position ,visible: $visible, onTap: $onTap}';
   }
 }
 

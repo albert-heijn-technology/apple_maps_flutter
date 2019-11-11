@@ -120,19 +120,6 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
     });
   }
 
-  Future<void> _changeInfoAnchor() async {
-    final Annotation annotation = annotations[selectedAnnotation];
-    final Offset currentAnchor = annotation.infoWindow.anchor;
-    final Offset newAnchor = Offset(1.0 - currentAnchor.dy, currentAnchor.dx);
-    setState(() {
-      annotations[selectedAnnotation] = annotation.copyWith(
-        infoWindowParam: annotation.infoWindow.copyWith(
-          anchorParam: newAnchor,
-        ),
-      );
-    });
-  }
-
   Future<void> _toggleDraggable() async {
     final Annotation annotation = annotations[selectedAnnotation];
     setState(() {
@@ -160,6 +147,15 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
     setState(() {
       annotations[selectedAnnotation] = annotation.copyWith(
         alphaParam: current < 0.1 ? 1.0 : current * 0.75,
+      );
+    });
+  }
+
+  Future<void> _toggleVisible() async {
+    final Annotation annotation = annotations[selectedAnnotation];
+    setState(() {
+      annotations[selectedAnnotation] = annotation.copyWith(
+        visibleParam: !annotation.visible,
       );
     });
   }
@@ -220,6 +216,10 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
                         FlatButton(
                           child: const Text('change position'),
                           onPressed: _changePosition,
+                        ),
+                        FlatButton(
+                          child: const Text('toggle visible'),
+                          onPressed: _toggleVisible,
                         ),
                       ],
                     ),

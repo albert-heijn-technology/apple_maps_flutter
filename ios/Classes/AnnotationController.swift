@@ -92,10 +92,11 @@ class FlutterAnnotation: NSObject, MKAnnotation {
     var id :String!
     var title: String?
     var subtitle: String?
-    var image :UIImage?
-    var alpha :Double?
-    var isDraggable :Bool?
-    var wasDragged :Bool = false
+    var image: UIImage?
+    var alpha: Double?
+    var isDraggable: Bool?
+    var wasDragged: Bool = false
+    var isVisible: Bool? = true
     var icon: AnnotationIcon = AnnotationIcon.init()
     
     public init(fromDictionary annotationData: Dictionary<String, Any>) {
@@ -107,6 +108,7 @@ class FlutterAnnotation: NSObject, MKAnnotation {
         self.title = infoWindow["title"] as? String
         self.subtitle = infoWindow["snippet"] as? String
         self.id = annotationData["annotationId"] as? String
+        self.isVisible = annotationData["visible"] as? Bool
         if let alpha :Double = annotationData["alpha"] as? Double {
             self.alpha = alpha
         }
@@ -117,7 +119,6 @@ class FlutterAnnotation: NSObject, MKAnnotation {
         let updatedPosition :Array<Double> = updatedAnnotationData["position"] as! Array<Double>
         let lat: Double = updatedPosition[0]
         let long: Double = updatedPosition[1]
-        
         let updatedInfoWindow :Dictionary<String, Any> = updatedAnnotationData["infoWindow"] as! Dictionary<String, Any>
         let updatedTitle = updatedInfoWindow["title"] as? String
         let updatedSubtitle = updatedInfoWindow["snippet"] as? String
@@ -126,6 +127,7 @@ class FlutterAnnotation: NSObject, MKAnnotation {
         let updatedIsDraggable: Bool = updatedAnnotationData["draggable"] as! Bool
         let iconData: Array<Any> = updatedAnnotationData["icon"] as! Array<Any>
         let updatedIcon: AnnotationIcon = getAnnotationImage(registrar: registrar, iconData: iconData, annotationId: self.id)
+        let updatedVisibility: Bool = updatedAnnotationData["visible"] as! Bool
         
         if (updatedTitle != self.title) {
             self.title = updatedTitle
@@ -157,6 +159,10 @@ class FlutterAnnotation: NSObject, MKAnnotation {
         }
         if (self.isDraggable != updatedIsDraggable) {
             self.isDraggable = updatedIsDraggable
+            didUpdate = true
+        }
+        if (self.isVisible != updatedVisibility) {
+            self.isVisible = updatedVisibility
             didUpdate = true
         }
         return didUpdate
