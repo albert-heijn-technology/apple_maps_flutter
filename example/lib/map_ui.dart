@@ -4,7 +4,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:apple_maps_flutter/apple_maps_flutter.dart';
-import 'package:flutter/services.dart' show rootBundle;
 
 import 'page.dart';
 

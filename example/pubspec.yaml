@@ -14,11 +14,11 @@ dependencies:
   cupertino_icons: ^0.1.2
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
-
   apple_maps_flutter:
     path: ../
+  flutter_driver:
+    sdk: flutter
+  test: ^1.6.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
