@@ -7,7 +7,6 @@
 
 import Foundation
 import MapKit
-import CoreLocation
 
 public class AppleMapViewFactory: NSObject, FlutterPlatformViewFactory {
     
@@ -33,7 +32,6 @@ public class AppleMapViewFactory: NSObject, FlutterPlatformViewFactory {
 
 public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelegate {
     @IBOutlet var mapView: FlutterMapView!
-    fileprivate let locationManager:CLLocationManager = CLLocationManager()
     var registrar: FlutterPluginRegistrar
     var channel: FlutterMethodChannel
     var annotationController :AnnotationController
@@ -131,11 +129,11 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
         }
         
         if let myLocationEnabled: Bool = options["myLocationEnabled"] as? Bool {
-            setUserLocation(myLocationEnabled: myLocationEnabled)
+            mapView.setUserLocation(myLocationEnabled: myLocationEnabled)
         }
         
         if let myLocationButtonEnabled: Bool = options["myLocationButtonEnabled"] as? Bool {
-            mapTrackingButton(isVisible: myLocationButtonEnabled)
+            mapView.mapTrackingButton(isVisible: myLocationButtonEnabled)
         }
         
         if let userTackingMode: Int = options["trackingMode"] as? Int {
@@ -151,23 +149,6 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
             }
         }
     }
-    
-    public func setUserLocation(myLocationEnabled :Bool) {
-        if CLLocationManager.authorizationStatus() == .notDetermined {
-            locationManager.requestWhenInUseAuthorization()
-        } else if CLLocationManager.authorizationStatus() ==  .authorizedWhenInUse {
-            if (myLocationEnabled) {
-                locationManager.requestWhenInUseAuthorization()
-                locationManager.desiredAccuracy = kCLLocationAccuracyBest
-                locationManager.distanceFilter = kCLDistanceFilterNone
-                locationManager.startUpdatingLocation()
-            } else {
-                locationManager.stopUpdatingLocation()
-            }
-            mapView.showsUserLocation = myLocationEnabled
-        }
-    }
-    
     
     private func getAnnotationView(annotation: FlutterAnnotation) -> MKAnnotationView{
         let identifier :String = annotation.id
@@ -196,31 +177,6 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
         annotationView!.isDraggable = annotation.isDraggable ?? false
         
         return annotationView!
-    }
-    
-   
-    // Functions used for the mapTrackingButton
-    func mapTrackingButton(isVisible visible: Bool){
-        if (visible) {
-            let image = UIImage(named: "outline_near_me")
-            let locationButton = UIButton(type: UIButtonType.custom) as UIButton
-            locationButton.tag = 100
-            locationButton.layer.cornerRadius = 5
-            locationButton.frame = CGRect(origin: CGPoint(x: mapView.bounds.width - 45, y: mapView.bounds.height - 45), size: CGSize(width: 40, height: 40))
-            locationButton.setImage(image, for: .normal)
-            locationButton.backgroundColor = .white
-            locationButton.alpha = 0.8
-            locationButton.addTarget(self, action: #selector(centerMapOnUserButtonClicked), for:.touchUpInside)
-            mapView.addSubview(locationButton)
-        } else {
-            if let _locationButton = mapView.viewWithTag(100) {
-                _locationButton.removeFromSuperview()
-            }
-        }
-    }
-    
-    @objc func centerMapOnUserButtonClicked() {
-        self.mapView.setUserTrackingMode(MKUserTrackingMode.follow, animated: true)
     }
     
     private func toPositionData(data: Array<Any>, animated: Bool) -> Dictionary<String, Any> {
@@ -293,6 +249,24 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
                 switch call.method {
                 case "map#getVisibleRegion":
                     result(self.mapView.getVisibleRegion())
+                case "map#isCompassEnabled":
+                    if #available(iOS 9.0, *) {
+                        result(self.mapView.showsCompass)
+                    } else {
+                        result(false)
+                    }
+                case "map#isPitchGesturesEnabled":
+                    result(self.mapView.isPitchEnabled)
+                case "map#isScrollGesturesEnabled":
+                    result(self.mapView.isScrollEnabled)
+                case "map#isZoomGesturesEnabled":
+                    result(self.mapView.isZoomEnabled)
+                case "map#isRotateGesturesEnabled":
+                    result(self.mapView.isRotateEnabled)
+                case "map#isMyLocationButtonEnabled":
+                    result(self.mapView.isMyLocationButtonShowing ?? false)
+                case "map#getMinMaxZoomLevels":
+                    result([self.mapView.minZoomLevel, self.mapView.maxZoomLevel])
                 default:
                     result(FlutterMethodNotImplemented)
                     return

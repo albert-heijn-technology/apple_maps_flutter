@@ -7,6 +7,7 @@
 
 import Foundation
 import MapKit
+import CoreLocation
 
 private let MERCATOR_OFFSET: Double = 268435456.0
 private let MERCATOR_RADIUS: Double = 85445659.44705395
@@ -16,6 +17,8 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
     var oldBounds: CGRect?
     var mapContainerView: UIView?
     var channel: FlutterMethodChannel?
+    fileprivate let locationManager:CLLocationManager = CLLocationManager()
+    var isMyLocationButtonShowing: Bool? = false
     
     convenience init(channel: FlutterMethodChannel) {
         self.init(frame: CGRect.zero)
@@ -89,6 +92,48 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
         return nil
       }
     }
+    
+    public func setUserLocation(myLocationEnabled :Bool) {
+        if CLLocationManager.authorizationStatus() == .notDetermined {
+            locationManager.requestWhenInUseAuthorization()
+        } else if CLLocationManager.authorizationStatus() ==  .authorizedWhenInUse {
+            if (myLocationEnabled) {
+               locationManager.requestWhenInUseAuthorization()
+               locationManager.desiredAccuracy = kCLLocationAccuracyBest
+               locationManager.distanceFilter = kCLDistanceFilterNone
+               locationManager.startUpdatingLocation()
+            } else {
+               locationManager.stopUpdatingLocation()
+            }
+        self.showsUserLocation = myLocationEnabled
+        }
+    }
+    
+    // Functions used for the mapTrackingButton
+    func mapTrackingButton(isVisible visible: Bool) {
+        self.isMyLocationButtonShowing = visible
+        if (visible) {
+           let image = UIImage(named: "outline_near_me")
+           let locationButton = UIButton(type: UIButtonType.custom) as UIButton
+           locationButton.tag = 100
+           locationButton.layer.cornerRadius = 5
+           locationButton.frame = CGRect(origin: CGPoint(x: self.bounds.width - 45, y: self.bounds.height - 45), size: CGSize(width: 40, height: 40))
+           locationButton.setImage(image, for: .normal)
+           locationButton.backgroundColor = .white
+           locationButton.alpha = 0.8
+           locationButton.addTarget(self, action: #selector(centerMapOnUserButtonClicked), for:.touchUpInside)
+           self.addSubview(locationButton)
+        } else {
+           if let _locationButton = self.viewWithTag(100) {
+               _locationButton.removeFromSuperview()
+           }
+        }
+    }
+    
+    @objc func centerMapOnUserButtonClicked() {
+       self.setUserTrackingMode(MKUserTrackingMode.follow, animated: true)
+    }
+       
     
     // Functions used for GestureRecognition
     private func initialiseTapGestureRecognizers() {

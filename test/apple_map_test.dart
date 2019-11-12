@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:apple_maps_flutter/apple_maps_flutter.dart';
+import 'package:flutter/foundation.dart'
+    show debugDefaultTargetPlatformOverride;
 
 import 'fake_maps_controllers.dart';
 
@@ -23,6 +25,7 @@ void main() {
   });
 
   testWidgets('Initial camera position', (WidgetTester tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
     await tester.pumpWidget(
       const Directionality(
         textDirection: TextDirection.ltr,
@@ -37,10 +40,12 @@ void main() {
 
     expect(platformAppleMap.cameraPosition,
         const CameraPosition(target: LatLng(10.0, 15.0)));
+    debugDefaultTargetPlatformOverride = null;
   });
 
   testWidgets('Initial camera position change is a no-op',
       (WidgetTester tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
     await tester.pumpWidget(
       const Directionality(
         textDirection: TextDirection.ltr,
@@ -64,9 +69,11 @@ void main() {
 
     expect(platformAppleMap.cameraPosition,
         const CameraPosition(target: LatLng(10.0, 15.0)));
+    debugDefaultTargetPlatformOverride = null;
   });
 
   testWidgets('Can update compassEnabled', (WidgetTester tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
     await tester.pumpWidget(
       const Directionality(
         textDirection: TextDirection.ltr,
@@ -93,9 +100,11 @@ void main() {
     );
 
     expect(platformAppleMap.compassEnabled, true);
+    debugDefaultTargetPlatformOverride = null;
   });
 
   testWidgets('Can update mapType', (WidgetTester tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
     await tester.pumpWidget(
       const Directionality(
         textDirection: TextDirection.ltr,
@@ -122,9 +131,11 @@ void main() {
     );
 
     expect(platformAppleMap.mapType, MapType.satellite);
+    debugDefaultTargetPlatformOverride = null;
   });
 
   testWidgets('Can update minMaxZoom', (WidgetTester tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
     await tester.pumpWidget(
       const Directionality(
         textDirection: TextDirection.ltr,
@@ -153,9 +164,11 @@ void main() {
 
     expect(
         platformAppleMap.minMaxZoomPreference, MinMaxZoomPreference.unbounded);
+    debugDefaultTargetPlatformOverride = null;
   });
 
   testWidgets('Can update rotateGesturesEnabled', (WidgetTester tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
     await tester.pumpWidget(
       const Directionality(
         textDirection: TextDirection.ltr,
@@ -182,9 +195,11 @@ void main() {
     );
 
     expect(platformAppleMap.rotateGesturesEnabled, true);
+    debugDefaultTargetPlatformOverride = null;
   });
 
   testWidgets('Can update scrollGesturesEnabled', (WidgetTester tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
     await tester.pumpWidget(
       const Directionality(
         textDirection: TextDirection.ltr,
@@ -211,9 +226,11 @@ void main() {
     );
 
     expect(platformAppleMap.scrollGesturesEnabled, true);
+    debugDefaultTargetPlatformOverride = null;
   });
 
   testWidgets('Can update pitchGesturesEnabled', (WidgetTester tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
     await tester.pumpWidget(
       const Directionality(
         textDirection: TextDirection.ltr,
@@ -240,38 +257,11 @@ void main() {
     );
 
     expect(platformAppleMap.pitchGesturesEnabled, true);
-  });
-
-  testWidgets('Can update trackCameraPosition', (WidgetTester tester) async {
-    await tester.pumpWidget(
-      const Directionality(
-        textDirection: TextDirection.ltr,
-        child: AppleMap(
-          initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
-        ),
-      ),
-    );
-
-    final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView;
-
-    expect(platformAppleMap.trackCameraPosition, false);
-
-    await tester.pumpWidget(
-      Directionality(
-        textDirection: TextDirection.ltr,
-        child: AppleMap(
-          initialCameraPosition:
-              const CameraPosition(target: LatLng(10.0, 15.0)),
-          onCameraMove: (CameraPosition position) {},
-        ),
-      ),
-    );
-
-    expect(platformAppleMap.trackCameraPosition, true);
+    debugDefaultTargetPlatformOverride = null;
   });
 
   testWidgets('Can update zoomGesturesEnabled', (WidgetTester tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
     await tester.pumpWidget(
       const Directionality(
         textDirection: TextDirection.ltr,
@@ -298,9 +288,11 @@ void main() {
     );
 
     expect(platformAppleMap.zoomGesturesEnabled, true);
+    debugDefaultTargetPlatformOverride = null;
   });
 
   testWidgets('Can update myLocationEnabled', (WidgetTester tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
     await tester.pumpWidget(
       const Directionality(
         textDirection: TextDirection.ltr,
@@ -327,10 +319,12 @@ void main() {
     );
 
     expect(platformAppleMap.myLocationEnabled, true);
+    debugDefaultTargetPlatformOverride = null;
   });
 
   testWidgets('Can update myLocationButtonEnabled',
       (WidgetTester tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
     await tester.pumpWidget(
       const Directionality(
         textDirection: TextDirection.ltr,
@@ -357,5 +351,6 @@ void main() {
     );
 
     expect(platformAppleMap.myLocationButtonEnabled, false);
+    debugDefaultTargetPlatformOverride = null;
   });
 }

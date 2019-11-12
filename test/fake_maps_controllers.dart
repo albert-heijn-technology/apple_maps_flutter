@@ -36,8 +36,6 @@ class FakePlatformAppleMap {
 
   bool zoomGesturesEnabled;
 
-  bool trackCameraPosition;
-
   bool myLocationEnabled;
 
   bool myLocationButtonEnabled;
@@ -55,6 +53,8 @@ class FakePlatformAppleMap {
         return Future<void>.sync(() {});
       case 'annotations#update':
         updateAnnotations(call.arguments);
+        return Future<void>.sync(() {});
+      default:
         return Future<void>.sync(() {});
     }
   }
@@ -104,6 +104,7 @@ class FakePlatformAppleMap {
       result.add(Annotation(
         annotationId: AnnotationId(annotationId),
         draggable: draggable,
+        visible: visible,
         infoWindow: infoWindow,
       ));
     }
@@ -131,9 +132,6 @@ class FakePlatformAppleMap {
     }
     if (options.containsKey('pitchGesturesEnabled')) {
       pitchGesturesEnabled = options['pitchGesturesEnabled'];
-    }
-    if (options.containsKey('trackCameraPosition')) {
-      trackCameraPosition = options['trackCameraPosition'];
     }
     if (options.containsKey('zoomGesturesEnabled')) {
       zoomGesturesEnabled = options['zoomGesturesEnabled'];

@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:apple_maps_flutter/apple_maps_flutter.dart';
+import 'package:flutter/foundation.dart'
+    show debugDefaultTargetPlatformOverride;
 
 import 'fake_maps_controllers.dart';
 
@@ -24,6 +26,7 @@ Set<Annotation> _toSet({Annotation m1, Annotation m2, Annotation m3}) {
 }
 
 Widget _mapWithAnnotations(Set<Annotation> annotations) {
+  debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
   return Directionality(
     textDirection: TextDirection.ltr,
     child: AppleMap(
@@ -47,6 +50,7 @@ void main() {
   });
 
   testWidgets('Initializing an annotation', (WidgetTester tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
     final Annotation m1 =
         Annotation(annotationId: AnnotationId("annotation_1"));
     await tester.pumpWidget(_mapWithAnnotations(_toSet(m1: m1)));
@@ -60,9 +64,11 @@ void main() {
     expect(initializedAnnotation, equals(m1));
     expect(platformAppleMap.annotationIdsToRemove.isEmpty, true);
     expect(platformAppleMap.annotationsToChange.isEmpty, true);
+    debugDefaultTargetPlatformOverride = null;
   });
 
   testWidgets("Adding an annotation", (WidgetTester tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
     final Annotation m1 =
         Annotation(annotationId: AnnotationId("annotation_1"));
     final Annotation m2 =
@@ -81,9 +87,11 @@ void main() {
 
     expect(platformAppleMap.annotationsToChange.length, 1);
     expect(platformAppleMap.annotationsToChange.first, equals(m1));
+    debugDefaultTargetPlatformOverride = null;
   });
 
   testWidgets("Removing an annotation", (WidgetTester tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
     final Annotation m1 =
         Annotation(annotationId: AnnotationId("annotation_1"));
 
@@ -98,9 +106,11 @@ void main() {
 
     expect(platformAppleMap.annotationsToChange.isEmpty, true);
     expect(platformAppleMap.annotationsToAdd.isEmpty, true);
+    debugDefaultTargetPlatformOverride = null;
   });
 
   testWidgets("Updating an annotation", (WidgetTester tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
     final Annotation m1 =
         Annotation(annotationId: AnnotationId("annotation_1"));
     final Annotation m2 =
@@ -116,9 +126,11 @@ void main() {
 
     expect(platformAppleMap.annotationIdsToRemove.isEmpty, true);
     expect(platformAppleMap.annotationsToAdd.isEmpty, true);
+    debugDefaultTargetPlatformOverride = null;
   });
 
   testWidgets("Updating an annotation", (WidgetTester tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
     final Annotation m1 =
         Annotation(annotationId: AnnotationId("annotation_1"));
     final Annotation m2 = Annotation(
@@ -136,9 +148,11 @@ void main() {
     final Annotation update = platformAppleMap.annotationsToChange.first;
     expect(update, equals(m2));
     expect(update.infoWindow.snippet, 'changed');
+    debugDefaultTargetPlatformOverride = null;
   });
 
   testWidgets("Multi Update", (WidgetTester tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
     Annotation m1 = Annotation(annotationId: AnnotationId("annotation_1"));
     Annotation m2 = Annotation(annotationId: AnnotationId("annotation_2"));
     final Set<Annotation> prev = _toSet(m1: m1, m2: m2);
@@ -156,9 +170,11 @@ void main() {
     expect(platformAppleMap.annotationsToChange, cur);
     expect(platformAppleMap.annotationIdsToRemove.isEmpty, true);
     expect(platformAppleMap.annotationsToAdd.isEmpty, true);
+    debugDefaultTargetPlatformOverride = null;
   });
 
   testWidgets("Multi Update", (WidgetTester tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
     Annotation m2 = Annotation(annotationId: AnnotationId("annotation_2"));
     final Annotation m3 =
         Annotation(annotationId: AnnotationId("annotation_3"));
@@ -185,11 +201,13 @@ void main() {
     expect(platformAppleMap.annotationsToAdd.first, equals(m1));
     expect(
         platformAppleMap.annotationIdsToRemove.first, equals(m3.annotationId));
+    debugDefaultTargetPlatformOverride = null;
   });
 
   testWidgets(
     "Partial Update",
     (WidgetTester tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
       final Annotation m1 =
           Annotation(annotationId: AnnotationId("annotation_1"));
       Annotation m2 = Annotation(annotationId: AnnotationId("annotation_2"));
@@ -207,11 +225,8 @@ void main() {
       expect(platformAppleMap.annotationsToChange, _toSet(m2: m2));
       expect(platformAppleMap.annotationIdsToRemove.isEmpty, true);
       expect(platformAppleMap.annotationsToAdd.isEmpty, true);
+      debugDefaultTargetPlatformOverride = null;
     },
-    // The test is currently broken due to a bug (we're updating all annotations
-    // instead of just the ones that were changed):
-    // https://github.com/flutter/flutter/issues/27823
-    // TODO(amirh): enable this test when the issue is fixed.
     skip: true,
   );
 }

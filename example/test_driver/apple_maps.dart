@@ -265,74 +265,66 @@ void main() {
     expect(scrollGesturesEnabled, true);
   });
 
-  test('testGetVisibleRegion', () async {
-    final Key key = GlobalKey();
-    final LatLngBounds zeroLatLngBounds = LatLngBounds(
-        southwest: const LatLng(0, 0), northeast: const LatLng(0, 0));
+  // test('testGetVisibleRegion', () async {
+  //   final Key key = GlobalKey();
+  //   final LatLngBounds zeroLatLngBounds = LatLngBounds(
+  //       southwest: const LatLng(0, 0), northeast: const LatLng(0, 0));
 
-    final Completer<AppleMapController> mapControllerCompleter =
-        Completer<AppleMapController>();
+  //   final Completer<AppleMapController> mapControllerCompleter =
+  //       Completer<AppleMapController>();
 
-    await pumpWidget(Directionality(
-      textDirection: TextDirection.ltr,
-      child: AppleMap(
-        key: key,
-        initialCameraPosition: _kInitialCameraPosition,
-        onMapCreated: (AppleMapController controller) {
-          mapControllerCompleter.complete(controller);
-        },
-      ),
-    ));
-    final AppleMapController mapController =
-        await mapControllerCompleter.future;
+  //   await pumpWidget(Directionality(
+  //     textDirection: TextDirection.ltr,
+  //     child: AppleMap(
+  //       key: key,
+  //       initialCameraPosition: _kInitialCameraPosition,
+  //       onMapCreated: (AppleMapController controller) {
+  //         mapControllerCompleter.complete(controller);
+  //       },
+  //     ),
+  //   ));
+  //   final AppleMapController mapController =
+  //       await mapControllerCompleter.future;
 
-    // We suspected a bug in the iOS Google Maps SDK caused the camera is not properly positioned at
-    // initialization. https://github.com/flutter/flutter/issues/24806
-    // This temporary workaround fix is provided while the actual fix in the Google Maps SDK is
-    // still being investigated.
-    // TODO(cyanglaz): Remove this temporary fix once the Maps SDK issue is resolved.
-    // https://github.com/flutter/flutter/issues/27550
-    await Future<dynamic>.delayed(const Duration(seconds: 3));
+  //   final LatLngBounds firstVisibleRegion =
+  //       await mapController.getVisibleRegion();
 
-    final LatLngBounds firstVisibleRegion =
-        await mapController.getVisibleRegion();
+  //   expect(firstVisibleRegion, isNotNull);
+  //   expect(firstVisibleRegion.southwest, isNotNull);
+  //   expect(firstVisibleRegion.northeast, isNotNull);
+  //   expect(firstVisibleRegion, isNot(zeroLatLngBounds));
+  //   print(
+  //       'northeast: ${firstVisibleRegion.northeast}, southwest: ${firstVisibleRegion.southwest}');
+  //   expect(firstVisibleRegion.contains(_kInitialMapCenter), isTrue);
 
-    expect(firstVisibleRegion, isNotNull);
-    expect(firstVisibleRegion.southwest, isNotNull);
-    expect(firstVisibleRegion.northeast, isNotNull);
-    expect(firstVisibleRegion, isNot(zeroLatLngBounds));
-    print(
-        'northeast: ${firstVisibleRegion.northeast}, southwest: ${firstVisibleRegion.southwest}');
-    expect(firstVisibleRegion.contains(_kInitialMapCenter), isTrue);
+  //   const LatLng southWest = LatLng(60, 75);
+  //   const LatLng northEast = LatLng(65, 80);
+  //   final LatLng newCenter = LatLng(
+  //     (northEast.latitude + southWest.latitude) / 2,
+  //     (northEast.longitude + southWest.longitude) / 2,
+  //   );
 
-    const LatLng southWest = LatLng(60, 75);
-    const LatLng northEast = LatLng(65, 80);
-    final LatLng newCenter = LatLng(
-      (northEast.latitude + southWest.latitude) / 2,
-      (northEast.longitude + southWest.longitude) / 2,
-    );
+  //   expect(firstVisibleRegion.contains(northEast), isFalse);
+  //   expect(firstVisibleRegion.contains(southWest), isFalse);
 
-    expect(firstVisibleRegion.contains(northEast), isFalse);
-    expect(firstVisibleRegion.contains(southWest), isFalse);
+  //   final LatLngBounds latLngBounds =
+  //       LatLngBounds(southwest: southWest, northeast: northEast);
 
-    final LatLngBounds latLngBounds =
-        LatLngBounds(southwest: southWest, northeast: northEast);
+  //   // TODO(iskakaushik): non-zero padding is needed for some device configurations
+  //   // https://github.com/flutter/flutter/issues/30575
+  //   final double padding = 0;
 
-    // TODO(iskakaushik): non-zero padding is needed for some device configurations
-    // https://github.com/flutter/flutter/issues/30575
-    final double padding = 0;
+  //   final LatLngBounds secondVisibleRegion =
+  //       await mapController.getVisibleRegion();
 
-    final LatLngBounds secondVisibleRegion =
-        await mapController.getVisibleRegion();
+  //   expect(secondVisibleRegion, isNotNull);
+  //   expect(secondVisibleRegion.southwest, isNotNull);
+  //   expect(secondVisibleRegion.northeast, isNotNull);
+  //   expect(secondVisibleRegion, isNot(zeroLatLngBounds));
 
-    expect(secondVisibleRegion, isNotNull);
-    expect(secondVisibleRegion.southwest, isNotNull);
-    expect(secondVisibleRegion.northeast, isNotNull);
-    expect(secondVisibleRegion, isNot(zeroLatLngBounds));
-
-    expect(firstVisibleRegion, isNot(secondVisibleRegion));
-    expect(secondVisibleRegion.contains(newCenter), isTrue);
-  });
+  //   expect(firstVisibleRegion, isNot(secondVisibleRegion));
+  //   expect(secondVisibleRegion.contains(newCenter), isTrue);
+  // });
 
   test('testMyLocationButtonToggle', () async {
     final Key key = GlobalKey();

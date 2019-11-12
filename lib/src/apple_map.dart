@@ -181,7 +181,7 @@ class _AppleMapState extends State<AppleMap> {
       );
     }
     return Text(
-        '$defaultTargetPlatform is not yet supported by the maps plugin');
+        '$defaultTargetPlatform is not yet supported by the apple maps plugin');
   }
 
   @override
