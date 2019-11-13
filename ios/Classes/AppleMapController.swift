@@ -34,7 +34,8 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
     @IBOutlet var mapView: FlutterMapView!
     var registrar: FlutterPluginRegistrar
     var channel: FlutterMethodChannel
-    var annotationController :AnnotationController
+    var annotationController: AnnotationController
+    var polylineController: PolylineController
     var initialCameraPosition :Dictionary<String, Any>
     var options :Dictionary<String, Any>
     
@@ -55,6 +56,7 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
         channel = FlutterMethodChannel(name: "plugins.flutter.io/apple_maps_\(id)", binaryMessenger: registrar.messenger())
         self.mapView = FlutterMapView(channel: channel)
         annotationController = AnnotationController(mapView: mapView, channel: channel, registrar: registrar)
+        polylineController = PolylineController(mapView: mapView, channel: channel, registrar: registrar)
         initialCameraPosition = args["initialCameraPosition"]! as! Dictionary<String, Any>
         options = args["options"] as! Dictionary<String, Any>
         super.init()
@@ -62,6 +64,9 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
         mapView.setCenterCoordinate(initialCameraPosition, animated: false)
         if let annotationsToAdd :NSArray = args["annotationsToAdd"] as? NSArray {
             annotationController.annotationsToAdd(annotations: annotationsToAdd)
+        }
+        if let polylinesToAdd :NSArray = args["polylinesToAdd"] as? NSArray {
+            polylineController.addPolylines(polylineData: polylinesToAdd)
         }
         mapView.delegate = self
     }
@@ -89,6 +94,10 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
             return getAnnotationView(annotation: flutterAnnotation)
         }
         return nil
+    }
+    
+    public func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+        return polylineController.polylineRenderer(overlay: overlay)
     }
     
     private func interprateOptions(options: Dictionary<String, Any>) {
@@ -222,10 +231,27 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
             if let args :Dictionary<String, Any> = call.arguments as? Dictionary<String,Any> {
                 switch(call.method) {
                 case "annotations#update":
-                    self.annotationController.annotationsToAdd(annotations: args["annotationsToAdd"]! as! NSArray)
-                    self.annotationController.annotationsToChange(annotations: args["annotationsToChange"] as! NSArray)
-                    self.annotationController.annotationsIdsToRemove(annotationIds: args["annotationIdsToRemove"] as! NSArray)
+                    if let annotationsToAdd = args["annotationsToAdd"] as? NSArray {
+                        self.annotationController.annotationsToAdd(annotations: annotationsToAdd)
+                    }
+                    if let annotationsToChange = args["annotationsToChange"] as? NSArray {
+                        self.annotationController.annotationsToChange(annotations: annotationsToChange)
+                    }
+                    if let annotationsToDelete = args["annotationIdsToRemove"] as? NSArray {
+                        self.annotationController.annotationsIdsToRemove(annotationIds: annotationsToDelete)
+                    }
                     result(nil)
+                case "polylines#update":
+                    if let polylinesToAdd: NSArray = args["polylinesToAdd"] as? NSArray {
+                        self.polylineController.addPolylines(polylineData: polylinesToAdd)
+                    }
+                    if let polylinesToChange: NSArray = args["polylinesToChange"] as? NSArray {
+                        self.polylineController.changePolylines(polylineData: polylinesToChange)
+                    }
+                    if let polylinesToRemove: NSArray = args["polylineIdsToRemove"] as? NSArray {
+                        self.polylineController.removePolylines(polylineIds: polylinesToRemove)
+                    }
+                    result(nil);
                 case "map#update":
                     self.interprateOptions(options: args["options"] as! Dictionary<String, Any>)
                     //result(mapView.centerCoordinate) implement result for camera update

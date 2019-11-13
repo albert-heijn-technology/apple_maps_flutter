@@ -32,6 +32,7 @@ class AppleMap extends StatefulWidget {
     this.myLocationEnabled = false,
     this.myLocationButtonEnabled = true,
     this.annotations,
+    this.polylines,
     this.onCameraMoveStarted,
     this.onCameraMove,
     this.onCameraIdle,
@@ -76,6 +77,9 @@ class AppleMap extends StatefulWidget {
 
   /// Annotations to be placed on the map.
   final Set<Annotation> annotations;
+
+  /// Polylines to be placed on the map.
+  final Set<Polyline> polylines;
 
   /// Called when the camera starts moving.
   ///
@@ -162,6 +166,7 @@ class _AppleMapState extends State<AppleMap> {
       Completer<AppleMapController>();
 
   Map<AnnotationId, Annotation> _annotations = <AnnotationId, Annotation>{};
+  Map<PolylineId, Polyline> _polylines = <PolylineId, Polyline>{};
   _AppleMapOptions _appleMapOptions;
 
   @override
@@ -170,6 +175,7 @@ class _AppleMapState extends State<AppleMap> {
       'initialCameraPosition': widget.initialCameraPosition?._toMap(),
       'options': _appleMapOptions.toMap(),
       'annotationsToAdd': _serializeAnnotationSet(widget.annotations),
+      'polylinesToAdd': _serializePolylineSet(widget.polylines),
     };
     if (defaultTargetPlatform == TargetPlatform.iOS) {
       return UiKitView(
@@ -189,6 +195,7 @@ class _AppleMapState extends State<AppleMap> {
     super.initState();
     _appleMapOptions = _AppleMapOptions.fromWidget(widget);
     _annotations = _keyByAnnotationId(widget.annotations);
+    _polylines = _keyByPolylineId(widget.polylines);
   }
 
   @override
@@ -196,6 +203,7 @@ class _AppleMapState extends State<AppleMap> {
     super.didUpdateWidget(oldWidget);
     _updateOptions();
     _updateAnnotations();
+    _updatePolylines();
   }
 
   void _updateOptions() async {
@@ -215,6 +223,13 @@ class _AppleMapState extends State<AppleMap> {
     controller._updateAnnotations(_AnnotationUpdates.from(
         _annotations.values.toSet(), widget.annotations));
     _annotations = _keyByAnnotationId(widget.annotations);
+  }
+
+  void _updatePolylines() async {
+    final AppleMapController controller = await _controller.future;
+    controller._updatePolylines(
+        _PolylineUpdates.from(_polylines.values.toSet(), widget.polylines));
+    _polylines = _keyByPolylineId(widget.polylines);
   }
 
   Future<void> onPlatformViewCreated(int id) async {
@@ -242,6 +257,14 @@ class _AppleMapState extends State<AppleMap> {
     final AnnotationId annotationId = AnnotationId(annotationIdParam);
     if (_annotations[annotationId]?.onDragEnd != null) {
       _annotations[annotationId].onDragEnd(position);
+    }
+  }
+
+  void onPolylineTap(String polylineIdParam) {
+    assert(polylineIdParam != null);
+    final PolylineId polylineId = PolylineId(polylineIdParam);
+    if (_polylines[polylineId]?.onTap != null) {
+      _polylines[polylineId].onTap();
     }
   }
 

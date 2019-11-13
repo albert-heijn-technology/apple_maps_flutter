@@ -180,11 +180,43 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
         }
     }
 
-    @objc func onTap(sender: UIGestureRecognizer) {
-        let locationInView = sender.location(in: self)
-        let locationOnMap = self.convert(locationInView, toCoordinateFrom: self)
+    @objc func onTap(tap: UITapGestureRecognizer) {
+        let locationInView = tap.location(in: self)
+        if tap.state == .recognized && tap.state == .recognized {
+            // Get map coordinate from touch point
+            let touchPt: CGPoint = tap.location(in: self)
+            let coord: CLLocationCoordinate2D = self.convert(touchPt, toCoordinateFrom: self)
+            let maxMeters: Double = meters(fromPixel: 8, at: touchPt)
+            var nearestDistance: Float = MAXFLOAT
+            var nearestPoly: FlutterPolyline? = nil
+            // for every overlay ...
+            for overlay: MKOverlay in self.overlays {
+                // .. if MKPolyline ...
+                if (overlay is FlutterPolyline) {
+                    // ... get the distance ...
+                    let distance: Float = Float(distanceOf(pt: MKMapPointForCoordinate(coord), toPoly: overlay as! MKPolyline))
+                    // ... and find the nearest one
+                    if (distance < nearestDistance) {
+                        nearestDistance = distance
+                        nearestPoly = (overlay as! FlutterPolyline)
+                    }
 
-        channel?.invokeMethod("map#onTap", arguments: ["position": [locationOnMap.latitude, locationOnMap.longitude]])
+                }
+            }
+
+            if (Double(nearestDistance) <= maxMeters) {
+                if (nearestPoly?.isConsumingTapEvents ?? false) {
+                    print("Touched poly: \(nearestPoly) distance: \(nearestDistance)")
+                    channel?.invokeMethod("polyline#onTap", arguments: ["polylineId": nearestPoly!.id])
+                } else {
+                    let locationOnMap = self.convert(locationInView, toCoordinateFrom: self)
+                    channel?.invokeMethod("map#onTap", arguments: ["position": [locationOnMap.latitude, locationOnMap.longitude]])
+                }
+            } else {
+                let locationOnMap = self.convert(locationInView, toCoordinateFrom: self)
+                channel?.invokeMethod("map#onTap", arguments: ["position": [locationOnMap.latitude, locationOnMap.longitude]])
+            }
+        }
     }
     
     public func updateCameraValues() {
@@ -197,5 +229,40 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer,
         shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
+    }
+    
+    func distanceOf(pt: MKMapPoint, toPoly poly: MKPolyline) -> Double {
+        var distance: Double = Double(MAXFLOAT)
+        for n in 0..<poly.pointCount - 1 {
+            let ptA = poly.points()[n]
+            let ptB = poly.points()[n + 1]
+            let xDelta: Double = ptB.x - ptA.x
+            let yDelta: Double = ptB.y - ptA.y
+            if xDelta == 0.0 && yDelta == 0.0 {
+                // Points must not be equal
+                continue
+            }
+            let u: Double = ((pt.x - ptA.x) * xDelta + (pt.y - ptA.y) * yDelta) / (xDelta * xDelta + yDelta * yDelta)
+            var ptClosest: MKMapPoint
+            if u < 0.0 {
+                ptClosest = ptA
+            }
+            else if u > 1.0 {
+                ptClosest = ptB
+            }
+            else {
+                ptClosest = MKMapPointMake(ptA.x + u * xDelta, ptA.y + u * yDelta)
+            }
+
+            distance = min(distance, MKMetersBetweenMapPoints(ptClosest, pt))
+        }
+        return distance
+    }
+
+    func meters(fromPixel px: Int, at pt: CGPoint) -> Double {
+        let ptB = CGPoint(x: pt.x + CGFloat(px), y: pt.y)
+        let coordA: CLLocationCoordinate2D = self.convert(pt, toCoordinateFrom: self)
+        let coordB: CLLocationCoordinate2D = self.convert(ptB, toCoordinateFrom: self)
+        return MKMetersBetweenMapPoints(MKMapPointForCoordinate(coordA), MKMapPointForCoordinate(coordB))
     }
 }

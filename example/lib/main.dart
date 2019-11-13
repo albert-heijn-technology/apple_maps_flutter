@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:apple_maps_flutter_example/place_annotation.dart';
+import 'package:apple_maps_flutter_example/place_polyline.dart';
 import 'package:flutter/material.dart';
 import 'animate_camera.dart';
 import 'map_click.dart';
@@ -20,6 +21,7 @@ final List<Page> _allPages = <Page>[
   MoveCameraPage(),
   PlaceAnnotationPage(),
   AnnotationIconsPage(),
+  PlacePolylinePage(),
 ];
 
 class MapsDemo extends StatelessWidget {
