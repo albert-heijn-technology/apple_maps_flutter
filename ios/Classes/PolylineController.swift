@@ -10,10 +10,16 @@ import MapKit
 
 class PolylineController {
     
-let availableCaps: Dictionary<String, CGLineCap> = [
+    let availableCaps: Dictionary<String, CGLineCap> = [
         "buttCap": CGLineCap.butt,
         "roundCap": CGLineCap.round,
         "squareCap": CGLineCap.square
+    ]
+    
+    let availableJointTypes: Array<CGLineJoin> = [
+        CGLineJoin.miter,
+        CGLineJoin.bevel,
+        CGLineJoin.round
     ]
     
     var mapView: MKMapView
@@ -38,10 +44,11 @@ let availableCaps: Dictionary<String, CGLineCap> = [
                 polylineRenderer.strokeColor = flutterPolyline.color
                 polylineRenderer.lineWidth = flutterPolyline.width ?? 1.0
                 polylineRenderer.lineDashPattern = linePatternToArray(patternData: flutterPolyline.pattern)
+                polylineRenderer.lineJoin = availableJointTypes[flutterPolyline.lineJoin ?? 2]
                 if (flutterPolyline.pattern != nil && flutterPolyline.pattern?.count != 0) {
                     polylineRenderer.lineCap = getLineCapForLinePattern(linePatternData: flutterPolyline.pattern)
                 } else {
-                    polylineRenderer.lineCap = availableCaps[flutterPolyline.capType ?? "roundCap"]!
+                    polylineRenderer.lineCap = availableCaps[flutterPolyline.capType ?? "buttCap"]!
                 }
             } else {
                 polylineRenderer.strokeColor = UIColor.clear
@@ -120,7 +127,6 @@ let availableCaps: Dictionary<String, CGLineCap> = [
                 }
             }
         }
-        print(finalPattern)
         return finalPattern
     }
     
@@ -149,6 +155,7 @@ class FlutterPolyline: MKPolyline {
     var id: String?
     var capType: String?
     var pattern: NSArray?
+    var lineJoin: Int?
     
     convenience init(fromDictionaray polylineData: Dictionary<String, Any>) {
         let points = polylineData["points"] as! NSArray
@@ -166,20 +173,17 @@ class FlutterPolyline: MKPolyline {
         self.isVisible = polylineData["visible"] as? Bool
         self.capType = polylineData["polylineCap"] as? String
         self.pattern = polylineData["pattern"] as? NSArray
+        self.lineJoin = polylineData["jointType"] as? Int
     }
     
     public func update(fromDictionary updatedPolylineData: Dictionary<String,Any>) -> Bool {
         let uodatedColor: UIColor? = hexToUIColor(hexColor: updatedPolylineData["color"] as! NSNumber)
-        let updatedIsConsumingTapEvents: Bool? = true
+        let updatedIsConsumingTapEvents: Bool? = updatedPolylineData["consumeTapEvents"] as? Bool
         let updatedWidth: CGFloat? = updatedPolylineData["width"] as? CGFloat
-        let updatedIsVisible: Bool? = true
+        let updatedIsVisible: Bool? = updatedPolylineData["visible"] as? Bool
         let updatedCapType: String? = updatedPolylineData["polylineCap"] as? String
-        var updatedPattern: NSArray? = updatedPolylineData["pattern"] as? NSArray
-        if (updatedPattern?.count ?? 0 > 0) {
-                print(updatedPattern?[0] ?? "empty")
-        }
-        
-        print(updatedPattern.debugDescription)
+        let updatedPattern: NSArray? = updatedPolylineData["pattern"] as? NSArray
+        let updatedLineJoin: Int? = updatedPolylineData["jointType"] as? Int
         var didUpdate = false
         
         if (self.color != uodatedColor) {
@@ -204,6 +208,10 @@ class FlutterPolyline: MKPolyline {
         }
         if (self.pattern != updatedPattern) {
             self.pattern = updatedPattern
+            didUpdate = true
+        }
+        if (self.lineJoin != updatedLineJoin) {
+            self.lineJoin = updatedLineJoin
             didUpdate = true
         }
         return didUpdate

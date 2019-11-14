@@ -186,7 +186,7 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
             // Get map coordinate from touch point
             let touchPt: CGPoint = tap.location(in: self)
             let coord: CLLocationCoordinate2D = self.convert(touchPt, toCoordinateFrom: self)
-            let maxMeters: Double = meters(fromPixel: 8, at: touchPt)
+            let maxMeters: Double = meters(fromPixel: 10, at: touchPt)
             var nearestDistance: Float = MAXFLOAT
             var nearestPoly: FlutterPolyline? = nil
             // for every overlay ...
@@ -206,7 +206,6 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
 
             if (Double(nearestDistance) <= maxMeters) {
                 if (nearestPoly?.isConsumingTapEvents ?? false) {
-                    print("Touched poly: \(nearestPoly) distance: \(nearestDistance)")
                     channel?.invokeMethod("polyline#onTap", arguments: ["polylineId": nearestPoly!.id])
                 } else {
                     let locationOnMap = self.convert(locationInView, toCoordinateFrom: self)

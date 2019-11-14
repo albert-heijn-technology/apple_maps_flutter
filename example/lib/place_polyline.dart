@@ -63,12 +63,6 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
     <PatternItem>[],
     <PatternItem>[PatternItem.dash(30.0), PatternItem.gap(20.0)],
     <PatternItem>[PatternItem.dot, PatternItem.gap(10.0)],
-    <PatternItem>[
-      PatternItem.dash(30.0),
-      PatternItem.gap(20.0),
-      PatternItem.dot,
-      PatternItem.gap(20.0)
-    ],
   ];
 
   void _onMapCreated(AppleMapController controller) {
@@ -187,8 +181,6 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
 
   @override
   Widget build(BuildContext context) {
-    final bool iOSorNotSelected = Platform.isIOS || (selectedPolyline == null);
-
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -258,7 +250,9 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
                         ),
                         FlatButton(
                           child: const Text('change joint type'),
-                          onPressed: iOSorNotSelected ? null : _changeJointType,
+                          onPressed: (selectedPolyline == null)
+                              ? null
+                              : _changeJointType,
                         ),
                         FlatButton(
                           child: const Text('change pattern'),
