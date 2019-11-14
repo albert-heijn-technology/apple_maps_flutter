@@ -55,9 +55,6 @@ class AnnotationIconsBodyState extends State<AnnotationIconsBody> {
   }
 
   Set<Annotation> _createAnnotation() {
-    // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-    // https://github.com/flutter/flutter/issues/28312
-    // ignore: prefer_collection_literals
     return <Annotation>[
       Annotation(
         annotationId: AnnotationId("annotation_1"),

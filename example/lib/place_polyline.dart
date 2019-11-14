@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:io' show Platform;
-
 import 'package:flutter/material.dart';
 import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 
@@ -116,15 +114,6 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
     });
   }
 
-  void _toggleGeodesic() {
-    final Polyline polyline = polylines[selectedPolyline];
-    setState(() {
-      polylines[selectedPolyline] = polyline.copyWith(
-        geodesicParam: !polyline.geodesic,
-      );
-    });
-  }
-
   void _toggleVisible() {
     final Polyline polyline = polylines[selectedPolyline];
     setState(() {
@@ -222,12 +211,6 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
                           onPressed: (selectedPolyline == null)
                               ? null
                               : _toggleVisible,
-                        ),
-                        FlatButton(
-                          child: const Text('toggle geodesic'),
-                          onPressed: (selectedPolyline == null)
-                              ? null
-                              : _toggleGeodesic,
                         ),
                       ],
                     ),

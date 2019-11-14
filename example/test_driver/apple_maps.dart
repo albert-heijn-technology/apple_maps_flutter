@@ -310,8 +310,6 @@ void main() {
   //   final LatLngBounds latLngBounds =
   //       LatLngBounds(southwest: southWest, northeast: northEast);
 
-  //   // TODO(iskakaushik): non-zero padding is needed for some device configurations
-  //   // https://github.com/flutter/flutter/issues/30575
   //   final double padding = 0;
 
   //   final LatLngBounds secondVisibleRegion =
