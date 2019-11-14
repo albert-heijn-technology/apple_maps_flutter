@@ -18,7 +18,7 @@ To use this plugin on iOS you need to opt-in for the embedded views preview by a
 
 # Android
 
-There is no Android implementation, but there will be a package to combine apple_maps_flutter and the [google_maps_flutter]("https://pub.dev/packages/google_maps_flutter") plugin to have the typical map implementations for Android/iOS (coming soon).
+There is no Android implementation, but there is a package combining apple_maps_flutter and the [google_maps_flutter]("https://pub.dev/packages/google_maps_flutter") plugin to have the typical map implementations for Android/iOS called [platform_maps_flutter]("https://pub.dev/packages/platform_maps_flutter").
 
 ## Sample Usage
 

@@ -106,7 +106,7 @@ void main() {
     debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
     final Polyline p1 = Polyline(polylineId: PolylineId("polyline_1"));
     final Polyline p2 =
-        Polyline(polylineId: PolylineId("polyline_1"), geodesic: true);
+        Polyline(polylineId: PolylineId("polyline_1"), visible: true);
 
     await tester.pumpWidget(_mapWithPolylines(_toSet(p1: p1)));
     await tester.pumpWidget(_mapWithPolylines(_toSet(p1: p2)));
@@ -125,7 +125,7 @@ void main() {
     debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
     final Polyline p1 = Polyline(polylineId: PolylineId("polyline_1"));
     final Polyline p2 =
-        Polyline(polylineId: PolylineId("polyline_1"), geodesic: true);
+        Polyline(polylineId: PolylineId("polyline_1"), visible: true);
 
     await tester.pumpWidget(_mapWithPolylines(_toSet(p1: p1)));
     await tester.pumpWidget(_mapWithPolylines(_toSet(p1: p2)));
@@ -136,7 +136,7 @@ void main() {
 
     final Polyline update = platformAppleMap.polylinesToChange.first;
     expect(update, equals(p2));
-    expect(update.geodesic, true);
+    expect(update.visible, true);
     debugDefaultTargetPlatformOverride = null;
   });
 
@@ -146,7 +146,7 @@ void main() {
     Polyline p2 = Polyline(polylineId: PolylineId("polyline_2"));
     final Set<Polyline> prev = _toSet(p1: p1, p2: p2);
     p1 = Polyline(polylineId: PolylineId("polyline_1"), visible: false);
-    p2 = Polyline(polylineId: PolylineId("polyline_2"), geodesic: true);
+    p2 = Polyline(polylineId: PolylineId("polyline_2"), consumeTapEvents: true);
     final Set<Polyline> cur = _toSet(p1: p1, p2: p2);
 
     await tester.pumpWidget(_mapWithPolylines(prev));
@@ -169,7 +169,7 @@ void main() {
 
     // p1 is added, p2 is updated, p3 is removed.
     final Polyline p1 = Polyline(polylineId: PolylineId("polyline_1"));
-    p2 = Polyline(polylineId: PolylineId("polyline_2"), geodesic: true);
+    p2 = Polyline(polylineId: PolylineId("polyline_2"), visible: true);
     final Set<Polyline> cur = _toSet(p1: p1, p2: p2);
 
     await tester.pumpWidget(_mapWithPolylines(prev));
@@ -195,7 +195,7 @@ void main() {
       final Polyline p1 = Polyline(polylineId: PolylineId("polyline_1"));
       Polyline p2 = Polyline(polylineId: PolylineId("polyline_2"));
       final Set<Polyline> prev = _toSet(p1: p1, p2: p2);
-      p2 = Polyline(polylineId: PolylineId("polyline_2"), geodesic: true);
+      p2 = Polyline(polylineId: PolylineId("polyline_2"), visible: true);
       final Set<Polyline> cur = _toSet(p1: p1, p2: p2);
 
       await tester.pumpWidget(_mapWithPolylines(prev));

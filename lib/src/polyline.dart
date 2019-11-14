@@ -39,7 +39,7 @@ class Polyline {
     this.consumeTapEvents = false,
     this.color = Colors.black,
     this.polylineCap = Cap.buttCap,
-    this.geodesic = false,
+    // this.geodesic = false,
     this.jointType = JointType.mitered,
     this.points = const <LatLng>[],
     this.patterns = const <PatternItem>[],
@@ -65,7 +65,7 @@ class Polyline {
   ///
   /// A geodesic is the shortest path between two points on the Earth's surface.
   /// The geodesic curve is constructed assuming the Earth is a sphere
-  final bool geodesic;
+  // final bool geodesic;
 
   /// Joint type of the polyline line segments.
   ///
@@ -135,7 +135,7 @@ class Polyline {
       color: colorParam ?? color,
       consumeTapEvents: consumeTapEventsParam ?? consumeTapEvents,
       polylineCap: polylineCapParam ?? polylineCap,
-      geodesic: geodesicParam ?? geodesic,
+      // geodesic: geodesicParam ?? geodesic,
       jointType: jointTypeParam ?? jointType,
       patterns: patternsParam ?? patterns,
       points: pointsParam ?? points,
@@ -159,7 +159,7 @@ class Polyline {
     addIfPresent('consumeTapEvents', consumeTapEvents);
     addIfPresent('color', color.value);
     addIfPresent('polylineCap', polylineCap?._toJson());
-    addIfPresent('geodesic', geodesic);
+    // addIfPresent('geodesic', geodesic);
     addIfPresent('jointType', jointType?.value);
     addIfPresent('visible', visible);
     addIfPresent('width', width);

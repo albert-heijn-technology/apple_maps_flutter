@@ -150,12 +150,12 @@ class FakePlatformAppleMap {
     for (Map<dynamic, dynamic> polylineData in polylinesData) {
       final String polylineId = polylineData['polylineId'];
       final bool visible = polylineData['visible'];
-      final bool geodesic = polylineData['geodesic'];
+      // final bool geodesic = polylineData['geodesic'];
 
       result.add(Polyline(
         polylineId: PolylineId(polylineId),
         visible: visible,
-        geodesic: geodesic,
+        // geodesic: geodesic,
       ));
     }
 

@@ -26,26 +26,6 @@ class Cap {
   /// start or end vertex of a [Polyline] with solid stroke pattern.
   static const Cap squareCap = Cap._('squareCap');
 
-  /// Constructs a new CustomCap with a bitmap overlay centered at the start or
-  /// end vertex of a [Polyline], orientated according to the direction of the line's
-  /// first or last edge and scaled with respect to the line's stroke width.
-  ///
-  /// CustomCap can be applied to [Polyline] with any stroke pattern.
-  ///
-  /// [bitmapDescriptor] must not be null.
-  ///
-  /// [refWidth] is the reference stroke width (in pixels) - the stroke width for which
-  /// the cap bitmap at its native dimension is designed. Must be positive. Default value
-  /// is 10 pixels.
-  static Cap customCapFromBitmap(
-    BitmapDescriptor bitmapDescriptor, {
-    double refWidth = 10,
-  }) {
-    assert(bitmapDescriptor != null);
-    assert(refWidth > 0.0);
-    return Cap._(<dynamic>['customCap', bitmapDescriptor._toJson(), refWidth]);
-  }
-
   final dynamic _json;
 
   dynamic _toJson() => _json;

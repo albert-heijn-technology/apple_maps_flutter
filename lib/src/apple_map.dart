@@ -119,15 +119,6 @@ class AppleMap extends StatefulWidget {
   ///
   /// Enabling this feature requires adding location permissions to both native
   /// platforms of your app.
-  /// * On Android add either
-  /// `<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />`
-  /// or `<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />`
-  /// to your `AndroidManifest.xml` file. `ACCESS_COARSE_LOCATION` returns a
-  /// location with an accuracy approximately equivalent to a city block, while
-  /// `ACCESS_FINE_LOCATION` returns as precise a location as possible, although
-  /// it consumes more battery power. You will also need to request these
-  /// permissions during run-time. If they are not granted, the My Location
-  /// feature will fail silently.
   /// * On iOS add a `NSLocationWhenInUseUsageDescription` key to your
   /// `Info.plist` file. This will automatically prompt the user for permissions
   /// when the map tries to turn on the My Location layer.
