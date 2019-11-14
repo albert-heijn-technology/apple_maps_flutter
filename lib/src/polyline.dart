@@ -81,6 +81,8 @@ class Polyline {
   /// Solid or a sequence of PatternItem objects to be repeated along the line.
   /// Available PatternItem types: Gap (defined by gap length in pixels), Dash (defined by line width and dash
   /// length in pixels) and Dot (circular, centered on the line, diameter defined by line width in pixels).
+  ///
+  /// Note: It is not possible to have a mix of dots and dashes.
   final List<PatternItem> patterns;
 
   /// The vertices of the polyline to be drawn.

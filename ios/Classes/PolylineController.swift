@@ -34,9 +34,19 @@ let availableCaps: Dictionary<String, CGLineCap> = [
         let polylineRenderer = MKPolylineRenderer(overlay: polyline)
 
         if let flutterPolyline: FlutterPolyline = overlay as? FlutterPolyline {
-            polylineRenderer.strokeColor = flutterPolyline.color
-            polylineRenderer.lineWidth = flutterPolyline.width ?? 1.0
-            polylineRenderer.lineCap = availableCaps[flutterPolyline.capType ?? "buttCap"]!
+            if (flutterPolyline.isVisible!) {
+                polylineRenderer.strokeColor = flutterPolyline.color
+                polylineRenderer.lineWidth = flutterPolyline.width ?? 1.0
+                polylineRenderer.lineDashPattern = linePatternToArray(patternData: flutterPolyline.pattern)
+                if (flutterPolyline.pattern != nil && flutterPolyline.pattern?.count != 0) {
+                    polylineRenderer.lineCap = getLineCapForLinePattern(linePatternData: flutterPolyline.pattern)
+                } else {
+                    polylineRenderer.lineCap = availableCaps[flutterPolyline.capType ?? "roundCap"]!
+                }
+            } else {
+                polylineRenderer.strokeColor = UIColor.clear
+                polylineRenderer.lineWidth = 0.0
+            }
         }
         return polylineRenderer
     }
@@ -80,6 +90,55 @@ let availableCaps: Dictionary<String, CGLineCap> = [
         mapView.remove(polyline)
         mapView.add(polyline)
     }
+    
+    private func linePatternToArray(patternData: NSArray?) -> [NSNumber] {
+        var finalPattern: [NSNumber] = []
+        var isDot: Bool = false
+        if (patternData == nil) {
+            return finalPattern
+        }
+        for pattern in patternData! {
+            if let _pattern: NSArray = pattern as? NSArray {
+                if (_pattern.count > 0) {
+                    if let identifier: String = _pattern[0] as? String {
+                        if (identifier == "dot") {
+                            isDot = true
+                            finalPattern.append(0)
+                        } else if (identifier == "dash") {
+                            isDot = false
+                            finalPattern.append(NSNumber(value: lround((_pattern[1] as! Double) * 1/3.5)))
+                        } else if (identifier == "gap") {
+                            if let length = _pattern[1] as? Double {
+                                if (isDot) {
+                                    finalPattern.append(NSNumber(value: length))
+                                } else {
+                                    finalPattern.append(NSNumber(value: lround(length * 1/3.5)))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        print(finalPattern)
+        return finalPattern
+    }
+    
+    private func getLineCapForLinePattern(linePatternData: NSArray?) -> CGLineCap {
+        if (linePatternData == nil) {
+            return CGLineCap.butt
+        }
+        for pattern in linePatternData! {
+            if let _pattern = pattern as? NSArray {
+                if (_pattern.contains("dot")) {
+                    return CGLineCap.round
+                } else if (_pattern.contains("dash")) {
+                    return CGLineCap.butt
+                }
+            }
+        }
+        return CGLineCap.butt
+    }
 }
 
 class FlutterPolyline: MKPolyline {
@@ -89,6 +148,7 @@ class FlutterPolyline: MKPolyline {
     var isVisible: Bool?
     var id: String?
     var capType: String?
+    var pattern: NSArray?
     
     convenience init(fromDictionaray polylineData: Dictionary<String, Any>) {
         let points = polylineData["points"] as! NSArray
@@ -105,6 +165,7 @@ class FlutterPolyline: MKPolyline {
         self.id = polylineData["polylineId"] as? String
         self.isVisible = polylineData["visible"] as? Bool
         self.capType = polylineData["polylineCap"] as? String
+        self.pattern = polylineData["pattern"] as? NSArray
     }
     
     public func update(fromDictionary updatedPolylineData: Dictionary<String,Any>) -> Bool {
@@ -113,6 +174,12 @@ class FlutterPolyline: MKPolyline {
         let updatedWidth: CGFloat? = updatedPolylineData["width"] as? CGFloat
         let updatedIsVisible: Bool? = true
         let updatedCapType: String? = updatedPolylineData["polylineCap"] as? String
+        var updatedPattern: NSArray? = updatedPolylineData["pattern"] as? NSArray
+        if (updatedPattern?.count ?? 0 > 0) {
+                print(updatedPattern?[0] ?? "empty")
+        }
+        
+        print(updatedPattern.debugDescription)
         var didUpdate = false
         
         if (self.color != uodatedColor) {
@@ -133,6 +200,10 @@ class FlutterPolyline: MKPolyline {
         }
         if (self.capType != updatedCapType) {
             self.capType = updatedCapType
+            didUpdate = true
+        }
+        if (self.pattern != updatedPattern) {
+            self.pattern = updatedPattern
             didUpdate = true
         }
         return didUpdate

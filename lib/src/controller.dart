@@ -21,7 +21,7 @@ class AppleMapController {
   ) async {
     assert(id != null);
     final MethodChannel channel =
-        MethodChannel('plugins.flutter.io/apple_maps_$id');
+        MethodChannel('apple_maps_plugin.luisthein.de/apple_maps_$id');
     // await channel.invokeMethod<void>('map#waitForMap');
     return AppleMapController._(
       channel,

@@ -11,8 +11,8 @@ import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 class FakePlatformAppleMap {
   FakePlatformAppleMap(int id, Map<dynamic, dynamic> params) {
     cameraPosition = CameraPosition.fromMap(params['initialCameraPosition']);
-    channel = MethodChannel(
-        'plugins.flutter.io/apple_maps_$id', const StandardMethodCodec());
+    channel = MethodChannel('apple_maps_plugin.luisthein.de/apple_maps_$id',
+        const StandardMethodCodec());
     channel.setMockMethodCallHandler(onMethodCall);
     updateOptions(params['options']);
     updateAnnotations(params);
@@ -46,6 +46,12 @@ class FakePlatformAppleMap {
 
   Set<Annotation> annotationsToChange;
 
+  Set<PolylineId> polylineIdsToRemove;
+
+  Set<Polyline> polylinesToAdd;
+
+  Set<Polyline> polylinesToChange;
+
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
       case 'map#update':
@@ -53,6 +59,9 @@ class FakePlatformAppleMap {
         return Future<void>.sync(() {});
       case 'annotations#update':
         updateAnnotations(call.arguments);
+        return Future<void>.sync(() {});
+      case 'polylines#update':
+        updatePolylines(call.arguments);
         return Future<void>.sync(() {});
       default:
         return Future<void>.sync(() {});
@@ -106,6 +115,47 @@ class FakePlatformAppleMap {
         draggable: draggable,
         visible: visible,
         infoWindow: infoWindow,
+      ));
+    }
+
+    return result;
+  }
+
+  void updatePolylines(Map<dynamic, dynamic> polylineUpdates) {
+    if (polylineUpdates == null) {
+      return;
+    }
+    polylinesToAdd = _deserializePolylines(polylineUpdates['polylinesToAdd']);
+    polylineIdsToRemove =
+        _deserializePolylineIds(polylineUpdates['polylineIdsToRemove']);
+    polylinesToChange =
+        _deserializePolylines(polylineUpdates['polylinesToChange']);
+  }
+
+  Set<PolylineId> _deserializePolylineIds(List<dynamic> polylineIds) {
+    if (polylineIds == null) {
+      return Set<PolylineId>();
+    }
+    return polylineIds
+        .map((dynamic polylineId) => PolylineId(polylineId))
+        .toSet();
+  }
+
+  Set<Polyline> _deserializePolylines(dynamic polylines) {
+    if (polylines == null) {
+      return Set<Polyline>();
+    }
+    final List<dynamic> polylinesData = polylines;
+    final Set<Polyline> result = Set<Polyline>();
+    for (Map<dynamic, dynamic> polylineData in polylinesData) {
+      final String polylineId = polylineData['polylineId'];
+      final bool visible = polylineData['visible'];
+      final bool geodesic = polylineData['geodesic'];
+
+      result.add(Polyline(
+        polylineId: PolylineId(polylineId),
+        visible: visible,
+        geodesic: geodesic,
       ));
     }
 

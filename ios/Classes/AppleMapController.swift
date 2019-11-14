@@ -53,7 +53,7 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
     
     public init(withFrame frame: CGRect, withRegistrar registrar: FlutterPluginRegistrar, withargs args: Dictionary<String, Any> ,withId id: Int64) {
         self.registrar = registrar
-        channel = FlutterMethodChannel(name: "plugins.flutter.io/apple_maps_\(id)", binaryMessenger: registrar.messenger())
+        channel = FlutterMethodChannel(name: "apple_maps_plugin.luisthein.de/apple_maps_\(id)", binaryMessenger: registrar.messenger())
         self.mapView = FlutterMapView(channel: channel)
         annotationController = AnnotationController(mapView: mapView, channel: channel, registrar: registrar)
         polylineController = PolylineController(mapView: mapView, channel: channel, registrar: registrar)

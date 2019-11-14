@@ -179,7 +179,7 @@ class _AppleMapState extends State<AppleMap> {
     };
     if (defaultTargetPlatform == TargetPlatform.iOS) {
       return UiKitView(
-        viewType: 'plugins.flutter.io/apple_maps',
+        viewType: 'apple_maps_plugin.luisthein.de/apple_maps',
         onPlatformViewCreated: onPlatformViewCreated,
         gestureRecognizers: widget.gestureRecognizers,
         creationParams: creationParams,

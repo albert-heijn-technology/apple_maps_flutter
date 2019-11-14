@@ -53,26 +53,22 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
     JointType.round
   ];
 
-  // Values when toggling polyline end cap type
-  int endCapsIndex = 0;
-  List<Cap> endCaps = <Cap>[Cap.buttCap, Cap.squareCap, Cap.roundCap];
-
   // Values when toggling polyline start cap type
-  int startCapsIndex = 0;
-  List<Cap> startCaps = <Cap>[Cap.buttCap, Cap.squareCap, Cap.roundCap];
+  int lineCapsIndex = 0;
+  List<Cap> lineCaps = <Cap>[Cap.buttCap, Cap.squareCap, Cap.roundCap];
 
   // Values when toggling polyline pattern
   int patternsIndex = 0;
   List<List<PatternItem>> patterns = <List<PatternItem>>[
     <PatternItem>[],
+    <PatternItem>[PatternItem.dash(30.0), PatternItem.gap(20.0)],
+    <PatternItem>[PatternItem.dot, PatternItem.gap(10.0)],
     <PatternItem>[
       PatternItem.dash(30.0),
       PatternItem.gap(20.0),
       PatternItem.dot,
       PatternItem.gap(20.0)
     ],
-    <PatternItem>[PatternItem.dash(30.0), PatternItem.gap(20.0)],
-    <PatternItem>[PatternItem.dot, PatternItem.gap(10.0)],
   ];
 
   void _onMapCreated(AppleMapController controller) {
@@ -175,7 +171,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
     final Polyline polyline = polylines[selectedPolyline];
     setState(() {
       polylines[selectedPolyline] = polyline.copyWith(
-        polylineCapParam: endCaps[++endCapsIndex % endCaps.length],
+        polylineCapParam: lineCaps[++lineCapsIndex % lineCaps.length],
       );
     });
   }
@@ -257,15 +253,18 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
                         ),
                         FlatButton(
                           child: const Text('change polyline caps'),
-                          onPressed: _changeCaps,
+                          onPressed:
+                              (selectedPolyline == null) ? null : _changeCaps,
                         ),
                         FlatButton(
-                          child: const Text('change joint type [Android only]'),
+                          child: const Text('change joint type'),
                           onPressed: iOSorNotSelected ? null : _changeJointType,
                         ),
                         FlatButton(
-                          child: const Text('change pattern [Android only]'),
-                          onPressed: iOSorNotSelected ? null : _changePattern,
+                          child: const Text('change pattern'),
+                          onPressed: (selectedPolyline == null)
+                              ? null
+                              : _changePattern,
                         ),
                       ],
                     )
