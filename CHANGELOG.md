@@ -1,3 +1,7 @@
+## 0.0.5
+
+* Added ability to place polylines.
+
 ## 0.0.4
 
 * Fixed error when updating Annotations on map.
