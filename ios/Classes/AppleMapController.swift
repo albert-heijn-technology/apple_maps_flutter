@@ -60,7 +60,7 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
         initialCameraPosition = args["initialCameraPosition"]! as! Dictionary<String, Any>
         options = args["options"] as! Dictionary<String, Any>
         super.init()
-        interprateOptions(options: options)
+        interpretOptions(options: options)
         mapView.setCenterCoordinate(initialCameraPosition, animated: false)
         if let annotationsToAdd :NSArray = args["annotationsToAdd"] as? NSArray {
             annotationController.annotationsToAdd(annotations: annotationsToAdd)
@@ -100,7 +100,7 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
         return polylineController.polylineRenderer(overlay: overlay)
     }
     
-    private func interprateOptions(options: Dictionary<String, Any>) {
+    private func interpretOptions(options: Dictionary<String, Any>) {
         if let isCompassEnabled: Bool = options["compassEnabled"] as? Bool {
             if #available(iOS 9.0, *) {
                 mapView.showsCompass = isCompassEnabled
@@ -321,7 +321,7 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
                     }
                     result(nil)
                 case "map#update":
-                    self.interprateOptions(options: args["options"] as! Dictionary<String, Any>)
+                    self.interpretOptions(options: args["options"] as! Dictionary<String, Any>)
                     //result(mapView.centerCoordinate) implement result for camera update
                 case "camera#animate":
                     let positionData :Dictionary<String, Any> = self.toPositionData(data: args["cameraUpdate"] as! Array<Any>, animated: true)
