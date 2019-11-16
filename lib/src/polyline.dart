@@ -40,7 +40,7 @@ class Polyline {
     this.color = Colors.black,
     this.polylineCap = Cap.buttCap,
     // this.geodesic = false,
-    this.jointType = JointType.mitered,
+    this.jointType = JointType.round,
     this.points = const <LatLng>[],
     this.patterns = const <PatternItem>[],
     this.visible = true,

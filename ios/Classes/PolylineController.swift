@@ -43,7 +43,7 @@ class PolylineController {
             if (flutterPolyline.isVisible!) {
                 polylineRenderer.strokeColor = flutterPolyline.color
                 polylineRenderer.lineWidth = flutterPolyline.width ?? 1.0
-                polylineRenderer.lineDashPattern = linePatternToArray(patternData: flutterPolyline.pattern)
+                polylineRenderer.lineDashPattern = linePatternToArray(patternData: flutterPolyline.pattern, lineWidth: flutterPolyline.width)
                 polylineRenderer.lineJoin = availableJointTypes[flutterPolyline.lineJoin ?? 2]
                 if (flutterPolyline.pattern != nil && flutterPolyline.pattern?.count != 0) {
                     polylineRenderer.lineCap = getLineCapForLinePattern(linePatternData: flutterPolyline.pattern)
@@ -98,7 +98,7 @@ class PolylineController {
         mapView.add(polyline)
     }
     
-    private func linePatternToArray(patternData: NSArray?) -> [NSNumber] {
+    private func linePatternToArray(patternData: NSArray?, lineWidth: CGFloat?) -> [NSNumber] {
         var finalPattern: [NSNumber] = []
         var isDot: Bool = false
         if (patternData == nil) {
@@ -117,7 +117,7 @@ class PolylineController {
                         } else if (identifier == "gap") {
                             if let length = _pattern[1] as? Double {
                                 if (isDot) {
-                                    finalPattern.append(NSNumber(value: length))
+                                    finalPattern.append(NSNumber(value: lround(Double((lineWidth ?? 0) * 1.5))))
                                 } else {
                                     finalPattern.append(NSNumber(value: lround(length * 1/3.5)))
                                 }
