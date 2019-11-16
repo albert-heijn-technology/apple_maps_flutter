@@ -81,7 +81,7 @@ class AnnotationController: NSObject {
     
     
     private func addAnnotation(annotationData: Dictionary<String, Any>) {
-        let annotation :MKAnnotation = FlutterAnnotation(fromDictionary: annotationData)
+        let annotation = FlutterAnnotation(fromDictionary: annotationData, registrar: self.registrar)
         mapView.addAnnotation(annotation)
     }
 }
@@ -97,13 +97,14 @@ class FlutterAnnotation: NSObject, MKAnnotation {
     var isDraggable: Bool?
     var wasDragged: Bool = false
     var isVisible: Bool? = true
-    var icon: AnnotationIcon = AnnotationIcon.init()
+    var icon: AnnotationIcon
     var anchor: CGPoint
     
-    public init(fromDictionary annotationData: Dictionary<String, Any>) {
+    public init(fromDictionary annotationData: Dictionary<String, Any>, registrar: FlutterPluginRegistrar) {
         let position :Array<Double> = annotationData["position"] as! Array<Double>
         let lat: Double = position[0]
         let long: Double = position[1]
+        let id: String = annotationData["annotationId"] as! String
         self.coordinate = CLLocationCoordinate2D(latitude: lat, longitude: long)
         let infoWindow :Dictionary<String, Any> = annotationData["infoWindow"] as! Dictionary<String, Any>
         self.title = infoWindow["title"] as? String
@@ -115,6 +116,7 @@ class FlutterAnnotation: NSObject, MKAnnotation {
         if let alpha :Double = annotationData["alpha"] as? Double {
             self.alpha = alpha
         }
+        self.icon = FlutterAnnotation.getAnnotationIcon(registrar: registrar, iconData: annotationData["icon"] as! Array<Any>, annotationId: id)
     }
     
     public func update(fromDictionary updatedAnnotationData: Dictionary<String, Any>, registrar: FlutterPluginRegistrar) -> Bool {
@@ -129,7 +131,7 @@ class FlutterAnnotation: NSObject, MKAnnotation {
         let updatedAlpha: Double = updatedAnnotationData["alpha"] as! Double
         let updatedIsDraggable: Bool = updatedAnnotationData["draggable"] as! Bool
         let iconData: Array<Any> = updatedAnnotationData["icon"] as! Array<Any>
-        let updatedIcon: AnnotationIcon = getAnnotationImage(registrar: registrar, iconData: iconData, annotationId: self.id)
+        let updatedIcon: AnnotationIcon = FlutterAnnotation.getAnnotationIcon(registrar: registrar, iconData: iconData, annotationId: self.id)
         let updatedVisibility: Bool = updatedAnnotationData["visible"] as! Bool
         let anchorData = updatedAnnotationData["anchor"] as! Array<Float>
         let updatedAnchor = CGPoint(x: CGFloat(anchorData[0]), y: CGFloat(anchorData[1]))
@@ -138,7 +140,20 @@ class FlutterAnnotation: NSObject, MKAnnotation {
             self.title = updatedTitle
             didUpdate = true
         }
-        if (self.icon.iconType != updatedIcon.iconType) {
+        
+        if let oldIcon = self.icon as? PinAnnotationIcon,
+            let newIcon = updatedIcon as? PinAnnotationIcon {
+            if oldIcon != newIcon {
+                self.icon = newIcon
+                didUpdate = true
+            }
+        } else if let oldIcon = self.icon as? CustomAnnotationIcon,
+            let newIcon = updatedIcon as? CustomAnnotationIcon {
+            if oldIcon != newIcon {
+                self.icon = newIcon
+                didUpdate = true
+            }
+        } else {
             self.icon = updatedIcon
             didUpdate = true
         }
@@ -179,20 +194,36 @@ class FlutterAnnotation: NSObject, MKAnnotation {
         return didUpdate
     }
     
-    private func getAnnotationImage(registrar: FlutterPluginRegistrar, iconData: Array<Any>, annotationId: String) -> AnnotationIcon {
+    private static func getAnnotationIcon(registrar: FlutterPluginRegistrar, iconData: Array<Any>, annotationId: String) -> AnnotationIcon {
         let iconTypeMap: Dictionary<String, IconType> = ["fromAssetImage": IconType.CUSTOM, "defaultAnnotation": IconType.PIN]
-        var icon: AnnotationIcon
         let iconType: IconType = iconTypeMap[iconData[0] as! String] ?? .PIN
-        var scaleParam: CGFloat?
        
         if (iconType == .CUSTOM) {
             let assetPath: String = iconData[1] as! String
-            scaleParam = CGFloat(iconData[2] as? Double ?? 1.0)
-            icon = AnnotationIcon(named: registrar.lookupKey(forAsset: assetPath), iconType: iconType, id: annotationId, iconScale: scaleParam)
+            let scaleParam = iconData[2] as? Float ?? 1.0
+            return CustomAnnotationIcon(named: registrar.lookupKey(forAsset: assetPath), id: annotationId, iconScale: scaleParam)
         } else {
-            icon = AnnotationIcon(named: "", iconType: iconType, id: annotationId)
+            let pinColorData = iconData[1] as! Array<Any>
+            let pinColorType = pinColorData[0] as! String
+            var pinColor: PinColor = .RED
+            var customColor: UIColor? = nil
+            
+            switch pinColorType {
+            case "red":
+                pinColor = .RED
+            case "green":
+                pinColor = .GREEN
+            case "purple":
+                pinColor = .PURPLE
+            case "custom":
+                pinColor = .CUSTOM
+                customColor = JsonConversions.convertColor(data: pinColorData[1])
+            default:
+                pinColor = .RED
+            }
+            
+            return PinAnnotationIcon(id: annotationId, pinColor: pinColor, customColor: customColor)
         }
-        return icon
     }
 }
 
@@ -200,31 +231,56 @@ enum IconType {
     case PIN, STANDARD, CUSTOM
 }
 
-class AnnotationIcon {
+protocol AnnotationIcon {}
+
+class PinAnnotationIcon : AnnotationIcon, Equatable {
+    let id: String
+    let pinColor: PinColor
+    let customColor: UIColor?
     
-    var iconType: IconType
-    var id: String
-    var image: UIImage?
+    public init(id: String, pinColor: PinColor = .RED, customColor: UIColor? = nil) {
+        self.id = id
+        self.pinColor = pinColor
+        self.customColor = customColor
+    }
     
-    public init(named name: String, iconType type: IconType? = .PIN, id: String, iconScale: CGFloat? = 1.0) {
-        if (type == .CUSTOM) {
-            if let uiImage: UIImage =  UIImage.init(named: name) {
-                if let cgImage: CGImage = uiImage.cgImage {
-                    if (iconScale != nil && iconScale! - 1 > 0.001){
-                        let scaledImage: UIImage = UIImage.init(cgImage: cgImage, scale: (iconScale! + 1) * CGFloat(uiImage.scale), orientation: uiImage.imageOrientation)
-                        self.image = scaledImage
-                    }
+    static func == (lhs: PinAnnotationIcon, rhs: PinAnnotationIcon) -> Bool {
+        return lhs.pinColor == rhs.pinColor && lhs.customColor == rhs.customColor
+    }
+}
+
+class CustomAnnotationIcon : AnnotationIcon, Equatable {
+    let id: String
+    let image: UIImage?
+    let name: String
+    let iconScale: Float
+    
+    public init(named name: String, id: String, iconScale: Float? = 1.0) {
+        self.id = id
+        self.name = name
+        self.iconScale = iconScale ?? 1.0
+        
+        if let uiImage: UIImage =  UIImage.init(named: name) {
+            if let cgImage: CGImage = uiImage.cgImage {
+                if (iconScale != nil && iconScale! - 1 > 0.001) {
+                    let scaledImage: UIImage = UIImage.init(cgImage: cgImage, scale: CGFloat(iconScale! + 1) * CGFloat(uiImage.scale), orientation: uiImage.imageOrientation)
+                    self.image = scaledImage
                 } else {
                     self.image = uiImage
                 }
+            } else {
+                self.image = uiImage
             }
+        } else {
+            self.image = nil
         }
-        self.iconType = type ?? .PIN
-        self.id = id
     }
     
-    public convenience init() {
-        self.init(named: "", id: "")
+    static func == (lhs: CustomAnnotationIcon, rhs: CustomAnnotationIcon) -> Bool {
+        return lhs.id == rhs.id && lhs.name == rhs.name && lhs.iconScale == rhs.iconScale
     }
-    
+}
+
+enum PinColor {
+    case RED, GREEN, PURPLE, CUSTOM
 }

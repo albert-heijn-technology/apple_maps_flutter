@@ -162,21 +162,22 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
     private func getAnnotationView(annotation: FlutterAnnotation) -> MKAnnotationView{
         let identifier :String = annotation.id
         var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier)
-        let oldflutterAnnoation = annotationView?.annotation as? FlutterAnnotation
+        let oldFlutterAnnotation = annotationView?.annotation as? FlutterAnnotation
         
-        if annotationView == nil || oldflutterAnnoation?.icon.iconType != annotation.icon.iconType {
-            if (annotation.icon.iconType == IconType.PIN) {
-                annotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
-            } else if (annotation.icon.iconType == IconType.CUSTOM) {
-                annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: identifier)
-                annotationView!.image = annotation.icon.image
-                
-                let xOffset = CGFloat(0.5 - annotation.anchor.x) * (customIcon.image?.size.width ?? 0)
-                let yOffset = CGFloat(0.5 - annotation.anchor.y) * (customIcon.image?.size.height ?? 0)
-                customAnnotationView.centerOffset = CGPoint(x: xOffset, y: yOffset)
+        if annotationView != nil {
+            if let _ = oldFlutterAnnotation?.icon as? PinAnnotationIcon,
+                let newIcon = annotation.icon as? PinAnnotationIcon,
+                let pinAnnotation = annotationView as? MKPinAnnotationView {
+                setPinColor(annotationView: pinAnnotation, icon: newIcon)
+            } else if let _ = oldFlutterAnnotation?.icon as? CustomAnnotationIcon,
+                let newIcon = annotation.icon as? CustomAnnotationIcon {
+                annotationView?.image = newIcon.image
+                setCenterOffset(annotationView: annotationView!, annotation: annotation, icon: newIcon)
+            } else {
+                annotationView = createAnnotationView(annotation: annotation)
             }
         } else {
-            annotationView!.annotation = annotation
+            annotationView = createAnnotationView(annotation: annotation)
         }
         // If annotation is not visible set alpha to 0 and don't let the user interact with it
         if (!annotation.isVisible!) {
@@ -191,7 +192,70 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
         
         return annotationView!
     }
+
+    private func createAnnotationView(annotation: FlutterAnnotation) -> MKAnnotationView {
+        if let pinIcon = annotation.icon as? PinAnnotationIcon {
+            let pinAnnotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: annotation.id)
+            setPinColor(annotationView: pinAnnotationView, icon: pinIcon)
+            return pinAnnotationView
+        } else if let customIcon = annotation.icon as? CustomAnnotationIcon {
+            let customAnnotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: annotation.id)
+            customAnnotationView.image = customIcon.image
+            setCenterOffset(annotationView: customAnnotationView, annotation: annotation, icon: customIcon)
+            return customAnnotationView
+        } else {
+            // this shouldn't happen
+            return MKPinAnnotationView(annotation: annotation, reuseIdentifier: annotation.id)
+        }
+    }
     
+    private func setPinColor(annotationView: MKPinAnnotationView, icon: PinAnnotationIcon) {
+        switch icon.pinColor {
+        case .RED:
+            annotationView.pinColor = .red
+        case .GREEN:
+            annotationView.pinColor = .green
+        case .PURPLE:
+            annotationView.pinColor = .purple
+        case .CUSTOM:
+            if #available(iOS 9.0, *), let customColor = icon.customColor {
+                annotationView.pinTintColor = customColor
+            } else {
+                annotationView.pinColor = .red
+            }
+        }
+    }
+    
+    private func setCenterOffset(annotationView: MKAnnotationView, annotation: FlutterAnnotation, icon: CustomAnnotationIcon) {
+        let xOffset = CGFloat(0.5 - annotation.anchor.x) * (icon.image?.size.width ?? 0)
+        let yOffset = CGFloat(0.5 - annotation.anchor.y) * (icon.image?.size.height ?? 0)
+        annotationView.centerOffset = CGPoint(x: xOffset, y: yOffset)
+    }
+   
+    // Functions used for the mapTrackingButton
+    func mapTrackingButton(isVisible visible: Bool){
+        if (visible) {
+            let image = UIImage(named: "outline_near_me")
+            let locationButton = UIButton(type: UIButtonType.custom) as UIButton
+            locationButton.tag = 100
+            locationButton.layer.cornerRadius = 5
+            locationButton.frame = CGRect(origin: CGPoint(x: mapView.bounds.width - 45, y: mapView.bounds.height - 45), size: CGSize(width: 40, height: 40))
+            locationButton.setImage(image, for: .normal)
+            locationButton.backgroundColor = .white
+            locationButton.alpha = 0.8
+            locationButton.addTarget(self, action: #selector(centerMapOnUserButtonClicked), for:.touchUpInside)
+            mapView.addSubview(locationButton)
+        } else {
+            if let _locationButton = mapView.viewWithTag(100) {
+                _locationButton.removeFromSuperview()
+            }
+        }
+    }
+    
+    @objc func centerMapOnUserButtonClicked() {
+        self.mapView.setUserTrackingMode(MKUserTrackingMode.follow, animated: true)
+    }
+
     private func toPositionData(data: Array<Any>, animated: Bool) -> Dictionary<String, Any> {
         var positionData: Dictionary<String, Any> = [:]
         if let update: String = data[0] as? String {
@@ -255,7 +319,7 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
                     if let polylinesToRemove: NSArray = args["polylineIdsToRemove"] as? NSArray {
                         self.polylineController.removePolylines(polylineIds: polylinesToRemove)
                     }
-                    result(nil);
+                    result(nil)
                 case "map#update":
                     self.interprateOptions(options: args["options"] as! Dictionary<String, Any>)
                     //result(mapView.centerCoordinate) implement result for camera update

@@ -159,14 +159,9 @@ class FlutterPolyline: MKPolyline {
     
     convenience init(fromDictionaray polylineData: Dictionary<String, Any>) {
         let points = polylineData["points"] as! NSArray
-        var _points: [CLLocationCoordinate2D] = []
-               for point in points {
-                   if let _point: NSArray = point as? NSArray {
-                       _points.append(CLLocationCoordinate2D.init(latitude: _point[0] as! CLLocationDegrees, longitude: _point[1] as! CLLocationDegrees))
-                   }
-               }
+        let _points: [CLLocationCoordinate2D] = points.compactMap { JsonConversions.convertLocation(data: $0) }
         self.init(coordinates: _points, count: points.count)
-        self.color = hexToUIColor(hexColor: polylineData["color"] as! NSNumber)
+        self.color = JsonConversions.convertColor(data: polylineData["color"])
         self.isConsumingTapEvents = polylineData["consumeTapEvents"] as? Bool
         self.width = polylineData["width"] as? CGFloat
         self.id = polylineData["polylineId"] as? String
@@ -177,7 +172,7 @@ class FlutterPolyline: MKPolyline {
     }
     
     public func update(fromDictionary updatedPolylineData: Dictionary<String,Any>) -> Bool {
-        let uodatedColor: UIColor? = hexToUIColor(hexColor: updatedPolylineData["color"] as! NSNumber)
+        let updatedColor = JsonConversions.convertColor(data: updatedPolylineData["color"])
         let updatedIsConsumingTapEvents: Bool? = updatedPolylineData["consumeTapEvents"] as? Bool
         let updatedWidth: CGFloat? = updatedPolylineData["width"] as? CGFloat
         let updatedIsVisible: Bool? = updatedPolylineData["visible"] as? Bool
@@ -186,8 +181,8 @@ class FlutterPolyline: MKPolyline {
         let updatedLineJoin: Int? = updatedPolylineData["jointType"] as? Int
         var didUpdate = false
         
-        if (self.color != uodatedColor) {
-            self.color = uodatedColor
+        if (self.color != updatedColor) {
+            self.color = updatedColor
             didUpdate = true
         }
         if (self.isConsumingTapEvents != updatedIsConsumingTapEvents) {
@@ -215,10 +210,5 @@ class FlutterPolyline: MKPolyline {
             didUpdate = true
         }
         return didUpdate
-    }
-    
-    private func hexToUIColor(hexColor: NSNumber) -> UIColor {
-        let value: CUnsignedLong = hexColor as! CUnsignedLong
-        return UIColor(red: (CGFloat((value & 0xFF0000) >> 16) / 255.0), green: (CGFloat((value & 0xFF00) >> 8) / 255.0), blue: (CGFloat((value & 0xFF)) / 255.0), alpha: (CGFloat((value & 0xFF000000) >> 24)) / 255.0)
     }
 }

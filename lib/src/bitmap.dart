@@ -4,10 +4,22 @@
 
 part of apple_maps_flutter;
 
-enum AnnatationColor {
-  RED,
-  GREEN,
-  PURPLE,
+class AnnotationColor {
+  const AnnotationColor._(this._json);
+
+  /// The platform red annotation color
+  static const red = AnnotationColor._(['red']);
+  /// The platform green annotation color
+  static const green = AnnotationColor._(['purple']);
+  /// The platform purple annotation color
+  static const purple = AnnotationColor._(['green']);
+  /// A custom annotation color
+  ///
+  /// Only supported since iOS 9
+  static AnnotationColor custom(Color color) => AnnotationColor._(['custom', color.value]);
+
+  final dynamic _json;
+  dynamic _toJson() => _json;
 }
 
 /// Defines a bitmap image. For a annotation, this class can be used to set the
@@ -23,9 +35,9 @@ class BitmapDescriptor {
   /// Creates a BitmapDescriptor that refers to a colorization of the default
   /// annotation image. For convenience, there is a predefined set of hue values.
   /// See e.g. [hueYellow].
-  static BitmapDescriptor defaultAnnotationWithColor(AnnatationColor color) {
+  static BitmapDescriptor defaultAnnotationWithColor(AnnotationColor color) {
     assert(color != null);
-    return BitmapDescriptor._(<dynamic>['defaultAnnotation', color.index]);
+    return BitmapDescriptor._(<dynamic>['defaultAnnotation', color._toJson()]);
   }
 
   /// Creates a [BitmapDescriptor] from an asset image.
