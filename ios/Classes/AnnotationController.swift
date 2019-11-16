@@ -98,6 +98,7 @@ class FlutterAnnotation: NSObject, MKAnnotation {
     var wasDragged: Bool = false
     var isVisible: Bool? = true
     var icon: AnnotationIcon = AnnotationIcon.init()
+    var anchor: CGPoint
     
     public init(fromDictionary annotationData: Dictionary<String, Any>) {
         let position :Array<Double> = annotationData["position"] as! Array<Double>
@@ -109,6 +110,8 @@ class FlutterAnnotation: NSObject, MKAnnotation {
         self.subtitle = infoWindow["snippet"] as? String
         self.id = annotationData["annotationId"] as? String
         self.isVisible = annotationData["visible"] as? Bool
+        let anchorData = annotationData["anchor"] as! Array<Float>
+        self.anchor = CGPoint(x: CGFloat(anchorData[0]), y: CGFloat(anchorData[1]))
         if let alpha :Double = annotationData["alpha"] as? Double {
             self.alpha = alpha
         }
@@ -128,6 +131,8 @@ class FlutterAnnotation: NSObject, MKAnnotation {
         let iconData: Array<Any> = updatedAnnotationData["icon"] as! Array<Any>
         let updatedIcon: AnnotationIcon = getAnnotationImage(registrar: registrar, iconData: iconData, annotationId: self.id)
         let updatedVisibility: Bool = updatedAnnotationData["visible"] as! Bool
+        let anchorData = updatedAnnotationData["anchor"] as! Array<Float>
+        let updatedAnchor = CGPoint(x: CGFloat(anchorData[0]), y: CGFloat(anchorData[1]))
         
         if (updatedTitle != self.title) {
             self.title = updatedTitle
@@ -137,6 +142,12 @@ class FlutterAnnotation: NSObject, MKAnnotation {
             self.icon = updatedIcon
             didUpdate = true
         }
+        
+        if (updatedAnchor.x != self.anchor.x || updatedAnchor.y != self.anchor.y) {
+            self.anchor = updatedAnchor
+            didUpdate = true
+        }
+        
         if (updatedSubtitle != self.subtitle) {
             self.subtitle = updatedSubtitle
             didUpdate = true

@@ -170,6 +170,10 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
             } else if (annotation.icon.iconType == IconType.CUSTOM) {
                 annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: identifier)
                 annotationView!.image = annotation.icon.image
+                
+                let xOffset = CGFloat(0.5 - annotation.anchor.x) * (customIcon.image?.size.width ?? 0)
+                let yOffset = CGFloat(0.5 - annotation.anchor.y) * (customIcon.image?.size.height ?? 0)
+                customAnnotationView.centerOffset = CGPoint(x: xOffset, y: yOffset)
             }
         } else {
             annotationView!.annotation = annotation

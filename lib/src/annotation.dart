@@ -146,6 +146,7 @@ class Annotation {
     this.alpha = 1.0,
     this.draggable = false,
     this.icon = BitmapDescriptor.defaultAnnotation,
+    this.anchor = const Offset(0.5, 1.0),
     this.infoWindow = InfoWindow.noText,
     this.position = const LatLng(0.0, 0.0),
     this.onTap,
@@ -166,6 +167,13 @@ class Annotation {
 
   /// A description of the bitmap used to draw the annotation icon.
   final BitmapDescriptor icon;
+
+  /// The icon image point that will be placed at the [position] of the marker.
+  ///
+  /// The image point is specified in normalized coordinates: An anchor of
+  /// (0.0, 0.0) means the top left corner of the image. An anchor
+  /// of (1.0, 1.0) means the bottom right corner of the image.
+  final Offset anchor;
 
   /// An Apple Maps InfoWindow.
   ///
@@ -189,6 +197,7 @@ class Annotation {
     double alphaParam,
     bool consumeTapEventsParam,
     bool draggableParam,
+    Offset anchorParam,
     BitmapDescriptor iconParam,
     InfoWindow infoWindowParam,
     LatLng positionParam,
@@ -201,6 +210,7 @@ class Annotation {
       alpha: alphaParam ?? alpha,
       draggable: draggableParam ?? draggable,
       icon: iconParam ?? icon,
+      anchor: anchorParam ?? anchor,
       infoWindow: infoWindowParam ?? infoWindow,
       position: positionParam ?? position,
       onTap: onTapParam ?? onTap,
@@ -222,6 +232,7 @@ class Annotation {
     addIfPresent('alpha', alpha);
     addIfPresent('draggable', draggable);
     addIfPresent('icon', icon?._toJson());
+    addIfPresent('anchor', _offsetToJson(anchor));
     addIfPresent('infoWindow', infoWindow?._toJson());
     addIfPresent('visible', visible);
     addIfPresent('position', position?._toJson());
@@ -242,7 +253,7 @@ class Annotation {
   @override
   String toString() {
     return 'Annotation{annotationId: $annotationId, alpha: $alpha, draggable: $draggable,'
-        'icon: $icon, infoWindow: $infoWindow, position: $position ,visible: $visible, onTap: $onTap}';
+        'icon: $icon, infoWindow: $infoWindow, position: $position ,visible: $visible, onTap: $onTap, anchor: $anchor}';
   }
 }
 
