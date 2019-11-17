@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:apple_maps_flutter_example/padding.dart';
 import 'package:apple_maps_flutter_example/place_annotation.dart';
 import 'package:apple_maps_flutter_example/place_polyline.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,7 @@ final List<Page> _allPages = <Page>[
   MapClickPage(),
   AnimateCameraPage(),
   MoveCameraPage(),
+  PaddingPage(),
   PlaceAnnotationPage(),
   AnnotationIconsPage(),
   PlacePolylinePage(),
