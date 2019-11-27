@@ -1,3 +1,7 @@
+## 0.0.6+1
+
+* Changed annotation initialisation, fixes custom annotation icons not showing up on the map.
+
 ## 0.0.6
 
 * Added ability to add padding to the map
