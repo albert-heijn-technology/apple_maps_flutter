@@ -60,7 +60,7 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
         initialCameraPosition = args["initialCameraPosition"]! as! Dictionary<String, Any>
         options = args["options"] as! Dictionary<String, Any>
         super.init()
-        interprateOptions(options: options)
+        interpretOptions(options: options)
         mapView.setCenterCoordinate(initialCameraPosition, animated: false)
         if let annotationsToAdd :NSArray = args["annotationsToAdd"] as? NSArray {
             annotationController.annotationsToAdd(annotations: annotationsToAdd)
@@ -100,7 +100,7 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
         return polylineController.polylineRenderer(overlay: overlay)
     }
     
-    private func interprateOptions(options: Dictionary<String, Any>) {
+    private func interpretOptions(options: Dictionary<String, Any>) {
         if let isCompassEnabled: Bool = options["compassEnabled"] as? Bool {
             if #available(iOS 9.0, *) {
                 mapView.showsCompass = isCompassEnabled
@@ -187,9 +187,9 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
         let oldflutterAnnoation = annotationView?.annotation as? FlutterAnnotation
         
         if annotationView == nil || oldflutterAnnoation?.icon.iconType != annotation.icon.iconType {
-            if (annotation.icon.iconType == IconType.PIN) {
+            if annotation.icon.iconType == IconType.PIN {
                 annotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
-            } else if (annotation.icon.iconType == IconType.CUSTOM) {
+            } else if annotation.icon.iconType == IconType.CUSTOM {
                 annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: identifier)
                 annotationView!.image = annotation.icon.image
             }
@@ -197,7 +197,7 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
             annotationView!.annotation = annotation
         }
         // If annotation is not visible set alpha to 0 and don't let the user interact with it
-        if (!annotation.isVisible!) {
+        if !annotation.isVisible! {
             annotationView!.canShowCallout = false
             annotationView!.alpha = CGFloat(0.0)
             annotationView!.isDraggable = false
@@ -206,7 +206,6 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
         annotationView!.canShowCallout = true
         annotationView!.alpha = CGFloat(annotation.alpha ?? 1.00)
         annotationView!.isDraggable = annotation.isDraggable ?? false
-        
         return annotationView!
     }
     
@@ -275,17 +274,17 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
                     }
                     result(nil);
                 case "map#update":
-                    self.interprateOptions(options: args["options"] as! Dictionary<String, Any>)
+                    self.interpretOptions(options: args["options"] as! Dictionary<String, Any>)
                     //result(mapView.centerCoordinate) implement result for camera update
                 case "camera#animate":
                     let positionData :Dictionary<String, Any> = self.toPositionData(data: args["cameraUpdate"] as! Array<Any>, animated: true)
-                    if (!positionData.isEmpty) {
+                    if !positionData.isEmpty {
                         self.mapView.setCenterCoordinate(positionData, animated: true)
                     }
                     result(nil)
                 case "camera#move":
                     let positionData :Dictionary<String, Any> = self.toPositionData(data: args["cameraUpdate"] as! Array<Any>, animated: false)
-                    if (!positionData.isEmpty) {
+                    if !positionData.isEmpty {
                         self.mapView.setCenterCoordinate(positionData, animated: false)
                     }
                     result(nil)

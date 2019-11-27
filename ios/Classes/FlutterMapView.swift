@@ -55,7 +55,7 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
     override func layoutSubviews() {
         super.layoutSubviews()
         // Only update the centerCoordinate in layoutSubviews if the bounds changed
-        if (self.bounds != oldBounds) {
+        if self.bounds != oldBounds {
             if #available(iOS 9.0, *) {
                 setCenterCoordinateWithAltitude(centerCoordinate: centerCoordinate, zoomLevel: zoomLevel, animated: false)
                 mapContainerView = self.findViewOfType("MKScrollContainerView", inView: self)
@@ -68,7 +68,7 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
     
     
     override func didMoveToSuperview() {
-        if (oldBounds != CGRect.zero) {
+        if oldBounds != CGRect.zero {
             oldBounds = CGRect.zero
         }
     }
@@ -105,14 +105,14 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
             } else {
                locationManager.stopUpdatingLocation()
             }
-        self.showsUserLocation = myLocationEnabled
+            self.showsUserLocation = myLocationEnabled
         }
     }
     
     // Functions used for the mapTrackingButton
     func mapTrackingButton(isVisible visible: Bool) {
         self.isMyLocationButtonShowing = visible
-        if (visible) {
+        if visible {
            let image = UIImage(named: "outline_near_me")
            let locationButton = UIButton(type: UIButtonType.custom) as UIButton
            locationButton.tag = 100
@@ -189,14 +189,10 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
             let maxMeters: Double = meters(fromPixel: 10, at: touchPt)
             var nearestDistance: Float = MAXFLOAT
             var nearestPoly: FlutterPolyline? = nil
-            // for every overlay ...
             for overlay: MKOverlay in self.overlays {
-                // .. if MKPolyline ...
-                if (overlay is FlutterPolyline) {
-                    // ... get the distance ...
+                if overlay is FlutterPolyline {
                     let distance: Float = Float(distanceOf(pt: MKMapPointForCoordinate(coord), toPoly: overlay as! MKPolyline))
-                    // ... and find the nearest one
-                    if (distance < nearestDistance) {
+                    if distance < nearestDistance {
                         nearestDistance = distance
                         nearestPoly = (overlay as! FlutterPolyline)
                     }
@@ -204,7 +200,7 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
                 }
             }
 
-            if (Double(nearestDistance) <= maxMeters) {
+            if Double(nearestDistance) <= maxMeters {
                 if (nearestPoly?.isConsumingTapEvents ?? false) {
                     channel?.invokeMethod("polyline#onTap", arguments: ["polylineId": nearestPoly!.id])
                 } else {
@@ -219,7 +215,7 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
     }
     
     public func updateCameraValues() {
-        if (oldBounds != nil && oldBounds != CGRect.zero) {
+        if oldBounds != nil && oldBounds != CGRect.zero {
             self.updateStoredCameraValues(newZoomLevel: calculatedZoomLevel, newPitch: camera.pitch, newHeading: actualHeading)
         }
     }

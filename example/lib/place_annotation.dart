@@ -57,12 +57,6 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
           annotations[selectedAnnotation] = resetOld;
         }
         selectedAnnotation = annotationId;
-        final Annotation newAnnotation = tappedAnnotation.copyWith(
-          iconParam: BitmapDescriptor.defaultAnnotationWithColor(
-            AnnatationColor.GREEN,
-          ),
-        );
-        annotations[annotationId] = newAnnotation;
       });
     }
   }
