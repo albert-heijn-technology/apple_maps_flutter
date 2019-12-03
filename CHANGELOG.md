@@ -1,3 +1,7 @@
+## 0.0.6+2
+
+* Converted iOS code to swift 5.
+
 ## 0.0.6+1
 
 * Changed annotation initialisation, fixes custom annotation icons not showing up on the map.

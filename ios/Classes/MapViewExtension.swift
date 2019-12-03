@@ -139,7 +139,7 @@ public extension MKMapView {
     
         // use the zoom level to compute the region
         let span = self.coordinateSpanWithMapView(centerCoordinate: centerCoordinate, zoomLevel: Int(zoomL))
-        let region = MKCoordinateRegionMake(centerCoordinate, span)
+        let region = MKCoordinateRegion.init(center: centerCoordinate, span: span)
         
         // set the region like normal
         self.setRegion(region, animated: animated)
@@ -181,7 +181,7 @@ public extension MKMapView {
         let latitudeDelta = -1 * (maxLat - minLat)
     
         // create and return the lat/lng span
-        return MKCoordinateSpanMake(latitudeDelta, longitudeDelta)
+        return MKCoordinateSpan.init(latitudeDelta: latitudeDelta, longitudeDelta: longitudeDelta)
     }
     
     @available(iOS 9.0, *)
@@ -207,7 +207,7 @@ public extension MKMapView {
         let maxLat = pixelSpaceYToLatitude(pixelY: topLeftPixelY + scaledMapHeight)
         let topBottom = CLLocationCoordinate2D.init(latitude: maxLat, longitude: centerCoordinate.longitude)
         
-        let distance = MKMetersBetweenMapPoints(MKMapPointForCoordinate(centerCoordinate), MKMapPointForCoordinate(topBottom))
+        let distance = MKMapPoint.init(centerCoordinate).distance(to: MKMapPoint.init(topBottom))
         let altitude = distance / tan(.pi*(15/180.0))
         
         return altitude

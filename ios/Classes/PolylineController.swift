@@ -62,7 +62,7 @@ class PolylineController {
         for _polyline in data {
             let polylineData :Dictionary<String, Any> = _polyline as! Dictionary<String, Any>
             let polyline = FlutterPolyline(fromDictionaray: polylineData)
-            mapView.add(polyline)
+            mapView.addOverlay(polyline)
         }
     }
 
@@ -88,15 +88,15 @@ class PolylineController {
         for overlay in mapView.overlays {
             if let polyline = overlay as? FlutterPolyline {
                 if polylineIds.contains(polyline.id!) {
-                    mapView.remove(polyline)
+                    mapView.removeOverlay(polyline)
                 }
             }
         }
     }
     
     private func updatePolylinesOnMap(oldPolyline: FlutterPolyline, newPolyline: FlutterPolyline) {
-        mapView.remove(oldPolyline)
-        mapView.add(newPolyline)
+        mapView.removeOverlay(oldPolyline)
+        mapView.addOverlay(newPolyline)
     }
     
     private func linePatternToArray(patternData: NSArray?, lineWidth: CGFloat?) -> [NSNumber] {
