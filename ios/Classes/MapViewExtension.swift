@@ -207,7 +207,7 @@ public extension MKMapView {
         let maxLat = pixelSpaceYToLatitude(pixelY: topLeftPixelY + scaledMapHeight)
         let topBottom = CLLocationCoordinate2D.init(latitude: maxLat, longitude: centerCoordinate.longitude)
         
-        let distance = MKMapPoint.init(centerCoordinate).distance(to: MKMapPoint.init(topBottom))
+        let distance = MKMetersBetweenMapPoints(MKMapPointForCoordinate(centerCoordinate), MKMapPointForCoordinate(topBottom))
         let altitude = distance / tan(.pi*(15/180.0))
         
         return altitude

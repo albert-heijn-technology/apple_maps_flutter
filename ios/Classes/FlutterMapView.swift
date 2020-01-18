@@ -191,7 +191,7 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
             var nearestPoly: FlutterPolyline? = nil
             for overlay: MKOverlay in self.overlays {
                 if overlay is FlutterPolyline {
-                    let distance: Float = Float(distanceOf(pt: MKMapPoint.init(coord), toPoly: overlay as! MKPolyline))
+                    let distance: Float = Float(distanceOf(pt: MKMapPointForCoordinate(coord), toPoly: overlay as! MKPolyline))
                     if distance < nearestDistance {
                         nearestDistance = distance
                         nearestPoly = (overlay as! FlutterPolyline)
@@ -249,7 +249,7 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
                 ptClosest = MKMapPoint.init(x: ptA.x + u * xDelta, y: ptA.y + u * yDelta)
             }
 
-            distance = min(distance, ptClosest.distance(to: pt))
+            distance = min(distance, MKMetersBetweenMapPoints(ptClosest, pt))
         }
         return distance
     }
@@ -258,6 +258,6 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
         let ptB = CGPoint(x: pt.x + CGFloat(px), y: pt.y)
         let coordA: CLLocationCoordinate2D = self.convert(pt, toCoordinateFrom: self)
         let coordB: CLLocationCoordinate2D = self.convert(ptB, toCoordinateFrom: self)
-        return MKMapPoint.init(coordA).distance(to: MKMapPoint.init(coordB))
+        return MKMetersBetweenMapPoints(MKMapPointForCoordinate(coordA), MKMapPointForCoordinate(coordB))
     }
 }
