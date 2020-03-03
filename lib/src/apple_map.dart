@@ -30,7 +30,7 @@ class AppleMap extends StatefulWidget {
     this.zoomGesturesEnabled = true,
     this.pitchGesturesEnabled = true,
     this.myLocationEnabled = false,
-    this.myLocationButtonEnabled = true,
+    this.myLocationButtonEnabled = false,
     this.padding = EdgeInsets.zero,
     this.annotations,
     this.polylines,
@@ -383,8 +383,7 @@ class _AppleMapOptions {
   }
 
   List<double> _serializePadding(EdgeInsets insets) {
-    if (insets == null)
-      return null;
+    if (insets == null) return null;
 
     return [insets.top, insets.left, insets.bottom, insets.right];
   }

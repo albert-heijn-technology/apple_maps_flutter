@@ -39,28 +39,15 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
     var initialCameraPosition :Dictionary<String, Any>
     var options :Dictionary<String, Any>
     
-    let mapTypes: Array<MKMapType> = [
-        MKMapType.standard,
-        MKMapType.satellite,
-        MKMapType.hybrid,
-    ]
-    
-    let userTrackingModes: Array<MKUserTrackingMode> = [
-        MKUserTrackingMode.none,
-        MKUserTrackingMode.follow,
-        MKUserTrackingMode.followWithHeading,
-    ]
-    
     public init(withFrame frame: CGRect, withRegistrar registrar: FlutterPluginRegistrar, withargs args: Dictionary<String, Any> ,withId id: Int64) {
         self.registrar = registrar
         channel = FlutterMethodChannel(name: "apple_maps_plugin.luisthein.de/apple_maps_\(id)", binaryMessenger: registrar.messenger())
-        self.mapView = FlutterMapView(channel: channel)
+        options = args["options"] as! Dictionary<String, Any>
+        self.mapView = FlutterMapView(channel: channel, options: options)
         annotationController = AnnotationController(mapView: mapView, channel: channel, registrar: registrar)
         polylineController = PolylineController(mapView: mapView, channel: channel, registrar: registrar)
         initialCameraPosition = args["initialCameraPosition"]! as! Dictionary<String, Any>
-        options = args["options"] as! Dictionary<String, Any>
         super.init()
-        interpretOptions(options: options)
         mapView.setCenterCoordinate(initialCameraPosition, animated: false)
         if let annotationsToAdd :NSArray = args["annotationsToAdd"] as? NSArray {
             annotationController.annotationsToAdd(annotations: annotationsToAdd)
@@ -98,87 +85,6 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
     
     public func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         return polylineController.polylineRenderer(overlay: overlay)
-    }
-    
-    private func interpretOptions(options: Dictionary<String, Any>) {
-        if let isCompassEnabled: Bool = options["compassEnabled"] as? Bool {
-            if #available(iOS 9.0, *) {
-                mapView.showsCompass = isCompassEnabled
-            } else {
-                // not sure if there's a simple solution
-            }
-        }
-
-        if let padding: Array<Any> = options["padding"] as? Array<Any> {
-            var margins = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
-            
-            if padding.count >= 1, let top: Double = padding[0] as? Double {
-                margins.top = CGFloat(top)
-            }
-            
-            if padding.count >= 2, let left: Double = padding[1] as? Double {
-                margins.left = CGFloat(left)
-            }
-            
-            if padding.count >= 3, let bottom: Double = padding[2] as? Double {
-                margins.bottom = CGFloat(bottom)
-            }
-            
-            if padding.count >= 4, let right: Double = padding[3] as? Double {
-                margins.right = CGFloat(right)
-            }
-            
-            mapView.layoutMargins = margins
-        }
-        
-        if let mapType: Int = options["mapType"] as? Int {
-            mapView.mapType = mapTypes[mapType]
-        }
-        
-        if let trafficEnabled: Bool = options["trafficEnabled"] as? Bool {
-            if #available(iOS 9.0, *) {
-                mapView.showsTraffic = trafficEnabled
-            } else {
-                // do nothing
-            }
-        }
-        
-        if let rotateGesturesEnabled: Bool = options["rotateGesturesEnabled"] as? Bool {
-            mapView.isRotateEnabled = rotateGesturesEnabled
-        }
-        
-        if let scrollGesturesEnabled: Bool = options["scrollGesturesEnabled"] as? Bool {
-            mapView.isScrollEnabled = scrollGesturesEnabled
-        }
-        
-        if let pitchGesturesEnabled: Bool = options["pitchGesturesEnabled"] as? Bool {
-            mapView.isPitchEnabled = pitchGesturesEnabled
-        }
-        
-        if let zoomGesturesEnabled: Bool = options["zoomGesturesEnabled"] as? Bool{
-            mapView.isZoomEnabled = zoomGesturesEnabled
-        }
-        
-        if let myLocationEnabled: Bool = options["myLocationEnabled"] as? Bool {
-            mapView.setUserLocation(myLocationEnabled: myLocationEnabled)
-        }
-        
-        if let myLocationButtonEnabled: Bool = options["myLocationButtonEnabled"] as? Bool {
-            mapView.mapTrackingButton(isVisible: myLocationButtonEnabled)
-        }
-        
-        if let userTackingMode: Int = options["trackingMode"] as? Int {
-            mapView.setUserTrackingMode(userTrackingModes[userTackingMode], animated: false)
-        }
-        
-        if let minMaxZoom: Array<Any> = options["minMaxZoomPreference"] as? Array<Any>{
-            if let _minZoom: Double = minMaxZoom[0] as? Double {
-                mapView.minZoomLevel = _minZoom
-            }
-            if let _maxZoom: Double = minMaxZoom[1] as? Double {
-                mapView.maxZoomLevel = _maxZoom
-            }
-        }
     }
     
     private func getAnnotationView(annotation: FlutterAnnotation) -> MKAnnotationView{
@@ -274,8 +180,7 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
                     }
                     result(nil);
                 case "map#update":
-                    self.interpretOptions(options: args["options"] as! Dictionary<String, Any>)
-                    //result(mapView.centerCoordinate) implement result for camera update
+                    self.mapView.interpretOptions(options: args["options"] as! Dictionary<String, Any>)
                 case "camera#animate":
                     let positionData :Dictionary<String, Any> = self.toPositionData(data: args["cameraUpdate"] as! Array<Any>, animated: true)
                     if !positionData.isEmpty {

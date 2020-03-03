@@ -9,8 +9,10 @@ import Foundation
 import UIKit
 import MapKit
 
-private let MERCATOR_OFFSET: Double = 268435456.0
-private let MERCATOR_RADIUS: Double = 85445659.44705395
+enum MapViewConstants: Double {
+    case MERCATOR_OFFSET = 268435456.0
+    case MERCATOR_RADIUS = 85445659.44705395
+}
 
 public extension MKMapView {
     private struct Holder {
@@ -87,19 +89,19 @@ public extension MKMapView {
     }
     
     func longitudeToPixelSpaceX(longitude: Double) -> Double {
-        return round(MERCATOR_OFFSET + MERCATOR_RADIUS * longitude * .pi / 180.0)
+        return round(MapViewConstants.MERCATOR_OFFSET.rawValue + MapViewConstants.MERCATOR_RADIUS.rawValue * longitude * .pi / 180.0)
     }
     
     func latitudeToPixelSpaceY(latitude: Double) -> Double {
-        return round(Double(Float(MERCATOR_OFFSET) - Float(MERCATOR_RADIUS) * logf((1 + sinf(Float(latitude * .pi / 180.0))) / (1 - sinf(Float(latitude * .pi / 180.0)))) / Float(2.0)))
+        return round(Double(Float(MapViewConstants.MERCATOR_OFFSET.rawValue) - Float(MapViewConstants.MERCATOR_RADIUS.rawValue) * logf((1 + sinf(Float(latitude * .pi / 180.0))) / (1 - sinf(Float(latitude * .pi / 180.0)))) / Float(2.0)))
     }
     
     func pixelSpaceXToLongitude(pixelX: Double) -> Double {
-        return ((round(pixelX) - MERCATOR_OFFSET) / MERCATOR_RADIUS) * 180.0 / .pi
+        return ((round(pixelX) - MapViewConstants.MERCATOR_OFFSET.rawValue) / MapViewConstants.MERCATOR_RADIUS.rawValue) * 180.0 / .pi
     }
     
     func pixelSpaceYToLatitude(pixelY: Double) -> Double {
-        return (.pi / 2.0 - 2.0 * atan(exp((round(pixelY) - MERCATOR_OFFSET) / MERCATOR_RADIUS))) * 180.0 / .pi
+        return (.pi / 2.0 - 2.0 * atan(exp((round(pixelY) - MapViewConstants.MERCATOR_OFFSET.rawValue) / MapViewConstants.MERCATOR_RADIUS.rawValue))) * 180.0 / .pi
     }
     
     func logC(val: Double, forBase base: Double) -> Double {

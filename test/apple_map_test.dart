@@ -330,7 +330,7 @@ void main() {
         textDirection: TextDirection.ltr,
         child: AppleMap(
           initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
-          myLocationEnabled: false,
+          myLocationButtonEnabled: true,
         ),
       ),
     );

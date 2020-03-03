@@ -8,7 +8,7 @@
 .dart_tool/
 pubspec.lock
 flutter_export_environment.sh
-
+resources/
 examples/all_plugins/pubspec.yaml
 
 Podfile
@@ -29,6 +29,8 @@ keystore.properties
 gradlew
 gradlew.bat
 gradle-wrapper.jar
+.flutter-plugins-dependencies
+flutter_export_environment.sh
 *.iml
 
 GeneratedPluginRegistrant.h

@@ -44,8 +44,6 @@ class CameraTargetBounds {
   /// Unbounded camera target.
   static const CameraTargetBounds unbounded = CameraTargetBounds(null);
 
-  dynamic _toJson() => <dynamic>[bounds?._toList()];
-
   @override
   bool operator ==(dynamic other) {
     if (identical(this, other)) return true;
@@ -94,14 +92,4 @@ class MinMaxZoomPreference {
   String toString() {
     return 'MinMaxZoomPreference(minZoom: $minZoom, maxZoom: $maxZoom)';
   }
-}
-
-/// Exception when a map style is invalid or was unable to be set.
-///
-/// See also: `setStyle` on [AppleMapController] for why this exception
-/// might be thrown.
-class MapStyleException implements Exception {
-  const MapStyleException(this.cause);
-
-  final String cause;
 }
