@@ -39,7 +39,6 @@ class Polyline {
     this.consumeTapEvents = false,
     this.color = Colors.black,
     this.polylineCap = Cap.buttCap,
-    // this.geodesic = false,
     this.jointType = JointType.round,
     this.points = const <LatLng>[],
     this.patterns = const <PatternItem>[],
@@ -135,7 +134,6 @@ class Polyline {
       color: colorParam ?? color,
       consumeTapEvents: consumeTapEventsParam ?? consumeTapEvents,
       polylineCap: polylineCapParam ?? polylineCap,
-      // geodesic: geodesicParam ?? geodesic,
       jointType: jointTypeParam ?? jointType,
       patterns: patternsParam ?? patterns,
       points: pointsParam ?? points,
@@ -159,7 +157,6 @@ class Polyline {
     addIfPresent('consumeTapEvents', consumeTapEvents);
     addIfPresent('color', color.value);
     addIfPresent('polylineCap', polylineCap?._toJson());
-    // addIfPresent('geodesic', geodesic);
     addIfPresent('jointType', jointType?.value);
     addIfPresent('visible', visible);
     addIfPresent('width', width);

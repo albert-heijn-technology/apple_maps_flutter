@@ -1,3 +1,7 @@
+## 0.0.6+3
+
+* Fixes issue #6, location permission is only requested if it's actually used.
+
 ## 0.0.6+2
 
 * Converted iOS code to swift 5.

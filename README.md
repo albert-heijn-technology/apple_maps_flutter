@@ -8,9 +8,9 @@ This plugin was based on the [google_maps_flutter]("https://pub.dev/packages/goo
 
 # Screenshots
 
-|                                               Example 1                                               |                                               Example 2                                               |
-| :---------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------: |
-| ![Example 1](https://github.com/LuisThein/apple_maps_flutter/blob/master/resources/example_img01.png) | ![Example 2](https://github.com/LuisThein/apple_maps_flutter/blob/master/resources/example_img02.png) |
+|                                     Example 1                                     |                                     Example 2                                     |
+| :-------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------: |
+| ![Example 1](https://luisthein.de/apple-maps-plugin-images/example_img01-min.png) | ![Example 2](https://luisthein.de/apple-maps-plugin-images/example_img02-min.png) |
 
 # iOS
 

@@ -9,20 +9,35 @@ import Foundation
 import MapKit
 import CoreLocation
 
-private let MERCATOR_OFFSET: Double = 268435456.0
-private let MERCATOR_RADIUS: Double = 85445659.44705395
+enum BUTTON_IDS: Int {
+    case LOCATION = 100
+}
+
 
 class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
-    
     var oldBounds: CGRect?
     var mapContainerView: UIView?
     var channel: FlutterMethodChannel?
-    fileprivate let locationManager:CLLocationManager = CLLocationManager()
+    var options: Dictionary<String, Any>?
     var isMyLocationButtonShowing: Bool? = false
+    fileprivate let locationManager:CLLocationManager = CLLocationManager()
     
-    convenience init(channel: FlutterMethodChannel) {
+    let mapTypes: Array<MKMapType> = [
+        MKMapType.standard,
+        MKMapType.satellite,
+        MKMapType.hybrid,
+    ]
+    
+    let userTrackingModes: Array<MKUserTrackingMode> = [
+        MKUserTrackingMode.none,
+        MKUserTrackingMode.follow,
+        MKUserTrackingMode.followWithHeading,
+    ]
+    
+    convenience init(channel: FlutterMethodChannel, options: Dictionary<String, Any>) {
         self.init(frame: CGRect.zero)
         self.channel = channel
+        self.options = options
         initialiseTapGestureRecognizers()
     }
     
@@ -50,12 +65,14 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
     }
     
     // To calculate the displayed region we have to get the layout bounds.
-    // Because the mapView is layed out using an auto layout we have to call
-    // setCenterCoordinate after the mapView was layed out.
+    // Because the self is layed out using an auto layout we have to call
+    // setCenterCoordinate after the self was layed out.
     override func layoutSubviews() {
-        super.layoutSubviews()
-        // Only update the centerCoordinate in layoutSubviews if the bounds changed
+        // Only update the map in layoutSubviews if the bounds changed
         if self.bounds != oldBounds {
+            if self.options != nil {
+                self.interpretOptions(options: self.options!)
+            }
             if #available(iOS 9.0, *) {
                 setCenterCoordinateWithAltitude(centerCoordinate: centerCoordinate, zoomLevel: zoomLevel, animated: false)
                 mapContainerView = self.findViewOfType("MKScrollContainerView", inView: self)
@@ -93,40 +110,125 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
       }
     }
     
-    public func setUserLocation(myLocationEnabled :Bool) {
+    func interpretOptions(options: Dictionary<String, Any>) {
+        if let isCompassEnabled: Bool = options["compassEnabled"] as? Bool {
+            if #available(iOS 9.0, *) {
+                self.showsCompass = isCompassEnabled
+            }
+        }
+
+        if let padding: Array<Any> = options["padding"] as? Array<Any> {
+            var margins = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
+            
+            if padding.count >= 1, let top: Double = padding[0] as? Double {
+                margins.top = CGFloat(top)
+            }
+            
+            if padding.count >= 2, let left: Double = padding[1] as? Double {
+                margins.left = CGFloat(left)
+            }
+            
+            if padding.count >= 3, let bottom: Double = padding[2] as? Double {
+                margins.bottom = CGFloat(bottom)
+            }
+            
+            if padding.count >= 4, let right: Double = padding[3] as? Double {
+                margins.right = CGFloat(right)
+            }
+            
+            self.layoutMargins = margins
+        }
+        
+        if let mapType: Int = options["mapType"] as? Int {
+            self.mapType = self.mapTypes[mapType]
+        }
+        
+        if let trafficEnabled: Bool = options["trafficEnabled"] as? Bool {
+            if #available(iOS 9.0, *) {
+                self.showsTraffic = trafficEnabled
+            } else {
+                // do nothing
+            }
+        }
+        
+        if let rotateGesturesEnabled: Bool = options["rotateGesturesEnabled"] as? Bool {
+            self.isRotateEnabled = rotateGesturesEnabled
+        }
+        
+        if let scrollGesturesEnabled: Bool = options["scrollGesturesEnabled"] as? Bool {
+            self.isScrollEnabled = scrollGesturesEnabled
+        }
+        
+        if let pitchGesturesEnabled: Bool = options["pitchGesturesEnabled"] as? Bool {
+            self.isPitchEnabled = pitchGesturesEnabled
+        }
+        
+        if let zoomGesturesEnabled: Bool = options["zoomGesturesEnabled"] as? Bool{
+            self.isZoomEnabled = zoomGesturesEnabled
+        }
+        
+        if let myLocationEnabled: Bool = options["myLocationEnabled"] as? Bool {
+            if (myLocationEnabled) {
+                self.setUserLocation()
+            } else {
+                self.removeUserLocation()
+            }
+            
+        }
+        
+        if let myLocationButtonEnabled: Bool = options["myLocationButtonEnabled"] as? Bool {
+            self.mapTrackingButton(isVisible: myLocationButtonEnabled)
+        }
+        
+        if let userTackingMode: Int = options["trackingMode"] as? Int {
+            self.setUserTrackingMode(self.userTrackingModes[userTackingMode], animated: false)
+        }
+        
+        if let minMaxZoom: Array<Any> = options["minMaxZoomPreference"] as? Array<Any>{
+            if let _minZoom: Double = minMaxZoom[0] as? Double {
+                self.minZoomLevel = _minZoom
+            }
+            if let _maxZoom: Double = minMaxZoom[1] as? Double {
+                self.maxZoomLevel = _maxZoom
+            }
+        }
+    }
+    
+    public func setUserLocation() {
         if CLLocationManager.authorizationStatus() == .notDetermined {
             locationManager.requestWhenInUseAuthorization()
         } else if CLLocationManager.authorizationStatus() ==  .authorizedWhenInUse {
-            if (myLocationEnabled) {
-               locationManager.requestWhenInUseAuthorization()
-               locationManager.desiredAccuracy = kCLLocationAccuracyBest
-               locationManager.distanceFilter = kCLDistanceFilterNone
-               locationManager.startUpdatingLocation()
-            } else {
-               locationManager.stopUpdatingLocation()
-            }
-            self.showsUserLocation = myLocationEnabled
+            locationManager.requestWhenInUseAuthorization()
+            locationManager.desiredAccuracy = kCLLocationAccuracyBest
+            locationManager.distanceFilter = kCLDistanceFilterNone
+            locationManager.startUpdatingLocation()
+            self.showsUserLocation = true
         }
+    }
+    
+    public func removeUserLocation() {
+        locationManager.stopUpdatingLocation()
+        self.showsUserLocation = false
     }
     
     // Functions used for the mapTrackingButton
     func mapTrackingButton(isVisible visible: Bool) {
         self.isMyLocationButtonShowing = visible
         if visible {
-           let image = UIImage(named: "outline_near_me")
-           let locationButton = UIButton(type: UIButton.ButtonType.custom) as UIButton
-           locationButton.tag = 100
-           locationButton.layer.cornerRadius = 5
-           locationButton.frame = CGRect(origin: CGPoint(x: self.bounds.width - 45, y: self.bounds.height - 45), size: CGSize(width: 40, height: 40))
-           locationButton.setImage(image, for: .normal)
-           locationButton.backgroundColor = .white
-           locationButton.alpha = 0.8
-           locationButton.addTarget(self, action: #selector(centerMapOnUserButtonClicked), for:.touchUpInside)
-           self.addSubview(locationButton)
+            let image = UIImage(named: "outline_near_me")
+            let locationButton = UIButton(type: UIButton.ButtonType.custom) as UIButton
+            locationButton.tag = BUTTON_IDS.LOCATION.rawValue
+            locationButton.layer.cornerRadius = 5
+            locationButton.frame = CGRect(origin: CGPoint(x: self.bounds.width - 45, y: self.bounds.height - 45), size: CGSize(width: 40, height: 40))
+            locationButton.setImage(image, for: .normal)
+            locationButton.backgroundColor = .white
+            locationButton.alpha = 0.8
+            locationButton.addTarget(self, action: #selector(centerMapOnUserButtonClicked), for:.touchUpInside)
+            self.addSubview(locationButton)
         } else {
-           if let _locationButton = self.viewWithTag(100) {
+            if let _locationButton = self.viewWithTag(BUTTON_IDS.LOCATION.rawValue) {
                _locationButton.removeFromSuperview()
-           }
+            }
         }
     }
     
@@ -163,7 +265,7 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
     }
        
     @objc func onMapGesture(sender: UIGestureRecognizer) {
-        let locationOnMap = self.region.center // mapView.convert(locationInView, toCoordinateFrom: mapView)
+        let locationOnMap = self.region.center // self.convert(locationInView, toCoordinateFrom: self)
         let zoom = self.calculatedZoomLevel
         let pitch = self.camera.pitch
         let heading = self.actualHeading
