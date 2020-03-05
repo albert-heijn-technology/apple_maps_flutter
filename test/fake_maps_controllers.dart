@@ -15,6 +15,7 @@ class FakePlatformAppleMap {
         const StandardMethodCodec());
     channel.setMockMethodCallHandler(onMethodCall);
     updateOptions(params['options']);
+    updatePolylines(params);
     updateAnnotations(params);
   }
 

@@ -293,7 +293,7 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
             var nearestPoly: FlutterPolyline? = nil
             for overlay: MKOverlay in self.overlays {
                 if overlay is FlutterPolyline {
-                    let distance: Float = Float(distanceOf(pt: MKMapPoint(coord), toPoly: overlay as! MKPolyline))
+                    let distance: Float = Float(distanceOf(pt: MKMapPoint.init(coord), toPoly: overlay as! MKPolyline))
                     if distance < nearestDistance {
                         nearestDistance = distance
                         nearestPoly = (overlay as! FlutterPolyline)
