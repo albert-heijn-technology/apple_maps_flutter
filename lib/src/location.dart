@@ -73,10 +73,6 @@ class LatLngBounds {
   /// The northeast corner of the rectangle.
   final LatLng northeast;
 
-  dynamic _toList() {
-    return <dynamic>[southwest._toJson(), northeast._toJson()];
-  }
-
   /// Returns whether this rectangle contains the given [LatLng].
   bool contains(LatLng point) {
     return _containsLatitude(point.latitude) &&

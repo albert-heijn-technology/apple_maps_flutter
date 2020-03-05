@@ -1,3 +1,7 @@
+## 0.0.6+4
+
+* Fixed build issues
+
 ## 0.0.6+3
 
 * Fixes issue #6, location permission is only requested if it's actually used.
