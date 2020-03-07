@@ -290,21 +290,28 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
             let coord: CLLocationCoordinate2D = self.convert(touchPt, toCoordinateFrom: self)
             let maxMeters: Double = meters(fromPixel: 10, at: touchPt)
             var nearestDistance: Float = MAXFLOAT
-            var nearestPoly: FlutterPolyline? = nil
+            var nearestPolyline: FlutterPolyline?
+            var nearestPolygon: FlutterPolygon?
             for overlay: MKOverlay in self.overlays {
                 if overlay is FlutterPolyline {
                     let distance: Float = Float(distanceOf(pt: MKMapPoint.init(coord), toPoly: overlay as! MKPolyline))
                     if distance < nearestDistance {
                         nearestDistance = distance
-                        nearestPoly = (overlay as! FlutterPolyline)
+                        nearestPolyline = (overlay as! FlutterPolyline)
                     }
-
+                } else if overlay is FlutterPolygon {
+                    let distance: Float = Float(distanceOf(pt: MKMapPoint.init(coord), toPoly: overlay as! MKPolygon))
+                    if distance < nearestDistance {
+                        nearestDistance = distance
+                        nearestPolygon = (overlay as! FlutterPolygon)
+                    }
                 }
             }
-
             if Double(nearestDistance) <= maxMeters {
-                if (nearestPoly?.isConsumingTapEvents ?? false) {
-                    channel?.invokeMethod("polyline#onTap", arguments: ["polylineId": nearestPoly!.id])
+                if nearestPolyline?.isConsumingTapEvents ?? false {
+                    channel?.invokeMethod("polyline#onTap", arguments: ["polylineId": nearestPolyline!.id])
+                } else if  nearestPolygon?.isConsumingTapEvents ?? false {
+                    channel?.invokeMethod("polygon#onTap", arguments: ["polygonId": nearestPolygon!.id])
                 } else {
                     let locationOnMap = self.convert(locationInView, toCoordinateFrom: self)
                     channel?.invokeMethod("map#onTap", arguments: ["position": [locationOnMap.latitude, locationOnMap.longitude]])
@@ -328,7 +335,7 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
         return true
     }
     
-    func distanceOf(pt: MKMapPoint, toPoly poly: MKPolyline) -> Double {
+    func distanceOf(pt: MKMapPoint, toPoly poly: MKMultiPoint) -> Double {
         var distance: Double = Double(MAXFLOAT)
         for n in 0..<poly.pointCount - 1 {
             let ptA = poly.points()[n]

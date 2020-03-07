@@ -36,6 +36,7 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
     var channel: FlutterMethodChannel
     var annotationController: AnnotationController
     var polylineController: PolylineController
+    var polygonController: PolygonController
     var initialCameraPosition :Dictionary<String, Any>
     var options :Dictionary<String, Any>
     
@@ -46,6 +47,7 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
         self.mapView = FlutterMapView(channel: channel, options: options)
         annotationController = AnnotationController(mapView: mapView, channel: channel, registrar: registrar)
         polylineController = PolylineController(mapView: mapView, channel: channel, registrar: registrar)
+        polygonController = PolygonController(mapView: mapView, channel: channel, registrar: registrar)
         initialCameraPosition = args["initialCameraPosition"]! as! Dictionary<String, Any>
         super.init()
         mapView.setCenterCoordinate(initialCameraPosition, animated: false)
@@ -54,6 +56,9 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
         }
         if let polylinesToAdd :NSArray = args["polylinesToAdd"] as? NSArray {
             polylineController.addPolylines(polylineData: polylinesToAdd)
+        }
+        if let polygonsToAdd :NSArray = args["polygonsToAdd"] as? NSArray {
+            polygonController.addPolygons(polygonData: polygonsToAdd)
         }
         mapView.delegate = self
     }
@@ -84,17 +89,23 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
     }
     
     public func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-        return polylineController.polylineRenderer(overlay: overlay)
+        if overlay is FlutterPolyline {
+            return polylineController.polylineRenderer(overlay: overlay)
+        } else if overlay is FlutterPolygon {
+            return polygonController.polygonRenderer(overlay: overlay)
+        }
+        return MKOverlayRenderer()
     }
     
     private func getAnnotationView(annotation: FlutterAnnotation) -> MKAnnotationView{
         let identifier :String = annotation.id
         var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier)
         let oldflutterAnnoation = annotationView?.annotation as? FlutterAnnotation
-        
         if annotationView == nil || oldflutterAnnoation?.icon.iconType != annotation.icon.iconType {
             if annotation.icon.iconType == IconType.PIN {
                 annotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+            } else if annotation.icon.iconType == IconType.STANDARD {
+                annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: identifier)
             } else if annotation.icon.iconType == IconType.CUSTOM {
                 annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: identifier)
                 annotationView!.image = annotation.icon.image
@@ -179,6 +190,17 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
                         self.polylineController.removePolylines(polylineIds: polylinesToRemove)
                     }
                     result(nil);
+                case "polygons#update":
+                   if let polyligonsToAdd: NSArray = args["polygonsToAdd"] as? NSArray {
+                       self.polygonController.addPolygons(polygonData: polyligonsToAdd)
+                   }
+                   if let polygonsToChange: NSArray = args["polygonsToChange"] as? NSArray {
+                       self.polygonController.changePolygons(polygonData: polygonsToChange)
+                   }
+                   if let polygonsToRemove: NSArray = args["polygonIdsToRemove"] as? NSArray {
+                       self.polygonController.removePolygons(polygonIds: polygonsToRemove)
+                   }
+                   result(nil);
                 case "map#update":
                     self.mapView.interpretOptions(options: args["options"] as! Dictionary<String, Any>)
                 case "camera#animate":

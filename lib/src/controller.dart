@@ -60,6 +60,9 @@ class AppleMapController {
       case 'polyline#onTap':
         _appleMapState.onPolylineTap(call.arguments['polylineId']);
         break;
+      case 'polygon#onTap':
+        _appleMapState.onPolygonTap(call.arguments['polygonId']);
+        break;
       case 'annotation#onDragEnd':
         _appleMapState.onAnnotationDragEnd(call.arguments['annotationId'],
             LatLng._fromJson(call.arguments['position']));
@@ -120,6 +123,20 @@ class AppleMapController {
     await channel.invokeMethod<void>(
       'polylines#update',
       polylineUpdates._toMap(),
+    );
+  }
+
+  /// Updates polygon configuration.
+  ///
+  /// Change listeners are notified once the update has been made on the
+  /// platform side.
+  ///
+  /// The returned [Future] completes after listeners have been notified.
+  Future<void> _updatePolygons(_PolygonUpdates polygonUpdates) async {
+    assert(polygonUpdates != null);
+    await channel.invokeMethod<void>(
+      'polygons#update',
+      polygonUpdates._toMap(),
     );
   }
 

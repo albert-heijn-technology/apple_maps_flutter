@@ -17,6 +17,7 @@ class FakePlatformAppleMap {
     updateOptions(params['options']);
     updatePolylines(params);
     updateAnnotations(params);
+    updatePolygons(params);
   }
 
   MethodChannel channel;
@@ -53,6 +54,12 @@ class FakePlatformAppleMap {
 
   Set<Polyline> polylinesToChange;
 
+  Set<PolygonId> polygonIdsToRemove;
+
+  Set<Polygon> polygonsToAdd;
+
+  Set<Polygon> polygonsToChange;
+
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
       case 'map#update':
@@ -63,6 +70,9 @@ class FakePlatformAppleMap {
         return Future<void>.sync(() {});
       case 'polylines#update':
         updatePolylines(call.arguments);
+        return Future<void>.sync(() {});
+      case 'polygons#update':
+        updatePolygons(call.arguments);
         return Future<void>.sync(() {});
       default:
         return Future<void>.sync(() {});
@@ -161,6 +171,50 @@ class FakePlatformAppleMap {
     }
 
     return result;
+  }
+
+  void updatePolygons(Map<dynamic, dynamic> polygonUpdates) {
+    if (polygonUpdates == null) {
+      return;
+    }
+    polygonsToAdd = _deserializePolygons(polygonUpdates['polygonsToAdd']);
+    polygonIdsToRemove =
+        _deserializePolygonIds(polygonUpdates['polygonIdsToRemove']);
+    polygonsToChange = _deserializePolygons(polygonUpdates['polygonsToChange']);
+  }
+
+  Set<PolygonId> _deserializePolygonIds(List<dynamic> polygonIds) {
+    if (polygonIds == null) {
+      return Set<PolygonId>();
+    }
+    return polygonIds.map((dynamic polygonId) => PolygonId(polygonId)).toSet();
+  }
+
+  Set<Polygon> _deserializePolygons(dynamic polygons) {
+    if (polygons == null) {
+      return Set<Polygon>();
+    }
+    final List<dynamic> polygonsData = polygons;
+    final Set<Polygon> result = Set<Polygon>();
+    for (Map<dynamic, dynamic> polygonData in polygonsData) {
+      final String polygonId = polygonData['polygonId'];
+      final bool visible = polygonData['visible'];
+      final List<LatLng> points = _deserializePoints(polygonData['points']);
+
+      result.add(Polygon(
+        polygonId: PolygonId(polygonId),
+        visible: visible,
+        points: points,
+      ));
+    }
+
+    return result;
+  }
+
+  List<LatLng> _deserializePoints(List<dynamic> points) {
+    return points.map<LatLng>((dynamic list) {
+      return LatLng(list[0], list[1]);
+    }).toList();
   }
 
   void updateOptions(Map<dynamic, dynamic> options) {

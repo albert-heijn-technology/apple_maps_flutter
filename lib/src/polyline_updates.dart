@@ -4,9 +4,9 @@
 
 part of apple_maps_flutter;
 
-/// [Polyline] update events to be applied to the [GoogleMap].
+/// [Polyline] update events to be applied to the [AppleMap].
 ///
-/// Used in [GoogleMapController] when the map is updated.
+/// Used in [AppleMapController] when the map is updated.
 class _PolylineUpdates {
   /// Computes [_PolylineUpdates] given previous and current [Polyline]s.
   _PolylineUpdates.from(Set<Polyline> previous, Set<Polyline> current) {

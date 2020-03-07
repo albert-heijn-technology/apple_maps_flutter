@@ -34,6 +34,7 @@ class AppleMap extends StatefulWidget {
     this.padding = EdgeInsets.zero,
     this.annotations,
     this.polylines,
+    this.polygons,
     this.onCameraMoveStarted,
     this.onCameraMove,
     this.onCameraIdle,
@@ -81,6 +82,9 @@ class AppleMap extends StatefulWidget {
 
   /// Polylines to be placed on the map.
   final Set<Polyline> polylines;
+
+  /// Polygons to be placed on the map.
+  final Set<Polygon> polygons;
 
   /// Called when the camera starts moving.
   ///
@@ -165,6 +169,7 @@ class _AppleMapState extends State<AppleMap> {
 
   Map<AnnotationId, Annotation> _annotations = <AnnotationId, Annotation>{};
   Map<PolylineId, Polyline> _polylines = <PolylineId, Polyline>{};
+  Map<PolygonId, Polygon> _polygons = <PolygonId, Polygon>{};
   _AppleMapOptions _appleMapOptions;
 
   @override
@@ -174,6 +179,7 @@ class _AppleMapState extends State<AppleMap> {
       'options': _appleMapOptions.toMap(),
       'annotationsToAdd': _serializeAnnotationSet(widget.annotations),
       'polylinesToAdd': _serializePolylineSet(widget.polylines),
+      'polygonsToAdd': _serializePolygonSet(widget.polygons),
     };
     if (defaultTargetPlatform == TargetPlatform.iOS) {
       return UiKitView(
@@ -194,6 +200,7 @@ class _AppleMapState extends State<AppleMap> {
     _appleMapOptions = _AppleMapOptions.fromWidget(widget);
     _annotations = _keyByAnnotationId(widget.annotations);
     _polylines = _keyByPolylineId(widget.polylines);
+    _polygons = _keyByPolygonId(widget.polygons);
   }
 
   @override
@@ -202,6 +209,7 @@ class _AppleMapState extends State<AppleMap> {
     _updateOptions();
     _updateAnnotations();
     _updatePolylines();
+    _updatePolygons();
   }
 
   void _updateOptions() async {
@@ -228,6 +236,14 @@ class _AppleMapState extends State<AppleMap> {
     controller._updatePolylines(
         _PolylineUpdates.from(_polylines.values.toSet(), widget.polylines));
     _polylines = _keyByPolylineId(widget.polylines);
+  }
+
+  void _updatePolygons() async {
+    final AppleMapController controller = await _controller.future;
+    // ignore: unawaited_futures
+    controller._updatePolygons(
+        _PolygonUpdates.from(_polygons.values.toSet(), widget.polygons));
+    _polygons = _keyByPolygonId(widget.polygons);
   }
 
   Future<void> onPlatformViewCreated(int id) async {
@@ -264,6 +280,12 @@ class _AppleMapState extends State<AppleMap> {
     if (_polylines[polylineId]?.onTap != null) {
       _polylines[polylineId].onTap();
     }
+  }
+
+  void onPolygonTap(String polygonIdParam) {
+    assert(polygonIdParam != null);
+    final PolygonId polygonId = PolygonId(polygonIdParam);
+    _polygons[polygonId].onTap();
   }
 
   void onInfoWindowTap(String annotationIdParam) {

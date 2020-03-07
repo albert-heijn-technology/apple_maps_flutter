@@ -26,4 +26,6 @@ part 'src/location.dart';
 part 'src/pattern_item.dart';
 part 'src/polyline.dart';
 part 'src/polyline_updates.dart';
+part 'src/polygon.dart';
+part 'src/polygon_updates.dart';
 part 'src/ui.dart';

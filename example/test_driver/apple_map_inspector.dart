@@ -8,7 +8,7 @@ import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 /// Inspect Apple Maps state using the platform SDK.
 ///
 /// This class is primarily used for testing. The methods on this
-/// class should call "getters" on the GoogleMap object or equivalent
+/// class should call "getters" on the AppleMap object or equivalent
 /// on the platform side.
 class AppleMapInspector {
   AppleMapInspector(this._channel);

@@ -5,6 +5,7 @@
 import 'package:apple_maps_flutter_example/padding.dart';
 import 'package:apple_maps_flutter_example/place_annotation.dart';
 import 'package:apple_maps_flutter_example/place_polyline.dart';
+import 'package:apple_maps_flutter_example/place_polygon.dart';
 import 'package:apple_maps_flutter_example/scrolling_map.dart';
 import 'package:flutter/material.dart';
 import 'animate_camera.dart';
@@ -25,6 +26,7 @@ final List<Page> _allPages = <Page>[
   PlaceAnnotationPage(),
   AnnotationIconsPage(),
   PlacePolylinePage(),
+  PlacePolygonPage(),
   ScrollingMapPage(),
 ];
 

@@ -15,6 +15,7 @@ enum MapViewConstants: Double {
 }
 
 public extension MKMapView {
+    // keeps track of the Map values
     private struct Holder {
         static var _zoomLevel: Double = Double(0)
         static var _pitch: CGFloat = CGFloat(0)
