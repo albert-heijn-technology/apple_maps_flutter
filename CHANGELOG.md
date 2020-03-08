@@ -1,3 +1,7 @@
+## 0.0.7
+
+* Added ability to place polygons on the map.
+
 ## 0.0.6+4
 
 * Fixed build issues

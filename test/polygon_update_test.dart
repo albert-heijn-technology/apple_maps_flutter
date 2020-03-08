@@ -191,7 +191,7 @@ void main() {
 
     // p1 is added, p2 is updated, p3 is removed.
     final Polygon p1 = Polygon(polygonId: PolygonId("polygon_1"));
-    p2 = Polygon(polygonId: PolygonId("polygon_2"));
+    p2 = Polygon(polygonId: PolygonId("polygon_2"), consumeTapEvents: true);
     final Set<Polygon> cur = _toSet(p1: p1, p2: p2);
 
     await tester.pumpWidget(_mapWithPolygons(prev));
@@ -216,7 +216,7 @@ void main() {
     final Polygon p2 = Polygon(polygonId: PolygonId("polygon_2"));
     Polygon p3 = Polygon(polygonId: PolygonId("polygon_3"));
     final Set<Polygon> prev = _toSet(p1: p1, p2: p2, p3: p3);
-    p3 = Polygon(polygonId: PolygonId("polygon_3"));
+    p3 = Polygon(polygonId: PolygonId("polygon_3"), consumeTapEvents: true);
     final Set<Polygon> cur = _toSet(p1: p1, p2: p2, p3: p3);
 
     await tester.pumpWidget(_mapWithPolygons(prev));

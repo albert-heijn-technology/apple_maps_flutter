@@ -122,9 +122,9 @@ class AppleMapsExample extends StatelessWidget {
 - [x] Add getter for the visible map region
 - [x] Add ability to place a polyline 
 - [x] Add ability to add padding to the map
+- [x] Add ability to place a polygon
 - [ ] Add ability to set LatLngBounds to map
 - [ ] Add scrollBy functionality 
-- [ ] Add ability to place a polygon
 - [ ] Add ability to place a circle  
 - [ ] . . .
 

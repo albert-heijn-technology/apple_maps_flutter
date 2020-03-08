@@ -199,13 +199,17 @@ class FakePlatformAppleMap {
     for (Map<dynamic, dynamic> polygonData in polygonsData) {
       final String polygonId = polygonData['polygonId'];
       final bool visible = polygonData['visible'];
+      final bool consumeTapEvent = polygonData['consumeTapEvents'];
       final List<LatLng> points = _deserializePoints(polygonData['points']);
 
-      result.add(Polygon(
-        polygonId: PolygonId(polygonId),
-        visible: visible,
-        points: points,
-      ));
+      result.add(
+        Polygon(
+          polygonId: PolygonId(polygonId),
+          visible: visible,
+          points: points,
+          consumeTapEvents: consumeTapEvent,
+        ),
+      );
     }
 
     return result;
