@@ -1,3 +1,7 @@
+## 0.1.0
+
+* Added ability to place circles on the map.
+
 ## 0.0.7
 
 * Added ability to place polygons on the map.

@@ -54,14 +54,14 @@ void main() {
     final Circle c1 = Circle(circleId: CircleId("circle_1"));
     await tester.pumpWidget(_mapWithCircles(_toSet(c1: c1)));
 
-    final FakePlatformAppleMap platformGoogleMap =
+    final FakePlatformAppleMap platformAppleMap =
         fakePlatformViewsController.lastCreatedView;
-    expect(platformGoogleMap.circlesToAdd.length, 1);
+    expect(platformAppleMap.circlesToAdd.length, 1);
 
-    final Circle initializedCircle = platformGoogleMap.circlesToAdd.first;
+    final Circle initializedCircle = platformAppleMap.circlesToAdd.first;
     expect(initializedCircle, equals(c1));
-    expect(platformGoogleMap.circleIdsToRemove.isEmpty, true);
-    expect(platformGoogleMap.circlesToChange.isEmpty, true);
+    expect(platformAppleMap.circleIdsToRemove.isEmpty, true);
+    expect(platformAppleMap.circlesToChange.isEmpty, true);
     debugDefaultTargetPlatformOverride = null;
   });
 
@@ -73,16 +73,16 @@ void main() {
     await tester.pumpWidget(_mapWithCircles(_toSet(c1: c1)));
     await tester.pumpWidget(_mapWithCircles(_toSet(c1: c1, c2: c2)));
 
-    final FakePlatformAppleMap platformGoogleMap =
+    final FakePlatformAppleMap platformAppleMap =
         fakePlatformViewsController.lastCreatedView;
-    expect(platformGoogleMap.circlesToAdd.length, 1);
+    expect(platformAppleMap.circlesToAdd.length, 1);
 
-    final Circle addedCircle = platformGoogleMap.circlesToAdd.first;
+    final Circle addedCircle = platformAppleMap.circlesToAdd.first;
     expect(addedCircle, equals(c2));
 
-    expect(platformGoogleMap.circleIdsToRemove.isEmpty, true);
+    expect(platformAppleMap.circleIdsToRemove.isEmpty, true);
 
-    expect(platformGoogleMap.circlesToChange.isEmpty, true);
+    expect(platformAppleMap.circlesToChange.isEmpty, true);
     debugDefaultTargetPlatformOverride = null;
   });
 
@@ -93,13 +93,13 @@ void main() {
     await tester.pumpWidget(_mapWithCircles(_toSet(c1: c1)));
     await tester.pumpWidget(_mapWithCircles(null));
 
-    final FakePlatformAppleMap platformGoogleMap =
+    final FakePlatformAppleMap platformAppleMap =
         fakePlatformViewsController.lastCreatedView;
-    expect(platformGoogleMap.circleIdsToRemove.length, 1);
-    expect(platformGoogleMap.circleIdsToRemove.first, equals(c1.circleId));
+    expect(platformAppleMap.circleIdsToRemove.length, 1);
+    expect(platformAppleMap.circleIdsToRemove.first, equals(c1.circleId));
 
-    expect(platformGoogleMap.circlesToChange.isEmpty, true);
-    expect(platformGoogleMap.circlesToAdd.isEmpty, true);
+    expect(platformAppleMap.circlesToChange.isEmpty, true);
+    expect(platformAppleMap.circlesToAdd.isEmpty, true);
     debugDefaultTargetPlatformOverride = null;
   });
 
@@ -111,13 +111,13 @@ void main() {
     await tester.pumpWidget(_mapWithCircles(_toSet(c1: c1)));
     await tester.pumpWidget(_mapWithCircles(_toSet(c1: c2)));
 
-    final FakePlatformAppleMap platformGoogleMap =
+    final FakePlatformAppleMap platformAppleMap =
         fakePlatformViewsController.lastCreatedView;
-    expect(platformGoogleMap.circlesToChange.length, 1);
-    expect(platformGoogleMap.circlesToChange.first, equals(c2));
+    expect(platformAppleMap.circlesToChange.length, 1);
+    expect(platformAppleMap.circlesToChange.first, equals(c2));
 
-    expect(platformGoogleMap.circleIdsToRemove.isEmpty, true);
-    expect(platformGoogleMap.circlesToAdd.isEmpty, true);
+    expect(platformAppleMap.circleIdsToRemove.isEmpty, true);
+    expect(platformAppleMap.circlesToAdd.isEmpty, true);
     debugDefaultTargetPlatformOverride = null;
   });
 
@@ -129,11 +129,11 @@ void main() {
     await tester.pumpWidget(_mapWithCircles(_toSet(c1: c1)));
     await tester.pumpWidget(_mapWithCircles(_toSet(c1: c2)));
 
-    final FakePlatformAppleMap platformGoogleMap =
+    final FakePlatformAppleMap platformAppleMap =
         fakePlatformViewsController.lastCreatedView;
-    expect(platformGoogleMap.circlesToChange.length, 1);
+    expect(platformAppleMap.circlesToChange.length, 1);
 
-    final Circle update = platformGoogleMap.circlesToChange.first;
+    final Circle update = platformAppleMap.circlesToChange.first;
     expect(update, equals(c2));
     expect(update.radius, 10);
     debugDefaultTargetPlatformOverride = null;
@@ -151,12 +151,12 @@ void main() {
     await tester.pumpWidget(_mapWithCircles(prev));
     await tester.pumpWidget(_mapWithCircles(cur));
 
-    final FakePlatformAppleMap platformGoogleMap =
+    final FakePlatformAppleMap platformAppleMap =
         fakePlatformViewsController.lastCreatedView;
 
-    expect(platformGoogleMap.circlesToChange, cur);
-    expect(platformGoogleMap.circleIdsToRemove.isEmpty, true);
-    expect(platformGoogleMap.circlesToAdd.isEmpty, true);
+    expect(platformAppleMap.circlesToChange, cur);
+    expect(platformAppleMap.circleIdsToRemove.isEmpty, true);
+    expect(platformAppleMap.circlesToAdd.isEmpty, true);
     debugDefaultTargetPlatformOverride = null;
   });
 
@@ -174,16 +174,16 @@ void main() {
     await tester.pumpWidget(_mapWithCircles(prev));
     await tester.pumpWidget(_mapWithCircles(cur));
 
-    final FakePlatformAppleMap platformGoogleMap =
+    final FakePlatformAppleMap platformAppleMap =
         fakePlatformViewsController.lastCreatedView;
 
-    expect(platformGoogleMap.circlesToChange.length, 1);
-    expect(platformGoogleMap.circlesToAdd.length, 1);
-    expect(platformGoogleMap.circleIdsToRemove.length, 1);
+    expect(platformAppleMap.circlesToChange.length, 1);
+    expect(platformAppleMap.circlesToAdd.length, 1);
+    expect(platformAppleMap.circleIdsToRemove.length, 1);
 
-    expect(platformGoogleMap.circlesToChange.first, equals(c2));
-    expect(platformGoogleMap.circlesToAdd.first, equals(c1));
-    expect(platformGoogleMap.circleIdsToRemove.first, equals(c3.circleId));
+    expect(platformAppleMap.circlesToChange.first, equals(c2));
+    expect(platformAppleMap.circlesToAdd.first, equals(c1));
+    expect(platformAppleMap.circleIdsToRemove.first, equals(c3.circleId));
     debugDefaultTargetPlatformOverride = null;
   });
 
@@ -199,12 +199,12 @@ void main() {
     await tester.pumpWidget(_mapWithCircles(prev));
     await tester.pumpWidget(_mapWithCircles(cur));
 
-    final FakePlatformAppleMap platformGoogleMap =
+    final FakePlatformAppleMap platformAppleMap =
         fakePlatformViewsController.lastCreatedView;
 
-    expect(platformGoogleMap.circlesToChange, _toSet(c3: c3));
-    expect(platformGoogleMap.circleIdsToRemove.isEmpty, true);
-    expect(platformGoogleMap.circlesToAdd.isEmpty, true);
+    expect(platformAppleMap.circlesToChange, _toSet(c3: c3));
+    expect(platformAppleMap.circleIdsToRemove.isEmpty, true);
+    expect(platformAppleMap.circlesToAdd.isEmpty, true);
     debugDefaultTargetPlatformOverride = null;
   });
 }

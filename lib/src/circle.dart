@@ -4,7 +4,7 @@
 
 part of apple_maps_flutter;
 
-/// Uniquely identifies a [Circle] among [GoogleMap] circles.
+/// Uniquely identifies a [Circle] among [AppleMap] circles.
 ///
 /// This does not have to be globally unique, only unique among the list.
 @immutable
@@ -35,7 +35,7 @@ class CircleId {
 /// Draws a circle on the map.
 @immutable
 class Circle {
-  /// Creates an immutable representation of a [Circle] to draw on [GoogleMap].
+  /// Creates an immutable representation of a [Circle] to draw on [AppleMap].
   const Circle({
     @required this.circleId,
     this.consumeTapEvents = false,

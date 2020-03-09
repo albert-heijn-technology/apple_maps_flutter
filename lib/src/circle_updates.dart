@@ -6,7 +6,7 @@ part of apple_maps_flutter;
 
 /// [Circle] update events to be applied to the [AppleMap].
 ///
-/// Used in [GoogleMapController] when the map is updated.
+/// Used in [AppleMapController] when the map is updated.
 class _CircleUpdates {
   /// Computes [_CircleUpdates] given previous and current [Circle]s.
   _CircleUpdates.from(Set<Circle> previous, Set<Circle> current) {
