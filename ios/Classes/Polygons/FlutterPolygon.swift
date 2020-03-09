@@ -34,8 +34,7 @@ class FlutterPolygon: MKPolygon {
     }
     
     static func == (lhs: FlutterPolygon, rhs: FlutterPolygon) -> Bool {
-        return lhs.strokeColor == rhs.strokeColor && lhs.fillColor == rhs.fillColor && lhs.isConsumingTapEvents == rhs.isConsumingTapEvents && lhs.width ==  rhs.width
-            && lhs.isVisible == rhs.isVisible
+        return lhs.strokeColor == rhs.strokeColor && lhs.fillColor == rhs.fillColor && lhs.isConsumingTapEvents == rhs.isConsumingTapEvents && lhs.width ==  rhs.width && lhs.isVisible == rhs.isVisible
     }
     
     static func != (lhs: FlutterPolygon, rhs: FlutterPolygon) -> Bool {

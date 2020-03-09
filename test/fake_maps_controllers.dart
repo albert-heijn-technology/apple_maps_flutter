@@ -18,6 +18,7 @@ class FakePlatformAppleMap {
     updatePolylines(params);
     updateAnnotations(params);
     updatePolygons(params);
+    updateCircles(params);
   }
 
   MethodChannel channel;
@@ -60,6 +61,12 @@ class FakePlatformAppleMap {
 
   Set<Polygon> polygonsToChange;
 
+  Set<CircleId> circleIdsToRemove;
+
+  Set<Circle> circlesToAdd;
+
+  Set<Circle> circlesToChange;
+
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
       case 'map#update':
@@ -73,6 +80,9 @@ class FakePlatformAppleMap {
         return Future<void>.sync(() {});
       case 'polygons#update':
         updatePolygons(call.arguments);
+        return Future<void>.sync(() {});
+      case 'circles#update':
+        updateCircles(call.arguments);
         return Future<void>.sync(() {});
       default:
         return Future<void>.sync(() {});
@@ -219,6 +229,44 @@ class FakePlatformAppleMap {
     return points.map<LatLng>((dynamic list) {
       return LatLng(list[0], list[1]);
     }).toList();
+  }
+
+  void updateCircles(Map<dynamic, dynamic> circleUpdates) {
+    if (circleUpdates == null) {
+      return;
+    }
+    circlesToAdd = _deserializeCircles(circleUpdates['circlesToAdd']);
+    circleIdsToRemove =
+        _deserializeCircleIds(circleUpdates['circleIdsToRemove']);
+    circlesToChange = _deserializeCircles(circleUpdates['circlesToChange']);
+  }
+
+  Set<CircleId> _deserializeCircleIds(List<dynamic> circleIds) {
+    if (circleIds == null) {
+      return Set<CircleId>();
+    }
+    return circleIds.map((dynamic circleId) => CircleId(circleId)).toSet();
+  }
+
+  Set<Circle> _deserializeCircles(dynamic circles) {
+    if (circles == null) {
+      return Set<Circle>();
+    }
+    final List<dynamic> circlesData = circles;
+    final Set<Circle> result = Set<Circle>();
+    for (Map<dynamic, dynamic> circleData in circlesData) {
+      final String circleId = circleData['circleId'];
+      final bool visible = circleData['visible'];
+      final double radius = circleData['radius'];
+
+      result.add(Circle(
+        circleId: CircleId(circleId),
+        visible: visible,
+        radius: radius,
+      ));
+    }
+
+    return result;
   }
 
   void updateOptions(Map<dynamic, dynamic> options) {

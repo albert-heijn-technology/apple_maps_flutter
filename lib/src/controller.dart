@@ -63,6 +63,9 @@ class AppleMapController {
       case 'polygon#onTap':
         _appleMapState.onPolygonTap(call.arguments['polygonId']);
         break;
+      case 'circle#onTap':
+        _appleMapState.onCircleTap(call.arguments['circleId']);
+        break;
       case 'annotation#onDragEnd':
         _appleMapState.onAnnotationDragEnd(call.arguments['annotationId'],
             LatLng._fromJson(call.arguments['position']));
@@ -137,6 +140,20 @@ class AppleMapController {
     await channel.invokeMethod<void>(
       'polygons#update',
       polygonUpdates._toMap(),
+    );
+  }
+
+  /// Updates circle configuration.
+  ///
+  /// Change listeners are notified once the update has been made on the
+  /// platform side.
+  ///
+  /// The returned [Future] completes after listeners have been notified.
+  Future<void> _updateCircles(_CircleUpdates circleUpdates) async {
+    assert(circleUpdates != null);
+    await channel.invokeMethod<void>(
+      'circles#update',
+      circleUpdates._toMap(),
     );
   }
 

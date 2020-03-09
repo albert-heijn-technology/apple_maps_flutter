@@ -34,6 +34,7 @@ class AppleMap extends StatefulWidget {
     this.padding = EdgeInsets.zero,
     this.annotations,
     this.polylines,
+    this.circles,
     this.polygons,
     this.onCameraMoveStarted,
     this.onCameraMove,
@@ -82,6 +83,9 @@ class AppleMap extends StatefulWidget {
 
   /// Polylines to be placed on the map.
   final Set<Polyline> polylines;
+
+  /// Circles to be placed on the map.
+  final Set<Circle> circles;
 
   /// Polygons to be placed on the map.
   final Set<Polygon> polygons;
@@ -170,6 +174,7 @@ class _AppleMapState extends State<AppleMap> {
   Map<AnnotationId, Annotation> _annotations = <AnnotationId, Annotation>{};
   Map<PolylineId, Polyline> _polylines = <PolylineId, Polyline>{};
   Map<PolygonId, Polygon> _polygons = <PolygonId, Polygon>{};
+  Map<CircleId, Circle> _circles = <CircleId, Circle>{};
   _AppleMapOptions _appleMapOptions;
 
   @override
@@ -180,6 +185,7 @@ class _AppleMapState extends State<AppleMap> {
       'annotationsToAdd': _serializeAnnotationSet(widget.annotations),
       'polylinesToAdd': _serializePolylineSet(widget.polylines),
       'polygonsToAdd': _serializePolygonSet(widget.polygons),
+      'circlesToAdd': _serializeCircleSet(widget.circles),
     };
     if (defaultTargetPlatform == TargetPlatform.iOS) {
       return UiKitView(
@@ -201,6 +207,7 @@ class _AppleMapState extends State<AppleMap> {
     _annotations = _keyByAnnotationId(widget.annotations);
     _polylines = _keyByPolylineId(widget.polylines);
     _polygons = _keyByPolygonId(widget.polygons);
+    _circles = _keyByCircleId(widget.circles);
   }
 
   @override
@@ -210,6 +217,7 @@ class _AppleMapState extends State<AppleMap> {
     _updateAnnotations();
     _updatePolylines();
     _updatePolygons();
+    _updateCircles();
   }
 
   void _updateOptions() async {
@@ -244,6 +252,14 @@ class _AppleMapState extends State<AppleMap> {
     controller._updatePolygons(
         _PolygonUpdates.from(_polygons.values.toSet(), widget.polygons));
     _polygons = _keyByPolygonId(widget.polygons);
+  }
+
+  void _updateCircles() async {
+    final AppleMapController controller = await _controller.future;
+    // ignore: unawaited_futures
+    controller._updateCircles(
+        _CircleUpdates.from(_circles.values.toSet(), widget.circles));
+    _circles = _keyByCircleId(widget.circles);
   }
 
   Future<void> onPlatformViewCreated(int id) async {
@@ -286,6 +302,12 @@ class _AppleMapState extends State<AppleMap> {
     assert(polygonIdParam != null);
     final PolygonId polygonId = PolygonId(polygonIdParam);
     _polygons[polygonId].onTap();
+  }
+
+  void onCircleTap(String circleIdParam) {
+    assert(circleIdParam != null);
+    final CircleId circleId = CircleId(circleIdParam);
+    _circles[circleId].onTap();
   }
 
   void onInfoWindowTap(String annotationIdParam) {

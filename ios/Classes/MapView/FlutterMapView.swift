@@ -283,43 +283,8 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
     }
 
     @objc func onTap(tap: UITapGestureRecognizer) {
-        let locationInView = tap.location(in: self)
-        if tap.state == .recognized && tap.state == .recognized {
-            // Get map coordinate from touch point
-            let touchPt: CGPoint = tap.location(in: self)
-            let coord: CLLocationCoordinate2D = self.convert(touchPt, toCoordinateFrom: self)
-            let maxMeters: Double = meters(fromPixel: 10, at: touchPt)
-            var nearestDistance: Float = MAXFLOAT
-            var nearestPolyline: FlutterPolyline?
-            var nearestPolygon: FlutterPolygon?
-            for overlay: MKOverlay in self.overlays {
-                if overlay is FlutterPolyline {
-                    let distance: Float = Float(distanceOf(pt: MKMapPoint.init(coord), toPoly: overlay as! MKPolyline))
-                    if distance < nearestDistance {
-                        nearestDistance = distance
-                        nearestPolyline = (overlay as! FlutterPolyline)
-                    }
-                } else if overlay is FlutterPolygon {
-                    let distance: Float = Float(distanceOf(pt: MKMapPoint.init(coord), toPoly: overlay as! MKPolygon))
-                    if distance < nearestDistance {
-                        nearestDistance = distance
-                        nearestPolygon = (overlay as! FlutterPolygon)
-                    }
-                }
-            }
-            if Double(nearestDistance) <= maxMeters {
-                if nearestPolyline?.isConsumingTapEvents ?? false {
-                    channel?.invokeMethod("polyline#onTap", arguments: ["polylineId": nearestPolyline!.id])
-                } else if  nearestPolygon?.isConsumingTapEvents ?? false {
-                    channel?.invokeMethod("polygon#onTap", arguments: ["polygonId": nearestPolygon!.id])
-                } else {
-                    let locationOnMap = self.convert(locationInView, toCoordinateFrom: self)
-                    channel?.invokeMethod("map#onTap", arguments: ["position": [locationOnMap.latitude, locationOnMap.longitude]])
-                }
-            } else {
-                let locationOnMap = self.convert(locationInView, toCoordinateFrom: self)
-                channel?.invokeMethod("map#onTap", arguments: ["position": [locationOnMap.latitude, locationOnMap.longitude]])
-            }
+        if tap.state == .recognized {
+            TouchHandler.handleOverlayTouch(tap: tap, overlays: self.overlays, channel: self.channel, _in: self)            
         }
     }
     
@@ -335,38 +300,11 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
         return true
     }
     
-    func distanceOf(pt: MKMapPoint, toPoly poly: MKMultiPoint) -> Double {
-        var distance: Double = Double(MAXFLOAT)
-        for n in 0..<poly.pointCount - 1 {
-            let ptA = poly.points()[n]
-            let ptB = poly.points()[n + 1]
-            let xDelta: Double = ptB.x - ptA.x
-            let yDelta: Double = ptB.y - ptA.y
-            if xDelta == 0.0 && yDelta == 0.0 {
-                // Points must not be equal
-                continue
-            }
-            let u: Double = ((pt.x - ptA.x) * xDelta + (pt.y - ptA.y) * yDelta) / (xDelta * xDelta + yDelta * yDelta)
-            var ptClosest: MKMapPoint
-            if u < 0.0 {
-                ptClosest = ptA
-            }
-            else if u > 1.0 {
-                ptClosest = ptB
-            }
-            else {
-                ptClosest = MKMapPoint.init(x: ptA.x + u * xDelta, y: ptA.y + u * yDelta)
-            }
-
-            distance = min(distance, ptClosest.distance(to: pt))
-        }
-        return distance
-    }
-
-    func meters(fromPixel px: Int, at pt: CGPoint) -> Double {
-        let ptB = CGPoint(x: pt.x + CGFloat(px), y: pt.y)
-        let coordA: CLLocationCoordinate2D = self.convert(pt, toCoordinateFrom: self)
-        let coordB: CLLocationCoordinate2D = self.convert(ptB, toCoordinateFrom: self)
-        return MKMapPoint.init(coordA).distance(to: MKMapPoint.init(coordB))
+    
+    
+    func distanceOfCGPoints(_ a: CGPoint, _ b: CGPoint) -> CGFloat {
+        let xDist = a.x - b.x
+        let yDist = a.y - b.y
+        return CGFloat(sqrt(xDist * xDist + yDist * yDist))
     }
 }

@@ -37,6 +37,7 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
     var annotationController: AnnotationController
     var polylineController: PolylineController
     var polygonController: PolygonController
+    var circleController: CircleController
     var initialCameraPosition :Dictionary<String, Any>
     var options :Dictionary<String, Any>
     
@@ -48,17 +49,21 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
         annotationController = AnnotationController(mapView: mapView, channel: channel, registrar: registrar)
         polylineController = PolylineController(mapView: mapView, channel: channel, registrar: registrar)
         polygonController = PolygonController(mapView: mapView, channel: channel, registrar: registrar)
+        circleController = CircleController(mapView: mapView, channel: channel, registrar: registrar)
         initialCameraPosition = args["initialCameraPosition"]! as! Dictionary<String, Any>
         super.init()
         mapView.setCenterCoordinate(initialCameraPosition, animated: false)
-        if let annotationsToAdd :NSArray = args["annotationsToAdd"] as? NSArray {
+        if let annotationsToAdd: NSArray = args["annotationsToAdd"] as? NSArray {
             annotationController.annotationsToAdd(annotations: annotationsToAdd)
         }
-        if let polylinesToAdd :NSArray = args["polylinesToAdd"] as? NSArray {
+        if let polylinesToAdd: NSArray = args["polylinesToAdd"] as? NSArray {
             polylineController.addPolylines(polylineData: polylinesToAdd)
         }
-        if let polygonsToAdd :NSArray = args["polygonsToAdd"] as? NSArray {
+        if let polygonsToAdd: NSArray = args["polygonsToAdd"] as? NSArray {
             polygonController.addPolygons(polygonData: polygonsToAdd)
+        }
+        if let circlesToAdd: NSArray = args["circlesToAdd"] as? NSArray {
+            circleController.addCircles(circleData: circlesToAdd)
         }
         mapView.delegate = self
     }
@@ -93,6 +98,8 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
             return polylineController.polylineRenderer(overlay: overlay)
         } else if overlay is FlutterPolygon {
             return polygonController.polygonRenderer(overlay: overlay)
+        } else if overlay is FlutterCircle {
+            return circleController.circleRenderer(overlay: overlay)
         }
         return MKOverlayRenderer()
     }
@@ -105,7 +112,11 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
             if annotation.icon.iconType == IconType.PIN {
                 annotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
             } else if annotation.icon.iconType == IconType.STANDARD {
-                annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+                if #available(iOS 11.0, *) {
+                    annotationView = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+                } else {
+                    annotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+                }
             } else if annotation.icon.iconType == IconType.CUSTOM {
                 annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: identifier)
                 annotationView!.image = annotation.icon.image
@@ -201,6 +212,17 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
                        self.polygonController.removePolygons(polygonIds: polygonsToRemove)
                    }
                    result(nil);
+                case "circles#update":
+                    if let circlesToAdd: NSArray = args["circlesToAdd"] as? NSArray {
+                        self.circleController.addCircles(circleData: circlesToAdd)
+                    }
+                    if let circlesToChange: NSArray = args["circlesToChange"] as? NSArray {
+                        self.circleController.changeCircles(circleData: circlesToChange)
+                    }
+                    if let circlesToRemove: NSArray = args["circleIdsToRemove"] as? NSArray {
+                        self.circleController.removeCircles(circleIds: circlesToRemove)
+                    }
+                    result(nil);
                 case "map#update":
                     self.mapView.interpretOptions(options: args["options"] as! Dictionary<String, Any>)
                 case "camera#animate":
