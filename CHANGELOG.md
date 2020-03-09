@@ -1,3 +1,7 @@
+## 0.1.1
+
+* Added markerAnnotation as selectable annotation type.
+
 ## 0.1.0
 
 * Added ability to place circles on the map.
