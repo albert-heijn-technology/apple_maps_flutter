@@ -4,7 +4,7 @@
 
 part of apple_maps_flutter;
 
-enum AnnatationColor {
+enum AnnotationColor {
   RED,
   GREEN,
   PURPLE,
@@ -16,14 +16,26 @@ enum AnnatationColor {
 class BitmapDescriptor {
   const BitmapDescriptor._(this._json);
 
-  /// Creates a BitmapDescriptor that refers to the default annotation image.
+  /// Creates a BitmapDescriptor that refers to the default/Pin annotation image.
   static const BitmapDescriptor defaultAnnotation =
       BitmapDescriptor._(<dynamic>['defaultAnnotation']);
 
-  /// Creates a BitmapDescriptor that refers to a colorization of the default
-  /// annotation image. For convenience, there is a predefined set of hue values.
-  /// See e.g. [hueYellow].
-  static BitmapDescriptor defaultAnnotationWithColor(AnnatationColor color) {
+  /// Creates a BitmapDescriptor that refers to the marker annotation image.
+  static const BitmapDescriptor markerAnnotation =
+      BitmapDescriptor._(<dynamic>['markerAnnotation']);
+
+  /// Creates a BitmapDescriptor that refers to a colorization of the marker
+  /// annotation image. For convenience, there is a predefined set of [AnnotationColors].
+  /// See e.g. [AnnotationColor.RED].
+  static BitmapDescriptor markerAnnotationWithColor(AnnotationColor color) {
+    assert(color != null);
+    return BitmapDescriptor._(<dynamic>['markerAnnotation', color.index]);
+  }
+
+  /// Creates a BitmapDescriptor that refers to a colorization of the default/Pin
+  /// annotation image. For convenience, there is a predefined set of [AnnotationColors].
+  /// See e.g. [AnnotationColor.RED].
+  static BitmapDescriptor defaultAnnotationWithColor(AnnotationColor color) {
     assert(color != null);
     return BitmapDescriptor._(<dynamic>['defaultAnnotation', color.index]);
   }

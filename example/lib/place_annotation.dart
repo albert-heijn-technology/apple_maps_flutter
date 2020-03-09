@@ -61,7 +61,7 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
     }
   }
 
-  void _add() {
+  void _add(String iconType) {
     final int annotationCount = annotations.length;
 
     if (annotationCount == 12) {
@@ -74,6 +74,9 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
 
     final Annotation annotation = Annotation(
       annotationId: annotationId,
+      icon: iconType == 'marker'
+          ? BitmapDescriptor.markerAnnotation
+          : BitmapDescriptor.defaultAnnotation,
       position: LatLng(
         center.latitude + sin(_annotationIdCounter * pi / 6.0) / 20.0,
         center.longitude + cos(_annotationIdCounter * pi / 6.0) / 20.0,
@@ -184,8 +187,12 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
                     Column(
                       children: <Widget>[
                         FlatButton(
-                          child: const Text('add'),
-                          onPressed: _add,
+                          child: const Text('add defaultAnnotation'),
+                          onPressed: () => _add('pin'),
+                        ),
+                        FlatButton(
+                          child: const Text('add markerAnnotation'),
+                          onPressed: () => _add('marker'),
                         ),
                         FlatButton(
                           child: const Text('remove'),

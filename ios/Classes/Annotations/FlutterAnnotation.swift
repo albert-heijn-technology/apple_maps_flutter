@@ -40,9 +40,9 @@ class FlutterAnnotation: NSObject, MKAnnotation {
     }
     
     static private func getAnnotationIcon(iconData: Array<Any>, registrar: FlutterPluginRegistrar, annotationId: String) -> AnnotationIcon {
-        let iconTypeMap: Dictionary<String, IconType> = ["fromAssetImage": IconType.CUSTOM, "defaultAnnotation": IconType.STANDARD]
+        let iconTypeMap: Dictionary<String, IconType> = ["fromAssetImage": IconType.CUSTOM, "defaultAnnotation": IconType.PIN, "markerAnnotation": IconType.MARKER]
         var icon: AnnotationIcon
-        let iconType: IconType = iconTypeMap[iconData[0] as! String] ?? .STANDARD
+        let iconType: IconType = iconTypeMap[iconData[0] as! String] ?? .PIN
         var scaleParam: CGFloat?
        
         if iconType == .CUSTOM {

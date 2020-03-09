@@ -8,7 +8,7 @@
 import Foundation
 
 enum IconType {
-    case PIN, STANDARD, CUSTOM
+    case PIN, MARKER, CUSTOM
 }
 
 class AnnotationIcon: Equatable {
@@ -17,7 +17,7 @@ class AnnotationIcon: Equatable {
     var id: String
     var image: UIImage?
     
-    public init(named name: String, iconType type: IconType? = .STANDARD, id: String, iconScale: CGFloat? = 1.0) {
+    public init(named name: String, iconType type: IconType? = .PIN, id: String, iconScale: CGFloat? = 1.0) {
         if type == .CUSTOM {
             if let uiImage: UIImage =  UIImage.init(named: name) {
                 if let cgImage: CGImage = uiImage.cgImage {
