@@ -47,3 +47,46 @@ class FlutterPolyline: MKPolyline {
     }
 }
 
+public extension MKPolyline {
+    // maxMeters is the preferred distance offset from the polyline to be acknowledged as a touch
+    func contains(coordinate: CLLocationCoordinate2D, mapView: MKMapView , maxMeters: Int = 8) -> Bool {
+        let distance: Double = distanceOf(pt: MKMapPoint.init(coordinate), toMultipPoint: self)
+        return distance <= meters(fromPixel: maxMeters, at: coordinate, view: mapView)
+    }
+    
+    private func distanceOf(pt: MKMapPoint, toMultipPoint multiPoint: MKMultiPoint) -> Double {
+        var distance: Double = Double(MAXFLOAT)
+        for n in 0..<multiPoint.pointCount - 1 {
+            let ptA = multiPoint.points()[n]
+            let ptB = multiPoint.points()[n + 1]
+            let xDelta: Double = ptB.x - ptA.x
+            let yDelta: Double = ptB.y - ptA.y
+            if xDelta == 0.0 && yDelta == 0.0 {
+                // Points must not be equal
+                continue
+            }
+            let u: Double = ((pt.x - ptA.x) * xDelta + (pt.y - ptA.y) * yDelta) / (xDelta * xDelta + yDelta * yDelta)
+            var ptClosest: MKMapPoint
+            if u < 0.0 {
+                ptClosest = ptA
+            }
+            else if u > 1.0 {
+                ptClosest = ptB
+            }
+            else {
+                ptClosest = MKMapPoint.init(x: ptA.x + u * xDelta, y: ptA.y + u * yDelta)
+            }
+
+            distance = min(distance, ptClosest.distance(to: pt))
+        }
+        return distance
+    }
+    
+    private func meters(fromPixel pixel: Int, at touchCoordinate: CLLocationCoordinate2D, view: MKMapView) -> Double {
+        let touchPoint: CGPoint = view.convert(touchCoordinate, toPointTo: view)
+        let maxOffsetPoint = CGPoint(x: touchPoint.x + CGFloat(pixel), y: touchPoint.y)
+        let maxOffsetCoordinate: CLLocationCoordinate2D = view.convert(maxOffsetPoint, toCoordinateFrom: view)
+        return MKMapPoint.init(touchCoordinate).distance(to: MKMapPoint.init(maxOffsetCoordinate))
+    }
+}
+

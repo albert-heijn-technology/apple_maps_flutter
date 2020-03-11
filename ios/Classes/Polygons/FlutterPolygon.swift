@@ -43,3 +43,15 @@ class FlutterPolygon: MKPolygon {
 }
 
 
+public extension MKPolygon {
+    func contains(coordinate: CLLocationCoordinate2D) -> Bool {
+        let polygonRenderer = MKPolygonRenderer(polygon: self)
+        let currentMapPoint: MKMapPoint = MKMapPoint(coordinate)
+        let polygonViewPoint: CGPoint = polygonRenderer.point(for: currentMapPoint)
+        if polygonRenderer.path == nil {
+          return false
+        } else{
+            return polygonRenderer.path.contains(polygonViewPoint)
+        }
+    }
+}

@@ -284,7 +284,7 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
 
     @objc func onTap(tap: UITapGestureRecognizer) {
         if tap.state == .recognized {
-            TouchHandler.handleOverlayTouch(tap: tap, overlays: self.overlays, channel: self.channel, _in: self)            
+            TouchHandler.handleMapTaps(tap: tap, overlays: self.overlays, channel: self.channel, in: self)
         }
     }
     
