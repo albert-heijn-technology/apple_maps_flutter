@@ -1,3 +1,7 @@
+## 0.1.1+1
+
+* Fixed Polygon and Circle Tap events.
+
 ## 0.1.1
 
 * Added markerAnnotation as selectable annotation type.

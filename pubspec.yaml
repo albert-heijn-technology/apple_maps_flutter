@@ -1,8 +1,9 @@
 name: apple_maps_flutter
 description: This plugin uses the Flutter platform view to display an Apple Maps widget.
-version: 0.1.1
+version: 0.1.1+1
 homepage: https://luisthein.de
-github: https://github.com/LuisThein/apple_maps_flutter
+repository: https://github.com/LuisThein/apple_maps_flutter
+issue_tracker: https://github.com/LuisThein/apple_maps_flutter/issues
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
