@@ -17,6 +17,7 @@ class FlutterPolyline: MKPolyline {
     var capType: String?
     var pattern: NSArray?
     var lineJoin: Int?
+    var zIndex: Int? = -1
     
     convenience init(fromDictionaray polylineData: Dictionary<String, Any>) {
         let points = polylineData["points"] as! NSArray
@@ -35,11 +36,12 @@ class FlutterPolyline: MKPolyline {
         self.capType = polylineData["polylineCap"] as? String
         self.pattern = polylineData["pattern"] as? NSArray
         self.lineJoin = polylineData["jointType"] as? Int
+        self.zIndex = polylineData["zIndex"] as? Int
     }
     
     static func == (lhs: FlutterPolyline, rhs: FlutterPolyline) -> Bool {
         return lhs.color == rhs.color && lhs.isConsumingTapEvents == rhs.isConsumingTapEvents && lhs.width ==  rhs.width
-            && lhs.isVisible == rhs.isVisible && lhs.capType == rhs.capType && lhs.pattern == rhs.pattern && lhs.lineJoin == rhs.lineJoin
+            && lhs.isVisible == rhs.isVisible && lhs.capType == rhs.capType && lhs.pattern == rhs.pattern && lhs.lineJoin == rhs.lineJoin && rhs.zIndex == lhs.zIndex
     }
     
     static func != (lhs: FlutterPolyline, rhs: FlutterPolyline) -> Bool {

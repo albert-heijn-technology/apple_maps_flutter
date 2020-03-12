@@ -15,6 +15,7 @@ class FlutterPolygon: MKPolygon {
     var width: CGFloat?
     var isVisible: Bool?
     var id: String?
+    var zIndex: Int? = -1
     
     convenience init(fromDictionaray polygonData: Dictionary<String, Any>) {
         let points = polygonData["points"] as! NSArray
@@ -31,10 +32,11 @@ class FlutterPolygon: MKPolygon {
         self.width = polygonData["strokeWidth"] as? CGFloat
         self.id = polygonData["polygonId"] as? String
         self.isVisible = polygonData["visible"] as? Bool
+        self.zIndex = polygonData["zIndex"] as? Int
     }
     
     static func == (lhs: FlutterPolygon, rhs: FlutterPolygon) -> Bool {
-        return lhs.strokeColor == rhs.strokeColor && lhs.fillColor == rhs.fillColor && lhs.isConsumingTapEvents == rhs.isConsumingTapEvents && lhs.width ==  rhs.width && lhs.isVisible == rhs.isVisible
+        return lhs.strokeColor == rhs.strokeColor && lhs.fillColor == rhs.fillColor && lhs.isConsumingTapEvents == rhs.isConsumingTapEvents && lhs.width ==  rhs.width && lhs.isVisible == rhs.isVisible && lhs.zIndex == rhs.zIndex
     }
     
     static func != (lhs: FlutterPolygon, rhs: FlutterPolygon) -> Bool {

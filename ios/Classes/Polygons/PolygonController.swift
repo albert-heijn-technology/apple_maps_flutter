@@ -45,7 +45,15 @@ class PolygonController {
         for _polygon in data {
             let polygonData :Dictionary<String, Any> = _polygon as! Dictionary<String, Any>
             let polygon = FlutterPolygon(fromDictionaray: polygonData)
+            addPolygon(polygon: polygon)
+        }
+    }
+    
+    private func addPolygon(polygon: FlutterPolygon) {
+        if polygon.zIndex == nil || polygon.zIndex == -1 {
             mapView.addOverlay(polygon)
+        } else {
+            mapView.insertOverlay(polygon, at: polygon.zIndex ?? 0)
         }
     }
 
@@ -79,6 +87,6 @@ class PolygonController {
     
     private func updatePolygonsOnMap(oldPolygon: FlutterPolygon, newPolygon: FlutterPolygon) {
         mapView.removeOverlay(oldPolygon)
-        mapView.addOverlay(newPolygon)
+        addPolygon(polygon: newPolygon)
     }
 }

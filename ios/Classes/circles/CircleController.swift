@@ -44,7 +44,15 @@ class CircleController {
         for _circle in data {
             let circleData :Dictionary<String, Any> = _circle as! Dictionary<String, Any>
             let circle = FlutterCircle(fromDictionaray: circleData)
+            addCircle(circle: circle)
+        }
+    }
+    
+    private func addCircle(circle: FlutterCircle) {
+        if circle.zIndex == nil || circle.zIndex == -1 {
             mapView.addOverlay(circle)
+        } else {
+            mapView.insertOverlay(circle, at: circle.zIndex ?? 0)
         }
     }
 
@@ -78,7 +86,7 @@ class CircleController {
     
     private func updateCirclesOnMap(oldCircle: FlutterCircle, newCircle: FlutterCircle) {
         mapView.removeOverlay(oldCircle)
-        mapView.addOverlay(newCircle)
+        addCircle(circle: newCircle)
     }
 }
 

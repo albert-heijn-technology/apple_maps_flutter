@@ -44,7 +44,7 @@ class Polyline {
     this.patterns = const <PatternItem>[],
     this.visible = true,
     this.width = 10,
-    this.zIndex = 0,
+    this.zIndex,
     this.onTap,
   });
 

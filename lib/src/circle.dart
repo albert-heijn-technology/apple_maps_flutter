@@ -45,6 +45,7 @@ class Circle {
     this.strokeColor = Colors.black,
     this.strokeWidth = 10,
     this.visible = true,
+    this.zIndex,
     this.onTap,
   });
 
@@ -78,6 +79,13 @@ class Circle {
   /// True if the circle is visible.
   final bool visible;
 
+  /// The z-index of the circle, used to determine relative drawing order of
+  /// map overlays.
+  ///
+  /// Overlays are drawn in order of z-index, so that lower values means drawn
+  /// earlier, and thus appearing to be closer to the surface of the Earth.
+  final int zIndex;
+
   /// Callbacks to receive tap events for circle placed on this map.
   final VoidCallback onTap;
 
@@ -103,6 +111,7 @@ class Circle {
       strokeColor: strokeColorParam ?? strokeColor,
       strokeWidth: strokeWidthParam ?? strokeWidth,
       visible: visibleParam ?? visible,
+      zIndex: zIndexParam ?? zIndex,
       onTap: onTapParam ?? onTap,
     );
   }
@@ -127,6 +136,7 @@ class Circle {
     addIfPresent('strokeColor', strokeColor.value);
     addIfPresent('strokeWidth', strokeWidth);
     addIfPresent('visible', visible);
+    addIfPresent('zIndex', zIndex);
 
     return json;
   }
@@ -144,6 +154,7 @@ class Circle {
         strokeColor == typedOther.strokeColor &&
         strokeWidth == typedOther.strokeWidth &&
         visible == typedOther.visible &&
+        zIndex == typedOther.zIndex &&
         onTap == typedOther.onTap;
   }
 

@@ -108,6 +108,16 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
     });
   }
 
+  Future<void> _changeZIndex() async {
+    final Polygon polygon = polygons[selectedPolygon];
+    final int current = polygon.zIndex ?? 0;
+    setState(() {
+      polygons[selectedPolygon] = polygon.copyWith(
+        zIndexParam: current == 12 ? 0 : current + 1,
+      );
+    });
+  }
+
   void _changeStrokeColor() {
     final Polygon polygon = polygons[selectedPolygon];
     setState(() {
@@ -176,6 +186,10 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
                           child: const Text('toggle visible'),
                           onPressed:
                               (selectedPolygon == null) ? null : _toggleVisible,
+                        ),
+                        FlatButton(
+                          child: const Text('change zIndex'),
+                          onPressed: _changeZIndex,
                         ),
                       ],
                     ),

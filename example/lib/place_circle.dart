@@ -178,6 +178,10 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
                           onPressed:
                               (selectedCircle == null) ? null : _toggleVisible,
                         ),
+                        FlatButton(
+                          child: const Text('change zIndex'),
+                          onPressed: _changeZIndex,
+                        ),
                       ],
                     ),
                     Column(
@@ -210,6 +214,16 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
         ),
       ],
     );
+  }
+
+  Future<void> _changeZIndex() async {
+    final Circle circle = circles[selectedCircle];
+    final int current = circle.zIndex ?? 0;
+    setState(() {
+      circles[selectedCircle] = circle.copyWith(
+        zIndexParam: current == 12 ? 0 : current + 1,
+      );
+    });
   }
 
   LatLng _createCenter() {

@@ -123,6 +123,16 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
     });
   }
 
+  Future<void> _changeZIndex() async {
+    final Polyline polyline = polylines[selectedPolyline];
+    final int current = polyline.zIndex ?? 0;
+    setState(() {
+      polylines[selectedPolyline] = polyline.copyWith(
+        zIndexParam: current == 12 ? 0 : current + 1,
+      );
+    });
+  }
+
   void _changeColor() {
     final Polyline polyline = polylines[selectedPolyline];
     setState(() {
@@ -211,6 +221,10 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
                           onPressed: (selectedPolyline == null)
                               ? null
                               : _toggleVisible,
+                        ),
+                        FlatButton(
+                          child: const Text('change zIndex'),
+                          onPressed: _changeZIndex,
                         ),
                       ],
                     ),

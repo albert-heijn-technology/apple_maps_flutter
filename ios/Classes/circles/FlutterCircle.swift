@@ -15,6 +15,7 @@ class FlutterCircle: MKCircle {
     var strokeWidth: CGFloat?
     var isVisible: Bool?
     var id: String?
+    var zIndex: Int? = -1
     
     convenience init(fromDictionaray circleData: Dictionary<String, Any>) {
         let _center = circleData["center"] as! NSArray
@@ -27,10 +28,11 @@ class FlutterCircle: MKCircle {
         self.strokeWidth = circleData["strokeWidth"] as? CGFloat
         self.id = circleData["circleId"] as? String
         self.isVisible = circleData["visible"] as? Bool
+        self.zIndex = circleData["zIndex"] as? Int
     }
     
     static func == (lhs: FlutterCircle, rhs: FlutterCircle) -> Bool {
-        return lhs.strokeColor == rhs.strokeColor && lhs.fillColor == rhs.fillColor && lhs.isConsumingTapEvents == rhs.isConsumingTapEvents && lhs.strokeWidth ==  rhs.strokeWidth && lhs.isVisible == rhs.isVisible
+        return lhs.strokeColor == rhs.strokeColor && lhs.fillColor == rhs.fillColor && lhs.isConsumingTapEvents == rhs.isConsumingTapEvents && lhs.strokeWidth ==  rhs.strokeWidth && lhs.isVisible == rhs.isVisible && lhs.zIndex == rhs.zIndex
     }
     
     static func != (lhs: FlutterCircle, rhs: FlutterCircle) -> Bool {

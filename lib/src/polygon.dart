@@ -44,6 +44,7 @@ class Polygon {
     this.strokeColor = Colors.black,
     this.strokeWidth = 10,
     this.visible = true,
+    this.zIndex,
     this.onTap,
   });
 
@@ -67,6 +68,13 @@ class Polygon {
   /// True if the marker is visible.
   final bool visible;
 
+  /// The z-index of the polygon, used to determine relative drawing order of
+  /// map overlays.
+  ///
+  /// Overlays are drawn in order of z-index, so that lower values means drawn
+  /// earlier, and thus appearing to be closer to the surface of the Earth.
+  final int zIndex;
+
   /// Line color in ARGB format, the same format used by Color. The default value is black (0xff000000).
   final Color strokeColor;
 
@@ -88,6 +96,7 @@ class Polygon {
     Color fillColorParam,
     int strokeWidthParam,
     bool visibleParam,
+    int zIndexParam,
     VoidCallback onTapParam,
   }) {
     return Polygon(
@@ -98,6 +107,7 @@ class Polygon {
       fillColor: fillColorParam ?? fillColor,
       strokeWidth: strokeWidthParam ?? strokeWidth,
       visible: visibleParam ?? visible,
+      zIndex: zIndexParam ?? zIndex,
       onTap: onTapParam ?? onTap,
     );
   }
@@ -122,6 +132,7 @@ class Polygon {
     addIfPresent('strokeColor', strokeColor.value);
     addIfPresent('strokeWidth', strokeWidth);
     addIfPresent('visible', visible);
+    addIfPresent('zIndex', zIndex);
 
     if (points != null) {
       json['points'] = _pointsToJson();
@@ -142,6 +153,7 @@ class Polygon {
         visible == typedOther.visible &&
         strokeColor == typedOther.strokeColor &&
         strokeWidth == typedOther.strokeWidth &&
+        zIndex == typedOther.zIndex &&
         onTap == typedOther.onTap;
   }
 
