@@ -9,7 +9,7 @@ import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 
 import 'page.dart';
 
-class PlaceCirclePage extends Page {
+class PlaceCirclePage extends ExamplePage {
   PlaceCirclePage() : super(const Icon(Icons.linear_scale), 'Place circle');
 
   @override

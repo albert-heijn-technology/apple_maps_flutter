@@ -7,7 +7,7 @@ import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 
 import 'page.dart';
 
-class MoveCameraPage extends Page {
+class MoveCameraPage extends ExamplePage {
   MoveCameraPage() : super(const Icon(Icons.map), 'Camera control');
 
   @override

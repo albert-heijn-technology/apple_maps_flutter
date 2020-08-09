@@ -12,7 +12,7 @@ const CameraPosition _kInitialPosition = CameraPosition(
   zoom: 11,
 );
 
-class MapCoordinatesPage extends Page {
+class MapCoordinatesPage extends ExamplePage {
   MapCoordinatesPage() : super(const Icon(Icons.map), 'Map coordinates');
 
   @override

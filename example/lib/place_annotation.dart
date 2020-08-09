@@ -11,7 +11,7 @@ import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 
 import 'page.dart';
 
-class PlaceAnnotationPage extends Page {
+class PlaceAnnotationPage extends ExamplePage {
   PlaceAnnotationPage() : super(const Icon(Icons.place), 'Place annotation');
 
   @override

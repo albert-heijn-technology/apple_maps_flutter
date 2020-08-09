@@ -7,7 +7,7 @@ import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 
 import 'page.dart';
 
-class PlacePolylinePage extends Page {
+class PlacePolylinePage extends ExamplePage {
   PlacePolylinePage() : super(const Icon(Icons.linear_scale), 'Place polyline');
 
   @override

@@ -7,7 +7,7 @@ import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 
 import 'page.dart';
 
-class AnimateCameraPage extends Page {
+class AnimateCameraPage extends ExamplePage {
   AnimateCameraPage()
       : super(const Icon(Icons.map), 'Camera control, animated');
 

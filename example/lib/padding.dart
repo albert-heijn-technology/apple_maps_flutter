@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 import 'page.dart';
 
-class PaddingPage extends Page {
+class PaddingPage extends ExamplePage {
   PaddingPage() : super(const Icon(Icons.map), 'Add padding to the map');
 
   @override

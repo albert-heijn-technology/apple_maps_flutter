@@ -17,7 +17,7 @@ import 'annotation_icons.dart';
 import 'move_camera.dart';
 import 'page.dart';
 
-final List<Page> _allPages = <Page>[
+final List<ExamplePage> _allPages = <ExamplePage>[
   MapUiPage(),
   MapCoordinatesPage(),
   MapClickPage(),
@@ -33,7 +33,7 @@ final List<Page> _allPages = <Page>[
 ];
 
 class MapsDemo extends StatelessWidget {
-  void _pushPage(BuildContext context, Page page) {
+  void _pushPage(BuildContext context, ExamplePage page) {
     Navigator.of(context).push(MaterialPageRoute<void>(
         builder: (_) => Scaffold(
               appBar: AppBar(title: Text(page.title)),

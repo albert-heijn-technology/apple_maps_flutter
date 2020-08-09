@@ -10,17 +10,17 @@ import MapKit
 
 public class AppleMapViewFactory: NSObject, FlutterPlatformViewFactory {
     
-    var registrar: FlutterPluginRegistrar?
+    var registrar: FlutterPluginRegistrar
     
     public init(withRegistrar registrar: FlutterPluginRegistrar){
-        super.init()
         self.registrar = registrar
+        super.init()
     }
     
     public func create(withFrame frame: CGRect, viewIdentifier viewId: Int64, arguments args: Any?) -> FlutterPlatformView {
         let argsDictionary =  args as! Dictionary<String, Any>
         
-        return AppleMapController(withFrame: frame, withRegistrar: registrar!, withargs: argsDictionary ,withId: viewId)
+        return AppleMapController(withFrame: frame, withRegistrar: registrar, withargs: argsDictionary, withId: viewId)
         
     }
     
@@ -31,56 +31,67 @@ public class AppleMapViewFactory: NSObject, FlutterPlatformViewFactory {
 
 
 public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelegate {
-    @IBOutlet var mapView: FlutterMapView!
+    var mapView: FlutterMapView!
     var registrar: FlutterPluginRegistrar
     var channel: FlutterMethodChannel
     var annotationController: AnnotationController
     var polylineController: PolylineController
     var polygonController: PolygonController
     var circleController: CircleController
-    var initialCameraPosition :Dictionary<String, Any>
-    var options :Dictionary<String, Any>
+    var initialCameraPosition: [String: Any]
+    var options: [String: Any]
     
     public init(withFrame frame: CGRect, withRegistrar registrar: FlutterPluginRegistrar, withargs args: Dictionary<String, Any> ,withId id: Int64) {
-        self.registrar = registrar
-        channel = FlutterMethodChannel(name: "apple_maps_plugin.luisthein.de/apple_maps_\(id)", binaryMessenger: registrar.messenger())
-        options = args["options"] as! Dictionary<String, Any>
+        self.options = args["options"] as! [String: Any]
+        self.channel = FlutterMethodChannel(name: "apple_maps_plugin.luisthein.de/apple_maps_\(id)", binaryMessenger: registrar.messenger())
+        
         self.mapView = FlutterMapView(channel: channel, options: options)
-        annotationController = AnnotationController(mapView: mapView, channel: channel, registrar: registrar)
-        polylineController = PolylineController(mapView: mapView, channel: channel, registrar: registrar)
-        polygonController = PolygonController(mapView: mapView, channel: channel, registrar: registrar)
-        circleController = CircleController(mapView: mapView, channel: channel, registrar: registrar)
-        initialCameraPosition = args["initialCameraPosition"]! as! Dictionary<String, Any>
+        self.registrar = registrar
+        
+        self.annotationController = AnnotationController(mapView: mapView, channel: channel, registrar: registrar)
+        self.polylineController = PolylineController(mapView: mapView, channel: channel, registrar: registrar)
+        self.polygonController = PolygonController(mapView: mapView, channel: channel, registrar: registrar)
+        self.circleController = CircleController(mapView: mapView, channel: channel, registrar: registrar)
+        self.initialCameraPosition = args["initialCameraPosition"]! as! Dictionary<String, Any>
+        
         super.init()
-        mapView.setCenterCoordinate(initialCameraPosition, animated: false)
+        
+        self.mapView.delegate = self
+        self.mapView.setCenterCoordinate(initialCameraPosition, animated: false)
+        self.setMethodCallHandlers()
+        
         if let annotationsToAdd: NSArray = args["annotationsToAdd"] as? NSArray {
-            annotationController.annotationsToAdd(annotations: annotationsToAdd)
+            self.annotationController.annotationsToAdd(annotations: annotationsToAdd)
         }
         if let polylinesToAdd: NSArray = args["polylinesToAdd"] as? NSArray {
-            polylineController.addPolylines(polylineData: polylinesToAdd)
+            self.polylineController.addPolylines(polylineData: polylinesToAdd)
         }
         if let polygonsToAdd: NSArray = args["polygonsToAdd"] as? NSArray {
-            polygonController.addPolygons(polygonData: polygonsToAdd)
+            self.polygonController.addPolygons(polygonData: polygonsToAdd)
         }
         if let circlesToAdd: NSArray = args["circlesToAdd"] as? NSArray {
-            circleController.addCircles(circleData: circlesToAdd)
+            self.circleController.addCircles(circleData: circlesToAdd)
         }
-        mapView.delegate = self
+    }
+    
+    
+    public func view() -> UIView {
+        return mapView
     }
     
     // onIdle
     public func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
-        channel.invokeMethod("camera#onIdle", arguments: "")
+        self.channel.invokeMethod("camera#onIdle", arguments: "")
     }
     
     // onMoveStarted
     public func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
-        channel.invokeMethod("camera#onMoveStarted", arguments: "")
+        self.channel.invokeMethod("camera#onMoveStarted", arguments: "")
     }
     
     public func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView)  {
         if let annotation :FlutterAnnotation = view.annotation as? FlutterAnnotation  {
-            annotationController.onAnnotationClick(annotation: annotation)
+            self.annotationController.onAnnotationClick(annotation: annotation)
         }
     }
     
@@ -88,7 +99,7 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
         if annotation is MKUserLocation {
             return nil
         } else if let flutterAnnotation = annotation as? FlutterAnnotation {
-            return annotationController.getAnnotationView(annotation: flutterAnnotation)
+            return self.annotationController.getAnnotationView(annotation: flutterAnnotation)
         }
         return nil
     }
@@ -104,45 +115,7 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
         return MKOverlayRenderer()
     }
     
-    private func toPositionData(data: Array<Any>, animated: Bool) -> Dictionary<String, Any> {
-        var positionData: Dictionary<String, Any> = [:]
-        if let update: String = data[0] as? String {
-            switch(update) {
-            case "newCameraPosition":
-                if let _positionData : Dictionary<String, Any> = data[1] as? Dictionary<String, Any> {
-                    positionData = _positionData
-                }
-            case "newLatLng":
-                if let _positionData : Array<Any> = data[1] as? Array<Any> {
-                    positionData = ["target": _positionData]
-                }
-            case "newLatLngZoom":
-                if let _positionData: Array<Any> = data[1] as? Array<Any> {
-                    let zoom: Double = data[2] as? Double ?? 0
-                    positionData = ["target": _positionData, "zoom": zoom]
-                }
-            case "zoomBy":
-                if let zoomBy: Double = data[1] as? Double {
-                    mapView.zoomBy(zoomBy: zoomBy, animated: animated)
-                }
-            case "zoomTo":
-                if let zoomTo: Double = data[1] as? Double {
-                    mapView.zoomTo(newZoomLevel: zoomTo, animated: animated)
-                }
-            case "zoomIn":
-                mapView.zoomIn(animated: animated)
-            case "zoomOut":
-                mapView.zoomOut(animated: animated)
-            default:
-                positionData = [:]
-            }
-            return positionData
-        }
-        return [:]
-    }
-    
-    // Setup of the view and MethodChannels
-    public func view() -> UIView {
+    private func setMethodCallHandlers() {
         channel.setMethodCallHandler({(call: FlutterMethodCall, result: FlutterResult) -> Void in
             if let args :Dictionary<String, Any> = call.arguments as? Dictionary<String,Any> {
                 switch(call.method) {
@@ -169,16 +142,16 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
                     }
                     result(nil);
                 case "polygons#update":
-                   if let polyligonsToAdd: NSArray = args["polygonsToAdd"] as? NSArray {
-                       self.polygonController.addPolygons(polygonData: polyligonsToAdd)
-                   }
-                   if let polygonsToChange: NSArray = args["polygonsToChange"] as? NSArray {
-                       self.polygonController.changePolygons(polygonData: polygonsToChange)
-                   }
-                   if let polygonsToRemove: NSArray = args["polygonIdsToRemove"] as? NSArray {
-                       self.polygonController.removePolygons(polygonIds: polygonsToRemove)
-                   }
-                   result(nil);
+                    if let polyligonsToAdd: NSArray = args["polygonsToAdd"] as? NSArray {
+                        self.polygonController.addPolygons(polygonData: polyligonsToAdd)
+                    }
+                    if let polygonsToChange: NSArray = args["polygonsToChange"] as? NSArray {
+                        self.polygonController.changePolygons(polygonData: polygonsToChange)
+                    }
+                    if let polygonsToRemove: NSArray = args["polygonIdsToRemove"] as? NSArray {
+                        self.polygonController.removePolygons(polygonIds: polygonsToRemove)
+                    }
+                    result(nil);
                 case "circles#update":
                     if let circlesToAdd: NSArray = args["circlesToAdd"] as? NSArray {
                         self.circleController.addCircles(circleData: circlesToAdd)
@@ -236,6 +209,42 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
                 }
             }
         })
-        return mapView
+    }
+    
+    private func toPositionData(data: Array<Any>, animated: Bool) -> Dictionary<String, Any> {
+        var positionData: Dictionary<String, Any> = [:]
+        if let update: String = data[0] as? String {
+            switch(update) {
+            case "newCameraPosition":
+                if let _positionData : Dictionary<String, Any> = data[1] as? Dictionary<String, Any> {
+                    positionData = _positionData
+                }
+            case "newLatLng":
+                if let _positionData : Array<Any> = data[1] as? Array<Any> {
+                    positionData = ["target": _positionData]
+                }
+            case "newLatLngZoom":
+                if let _positionData: Array<Any> = data[1] as? Array<Any> {
+                    let zoom: Double = data[2] as? Double ?? 0
+                    positionData = ["target": _positionData, "zoom": zoom]
+                }
+            case "zoomBy":
+                if let zoomBy: Double = data[1] as? Double {
+                    mapView.zoomBy(zoomBy: zoomBy, animated: animated)
+                }
+            case "zoomTo":
+                if let zoomTo: Double = data[1] as? Double {
+                    mapView.zoomTo(newZoomLevel: zoomTo, animated: animated)
+                }
+            case "zoomIn":
+                mapView.zoomIn(animated: animated)
+            case "zoomOut":
+                mapView.zoomOut(animated: animated)
+            default:
+                positionData = [:]
+            }
+            return positionData
+        }
+        return [:]
     }
 }

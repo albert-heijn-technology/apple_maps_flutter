@@ -9,7 +9,7 @@ import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 
 import 'page.dart';
 
-class PlacePolygonPage extends Page {
+class PlacePolygonPage extends ExamplePage {
   PlacePolygonPage() : super(const Icon(Icons.linear_scale), 'Place polygon');
 
   @override

@@ -12,7 +12,7 @@ import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 
 import 'page.dart';
 
-class ScrollingMapPage extends Page {
+class ScrollingMapPage extends ExamplePage {
   ScrollingMapPage() : super(const Icon(Icons.map), 'Scrolling map');
 
   @override

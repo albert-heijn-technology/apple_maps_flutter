@@ -12,7 +12,7 @@ const CameraPosition _kInitialPosition = CameraPosition(
   zoom: 11,
 );
 
-class MapClickPage extends Page {
+class MapClickPage extends ExamplePage {
   MapClickPage() : super(const Icon(Icons.mouse), 'Map click');
 
   @override
