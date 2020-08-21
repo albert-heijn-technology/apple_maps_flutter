@@ -1,3 +1,7 @@
+## 0.1.1+2
+
+* Fixed map freezing when setState is being called
+
 ## 0.1.1+1
 
 * Fixed Polygon and Circle Tap events.
