@@ -2,20 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:apple_maps_flutter_example/map_update.dart';
 import 'package:apple_maps_flutter_example/padding.dart';
 import 'package:apple_maps_flutter_example/place_annotation.dart';
 import 'package:apple_maps_flutter_example/place_circle.dart';
 import 'package:apple_maps_flutter_example/place_polyline.dart';
 import 'package:apple_maps_flutter_example/place_polygon.dart';
 import 'package:apple_maps_flutter_example/scrolling_map.dart';
+import 'package:apple_maps_flutter_example/animate_camera.dart';
+import 'package:apple_maps_flutter_example/map_click.dart';
+import 'package:apple_maps_flutter_example/map_coordinates.dart';
+import 'package:apple_maps_flutter_example/map_ui.dart';
+import 'package:apple_maps_flutter_example/annotation_icons.dart';
+import 'package:apple_maps_flutter_example/move_camera.dart';
+import 'package:apple_maps_flutter_example/page.dart';
 import 'package:flutter/material.dart';
-import 'animate_camera.dart';
-import 'map_click.dart';
-import 'map_coordinates.dart';
-import 'map_ui.dart';
-import 'annotation_icons.dart';
-import 'move_camera.dart';
-import 'page.dart';
 
 final List<ExamplePage> _allPages = <ExamplePage>[
   MapUiPage(),
@@ -30,6 +31,7 @@ final List<ExamplePage> _allPages = <ExamplePage>[
   PlacePolygonPage(),
   PlaceCirclePage(),
   ScrollingMapPage(),
+  MapUpdatePage(),
 ];
 
 class MapsDemo extends StatelessWidget {
