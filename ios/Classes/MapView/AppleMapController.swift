@@ -74,9 +74,14 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
         }
     }
     
-    
     public func view() -> UIView {
         return mapView
+    }
+    
+    public func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+        if let flutterAnnotation: FlutterAnnotation = view.annotation as? FlutterAnnotation {
+            self.channel.invokeMethod("infoWindow#onTap", arguments: ["annotationId": flutterAnnotation.id])
+        }
     }
     
     // onIdle
@@ -121,15 +126,27 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
                 switch(call.method) {
                 case "annotations#update":
                     if let annotationsToAdd = args["annotationsToAdd"] as? NSArray {
-                        self.annotationController.annotationsToAdd(annotations: annotationsToAdd)
+                        if annotationsToAdd.count > 0 {
+                            self.annotationController.annotationsToAdd(annotations: annotationsToAdd)
+                        }
                     }
                     if let annotationsToChange = args["annotationsToChange"] as? NSArray {
-                        self.annotationController.annotationsToChange(annotations: annotationsToChange)
+                        if annotationsToChange.count > 0 {
+                            self.annotationController.annotationsToChange(annotations: annotationsToChange)
+                        }
                     }
                     if let annotationsToDelete = args["annotationIdsToRemove"] as? NSArray {
-                        self.annotationController.annotationsIdsToRemove(annotationIds: annotationsToDelete)
+                        if annotationsToDelete.count > 0 {
+                            self.annotationController.annotationsIdsToRemove(annotationIds: annotationsToDelete)
+                        }
                     }
                     result(nil)
+                case "annotations#showInfoWindow":
+                    self.annotationController.showAnnotation(with: args["annotationId"] as! String)
+                case "annotations#hideInfoWindow":
+                    self.annotationController.hideAnnotation(with: args["annotationId"] as! String)
+                case "annotations#isInfoWindowShown":
+                    result(self.annotationController.isAnnotationSelected(with: args["annotationId"] as! String))
                 case "polylines#update":
                     if let polylinesToAdd: NSArray = args["polylinesToAdd"] as? NSArray {
                         self.polylineController.addPolylines(polylineData: polylinesToAdd)

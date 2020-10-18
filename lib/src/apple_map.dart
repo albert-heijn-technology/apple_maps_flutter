@@ -237,6 +237,9 @@ class _AppleMapState extends State<AppleMap> {
     controller._updateAnnotations(_AnnotationUpdates.from(
         _annotations.values.toSet(), widget.annotations));
     _annotations = _keyByAnnotationId(widget.annotations);
+    _annotations.forEach((key, value) {
+      print('Id: ${key.value} icon = ${value.icon._toJson()}');
+    });
   }
 
   void _updatePolylines() async {

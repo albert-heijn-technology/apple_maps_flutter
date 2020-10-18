@@ -37,6 +37,7 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
   Map<AnnotationId, Annotation> annotations = <AnnotationId, Annotation>{};
   AnnotationId selectedAnnotation;
   int _annotationIdCounter = 1;
+  BitmapDescriptor _annotationIcon;
 
   void _onMapCreated(AppleMapController controller) {
     this.controller = controller;
@@ -52,8 +53,8 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
     if (tappedAnnotation != null) {
       setState(() {
         if (annotations.containsKey(selectedAnnotation)) {
-          final Annotation resetOld = annotations[selectedAnnotation]
-              .copyWith(iconParam: BitmapDescriptor.defaultAnnotation);
+          final Annotation resetOld =
+              annotations[selectedAnnotation].copyWith();
           annotations[selectedAnnotation] = resetOld;
         }
         selectedAnnotation = annotationId;
@@ -76,12 +77,17 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
       annotationId: annotationId,
       icon: iconType == 'marker'
           ? BitmapDescriptor.markerAnnotation
-          : BitmapDescriptor.defaultAnnotation,
+          : iconType == 'pin'
+              ? BitmapDescriptor.defaultAnnotation
+              : _annotationIcon,
       position: LatLng(
         center.latitude + sin(_annotationIdCounter * pi / 6.0) / 20.0,
         center.longitude + cos(_annotationIdCounter * pi / 6.0) / 20.0,
       ),
-      infoWindow: InfoWindow(title: annotationIdVal, snippet: '*'),
+      infoWindow: InfoWindow(
+          title: annotationIdVal,
+          snippet: '*',
+          onTap: () => print('InfowWindow of id: $annotationId tapped.')),
       onTap: () {
         _onAnnotationTapped(annotationId);
       },
@@ -128,7 +134,8 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
 
   Future<void> _changeInfo() async {
     final Annotation annotation = annotations[selectedAnnotation];
-    final String newSnippet = annotation.infoWindow.snippet + '*';
+    final String newSnippet = annotation.infoWindow.snippet +
+        (annotation.infoWindow.snippet.length % 10 == 0 ? '\n' : '*');
     setState(() {
       annotations[selectedAnnotation] = annotation.copyWith(
         infoWindowParam: annotation.infoWindow.copyWith(
@@ -157,8 +164,44 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
     });
   }
 
+  Future<void> _createAnnotationImageFromAsset(BuildContext context) async {
+    if (_annotationIcon == null) {
+      final ImageConfiguration imageConfiguration =
+          createLocalImageConfiguration(context);
+      BitmapDescriptor.fromAssetImage(
+              imageConfiguration, 'assets/red_square.png')
+          .then(_updateBitmap);
+    }
+  }
+
+  void _updateBitmap(BitmapDescriptor bitmap) {
+    setState(() {
+      _annotationIcon = bitmap;
+    });
+  }
+
+  Future<void> _showInfoWindow() async {
+    final Annotation annotation = annotations[selectedAnnotation];
+    await this.controller.showMarkerInfoWindow(annotation.annotationId);
+  }
+
+  Future<void> _hideInfoWindow() async {
+    final Annotation annotation = annotations[selectedAnnotation];
+    this.controller.hideMarkerInfoWindow(annotation.annotationId);
+  }
+
+  Future<bool> _isInfoWindowShown() async {
+    final Annotation annotation = annotations[selectedAnnotation];
+    print(
+        'Is InfowWindow visible: ${await this.controller.isMarkerInfoWindowShown(annotation.annotationId)}');
+    return await this
+        .controller
+        .isMarkerInfoWindowShown(annotation.annotationId);
+  }
+
   @override
   Widget build(BuildContext context) {
+    _createAnnotationImageFromAsset(context);
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -195,12 +238,20 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
                           onPressed: () => _add('marker'),
                         ),
                         FlatButton(
+                          child: const Text('add customAnnotation'),
+                          onPressed: () => _add('customAnnotation'),
+                        ),
+                        FlatButton(
                           child: const Text('remove'),
                           onPressed: _remove,
                         ),
                         FlatButton(
                           child: const Text('change info'),
                           onPressed: _changeInfo,
+                        ),
+                        FlatButton(
+                          child: const Text('infoWindow is shown?s'),
+                          onPressed: _isInfoWindowShown,
                         ),
                       ],
                     ),
@@ -221,6 +272,14 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
                         FlatButton(
                           child: const Text('toggle visible'),
                           onPressed: _toggleVisible,
+                        ),
+                        FlatButton(
+                          child: const Text('show infoWindow'),
+                          onPressed: _showInfoWindow,
+                        ),
+                        FlatButton(
+                          child: const Text('hide infoWindow'),
+                          onPressed: _hideInfoWindow,
                         ),
                       ],
                     ),

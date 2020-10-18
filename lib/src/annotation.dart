@@ -72,6 +72,7 @@ class InfoWindow {
     addIfPresent('title', title);
     addIfPresent('snippet', snippet);
     addIfPresent('anchor', _offsetToJson(anchor));
+    addIfPresent('consumesTapEvents', onTap != null);
 
     return json;
   }
@@ -83,7 +84,8 @@ class InfoWindow {
     final InfoWindow typedOther = other;
     return title == typedOther.title &&
         snippet == typedOther.snippet &&
-        anchor == typedOther.anchor;
+        anchor == typedOther.anchor &&
+        onTap == typedOther.onTap;
   }
 
   @override
@@ -91,7 +93,7 @@ class InfoWindow {
 
   @override
   String toString() {
-    return 'InfoWindow{title: $title, snippet: $snippet, anchor: $anchor}';
+    return 'InfoWindow{title: $title, snippet: $snippet, anchor: $anchor, consumesTapEvents: ${onTap != null}}';
   }
 }
 

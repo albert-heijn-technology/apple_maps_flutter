@@ -13,6 +13,7 @@ class FlutterAnnotation: NSObject, MKAnnotation {
     var id :String!
     var title: String?
     var subtitle: String?
+    var infoWindowConsumesTapEvents: Bool = false
     var image: UIImage?
     var alpha: Double?
     var isDraggable: Bool?
@@ -28,6 +29,7 @@ class FlutterAnnotation: NSObject, MKAnnotation {
         self.coordinate = CLLocationCoordinate2D(latitude: lat, longitude: long)
         self.title = infoWindow["title"] as? String
         self.subtitle = infoWindow["snippet"] as? String
+        self.infoWindowConsumesTapEvents = infoWindow["consumesTapEvents"] as? Bool ?? false
         self.id = annotationData["annotationId"] as? String
         self.isVisible = annotationData["visible"] as? Bool
         self.isDraggable = annotationData["draggable"] as? Bool

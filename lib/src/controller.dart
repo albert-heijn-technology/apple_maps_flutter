@@ -167,6 +167,48 @@ class AppleMapController {
     });
   }
 
+  /// Programmatically show the Info Window for a [Marker].
+  ///
+  /// The `markerId` must match one of the markers on the map.
+  /// An invalid `markerId` triggers an "Invalid markerId" error.
+  ///
+  /// * See also:
+  ///   * [hideMarkerInfoWindow] to hide the Info Window.
+  ///   * [isMarkerInfoWindowShown] to check if the Info Window is showing.
+  Future<void> showMarkerInfoWindow(AnnotationId annotationId) {
+    assert(annotationId != null);
+    return channel.invokeMethod<void>('annotations#showInfoWindow',
+        <String, String>{'annotationId': annotationId.value});
+  }
+
+  /// Programmatically hide the Info Window for a [Marker].
+  ///
+  /// The `markerId` must match one of the markers on the map.
+  /// An invalid `markerId` triggers an "Invalid markerId" error.
+  ///
+  /// * See also:
+  ///   * [showMarkerInfoWindow] to show the Info Window.
+  ///   * [isMarkerInfoWindowShown] to check if the Info Window is showing.
+  Future<void> hideMarkerInfoWindow(AnnotationId annotationId) {
+    assert(annotationId != null);
+    return channel.invokeMethod<void>('annotations#hideInfoWindow',
+        <String, String>{'annotationId': annotationId.value});
+  }
+
+  /// Returns `true` when the [InfoWindow] is showing, `false` otherwise.
+  ///
+  /// The `markerId` must match one of the markers on the map.
+  /// An invalid `markerId` triggers an "Invalid markerId" error.
+  ///
+  /// * See also:
+  ///   * [showMarkerInfoWindow] to show the Info Window.
+  ///   * [hideMarkerInfoWindow] to hide the Info Window.
+  Future<bool> isMarkerInfoWindowShown(AnnotationId annotationId) {
+    assert(annotationId != null);
+    return channel.invokeMethod<bool>('annotations#isInfoWindowShown',
+        <String, String>{'annotationId': annotationId.value});
+  }
+
   /// Changes the map camera position.
   ///
   /// The returned [Future] completes after the change has been made on the
