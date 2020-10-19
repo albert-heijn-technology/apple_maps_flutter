@@ -1,3 +1,11 @@
+## 0.1.2
+
+* Annotation rework:
+   * onTap for InfoWindow added
+   * Multiline InfoWindow subtitle support
+   * Overall Annotation handling refactored
+   * Correct UserTracking Button added
+
 ## 0.1.1+2
 
 * Fixed map freezing when setState is being called
