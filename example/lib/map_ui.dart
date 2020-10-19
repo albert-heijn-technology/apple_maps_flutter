@@ -48,6 +48,7 @@ class MapUiBodyState extends State<MapUiBody> {
   bool _pitchGesturesEnabled = true;
   bool _zoomGesturesEnabled = true;
   bool _myLocationEnabled = true;
+  TrackingMode _trackingMode = TrackingMode.none;
   AppleMapController _controller;
   @override
   void initState() {
@@ -170,6 +171,7 @@ class MapUiBodyState extends State<MapUiBody> {
   Widget build(BuildContext context) {
     final AppleMap appleMap = AppleMap(
       onMapCreated: onMapCreated,
+      trackingMode: _trackingMode,
       initialCameraPosition: _kInitialPosition,
       compassEnabled: _compassEnabled,
       minMaxZoomPreference: _minMaxZoomPreference,
@@ -180,6 +182,7 @@ class MapUiBodyState extends State<MapUiBody> {
       zoomGesturesEnabled: _zoomGesturesEnabled,
       myLocationEnabled: _myLocationEnabled,
       myLocationButtonEnabled: _myLocationButtonEnabled,
+      padding: const EdgeInsets.all(10),
       onCameraMove: _updateCameraPosition,
     );
 

@@ -114,6 +114,7 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
         if let isCompassEnabled: Bool = options["compassEnabled"] as? Bool {
             if #available(iOS 9.0, *) {
                 self.showsCompass = isCompassEnabled
+                self.mapTrackingButton(isVisible: self.isMyLocationButtonShowing ?? false)
             }
         }
 
@@ -214,20 +215,38 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
     // Functions used for the mapTrackingButton
     func mapTrackingButton(isVisible visible: Bool) {
         self.isMyLocationButtonShowing = visible
+        if let _locationButton = self.viewWithTag(BUTTON_IDS.LOCATION.rawValue) {
+           _locationButton.removeFromSuperview()
+        }
         if visible {
-            let image = UIImage(named: "outline_near_me")
-            let locationButton = UIButton(type: UIButton.ButtonType.custom) as UIButton
-            locationButton.tag = BUTTON_IDS.LOCATION.rawValue
-            locationButton.layer.cornerRadius = 5
-            locationButton.frame = CGRect(origin: CGPoint(x: self.bounds.width - 45, y: self.bounds.height - 45), size: CGSize(width: 40, height: 40))
-            locationButton.setImage(image, for: .normal)
-            locationButton.backgroundColor = .white
-            locationButton.alpha = 0.8
-            locationButton.addTarget(self, action: #selector(centerMapOnUserButtonClicked), for:.touchUpInside)
-            self.addSubview(locationButton)
-        } else {
-            if let _locationButton = self.viewWithTag(BUTTON_IDS.LOCATION.rawValue) {
-               _locationButton.removeFromSuperview()
+            let buttonContainer = UIView()
+            if #available(iOS 9.0, *) {
+                buttonContainer.translatesAutoresizingMaskIntoConstraints = false
+                buttonContainer.widthAnchor.constraint(equalToConstant: 35).isActive = true
+                buttonContainer.heightAnchor.constraint(equalToConstant: 35).isActive = true
+                buttonContainer.layer.cornerRadius = 8
+                buttonContainer.tag = BUTTON_IDS.LOCATION.rawValue
+                buttonContainer.backgroundColor = .white
+                if #available(iOS 11.0, *) {
+                    let userTrackingButton = MKUserTrackingButton(mapView: self)
+                    userTrackingButton.translatesAutoresizingMaskIntoConstraints = false
+                    buttonContainer.addSubview(userTrackingButton)
+                    userTrackingButton.centerXAnchor.constraint(equalTo: buttonContainer.centerXAnchor).isActive = true
+                    userTrackingButton.centerYAnchor.constraint(equalTo: buttonContainer.centerYAnchor).isActive = true
+                } else {
+                    let locationButton = UIButton(type: UIButton.ButtonType.custom) as UIButton
+                    let image = UIImage(named: "outline_near_me")
+                    locationButton.translatesAutoresizingMaskIntoConstraints = false
+                    locationButton.setImage(image, for: .normal)
+                    locationButton.imageView?.tintColor = .blue
+                    locationButton.addTarget(self, action: #selector(centerMapOnUserButtonClicked), for:.touchUpInside)
+                    buttonContainer.addSubview(locationButton)
+                    locationButton.centerXAnchor.constraint(equalTo: buttonContainer.centerXAnchor).isActive = true
+                    locationButton.centerYAnchor.constraint(equalTo: buttonContainer.centerYAnchor).isActive = true
+                }
+                self.addSubview(buttonContainer)
+                buttonContainer.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -5 - self.layoutMargins.right).isActive = true
+                buttonContainer.topAnchor.constraint(equalTo: self.topAnchor, constant: self.showsCompass ? 50 : 5 + self.layoutMargins.top).isActive = true
             }
         }
     }
