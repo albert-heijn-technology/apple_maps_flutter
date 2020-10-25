@@ -1,3 +1,7 @@
+## 0.1.2+4
+
+* Added configurable Anchor for infoWindows
+
 ## 0.1.2+3
 
 * Fixed the offset of custom markers
