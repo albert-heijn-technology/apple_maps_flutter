@@ -46,6 +46,9 @@ class AnnotationController: NSObject {
         }
         if annotation.icon.iconType != .MARKER {
             initInfoWindow(annotation: annotation, annotationView: annotationView!)
+            if annotation.icon.iconType != .PIN {
+                annotationView!.centerOffset = CGPoint(x: 0, y: -annotationView!.frame.size.height / 2)
+            }
         }
         annotationView!.canShowCallout = true
         annotationView!.alpha = CGFloat(annotation.alpha ?? 1.00)

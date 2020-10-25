@@ -58,7 +58,7 @@ class AnnotationIconsBodyState extends State<AnnotationIconsBody> {
     return <Annotation>[
       Annotation(
         annotationId: AnnotationId("annotation_1"),
-        position: _kMapCenter,
+        position: LatLng(52.707755, -2.7540658),
         icon: _annotationIcon,
       ),
     ].toSet();
@@ -69,7 +69,7 @@ class AnnotationIconsBodyState extends State<AnnotationIconsBody> {
       final ImageConfiguration imageConfiguration =
           new ImageConfiguration(devicePixelRatio: 1.0);
       BitmapDescriptor.fromAssetImage(
-              imageConfiguration, 'assets/red_square.png')
+              imageConfiguration, 'assets/test_marker.png')
           .then(_updateBitmap);
     }
   }
