@@ -1,3 +1,7 @@
+## 0.1.2+2
+
+* Fixed the onTap event for Annotation Callouts
+
 ## 0.1.2+1
 
 * Added custom annotation icons from byte data
