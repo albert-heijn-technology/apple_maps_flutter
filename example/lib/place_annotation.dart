@@ -93,6 +93,7 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
       ),
       infoWindow: InfoWindow(
           title: annotationIdVal,
+          anchor: Offset(0.5, 0.0),
           snippet: '*',
           onTap: () => print('InfowWindow of id: $annotationId tapped.')),
       onTap: () {
@@ -221,7 +222,7 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
   @override
   Widget build(BuildContext context) {
     _createAnnotationImageFromAsset(context, _devicePixelRatio);
-    _getBytesFromAsset('assets/red_square.png', 10);
+    _getBytesFromAsset('assets/red_square.png', 40);
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.stretch,

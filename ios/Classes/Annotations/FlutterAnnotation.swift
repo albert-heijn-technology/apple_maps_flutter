@@ -19,6 +19,7 @@ class FlutterAnnotation: NSObject, MKAnnotation {
     var isDraggable: Bool?
     var wasDragged: Bool = false
     var isVisible: Bool? = true
+    var calloutOffset: CalloutOffset = CalloutOffset(x: 0, y: 0)
     var icon: AnnotationIcon = AnnotationIcon.init()
     
     public init(fromDictionary annotationData: Dictionary<String, Any>, registrar: FlutterPluginRegistrar) {
@@ -38,6 +39,10 @@ class FlutterAnnotation: NSObject, MKAnnotation {
         }
         if let iconData: Array<Any> = annotationData["icon"] as? Array<Any> {
             self.icon = FlutterAnnotation.getAnnotationIcon(iconData: iconData, registrar: registrar, annotationId: id)
+        }
+        
+        if let calloutOffsetJSON = infoWindow["anchor"] as? Array<Double> {
+            self.calloutOffset = CalloutOffset(x: calloutOffsetJSON[0], y: calloutOffsetJSON[1])
         }
     }
     
@@ -68,4 +73,9 @@ class FlutterAnnotation: NSObject, MKAnnotation {
     static func != (lhs: FlutterAnnotation, rhs: FlutterAnnotation) -> Bool {
         return !(lhs == rhs)
     }
+}
+
+struct CalloutOffset {
+    let x: Double
+    let y: Double
 }

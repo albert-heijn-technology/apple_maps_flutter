@@ -93,9 +93,10 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
     }
     
     public func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView)  {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.calloutTapped(_:)))
-        view.addGestureRecognizer(tapGesture)
         if let annotation :FlutterAnnotation = view.annotation as? FlutterAnnotation  {
+            if annotation.infoWindowConsumesTapEvents {
+                view.addGestureRecognizer(self.onCalloutTapGestureRecognizer!)
+            }
             self.currentlySelectedAnnotation = annotation.id
             self.annotationController.onAnnotationClick(annotation: annotation)
         }

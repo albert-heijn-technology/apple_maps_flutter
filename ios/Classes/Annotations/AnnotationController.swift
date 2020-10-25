@@ -111,6 +111,10 @@ class AnnotationController: NSObject {
     }
 
     private func initInfoWindow(annotation: FlutterAnnotation, annotationView: MKAnnotationView) {
+\(CGFloat(annotation.calloutOffset.y))")
+        let x = self.getInfoWindowXOffset(annotationView: annotationView, annotation: annotation)
+        let y = self.getInfoWindowYOffset(annotationView: annotationView, annotation: annotation)
+        annotationView.calloutOffset = CGPoint(x: x, y: y)
         if #available(iOS 9.0, *) {
             let lines = annotation.subtitle?.split(whereSeparator: \.isNewline)
             if lines != nil {
@@ -185,5 +189,16 @@ class AnnotationController: NSObject {
         }
         annotationView?.image = annotation.icon.image
         return annotationView!
+    }
+    
+    private func getInfoWindowXOffset(annotationView: MKAnnotationView, annotation: FlutterAnnotation) -> CGFloat {
+        if annotation.icon.iconType == .PIN {
+            return annotationView.frame.origin.x - (annotationView.frame.origin.x * CGFloat(annotation.calloutOffset.x))
+        }
+        return annotationView.frame.origin.x + (annotationView.frame.width * CGFloat(annotation.calloutOffset.x))
+    }
+    
+    private func getInfoWindowYOffset(annotationView: MKAnnotationView, annotation: FlutterAnnotation) -> CGFloat {
+        return annotationView.frame.height * CGFloat(annotation.calloutOffset.y)
     }
 }
