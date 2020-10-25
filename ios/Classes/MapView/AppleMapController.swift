@@ -40,6 +40,8 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
     var circleController: CircleController
     var initialCameraPosition: [String: Any]
     var options: [String: Any]
+    var onCalloutTapGestureRecognizer: UITapGestureRecognizer?
+    var currentlySelectedAnnotation: String?
     
     public init(withFrame frame: CGRect, withRegistrar registrar: FlutterPluginRegistrar, withargs args: Dictionary<String, Any> ,withId id: Int64) {
         self.options = args["options"] as! [String: Any]
@@ -72,16 +74,12 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
         if let circlesToAdd: NSArray = args["circlesToAdd"] as? NSArray {
             self.circleController.addCircles(circleData: circlesToAdd)
         }
+        
+        self.onCalloutTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.calloutTapped(_:)))
     }
     
     public func view() -> UIView {
         return mapView
-    }
-    
-    public func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
-        if let flutterAnnotation: FlutterAnnotation = view.annotation as? FlutterAnnotation {
-            self.channel.invokeMethod("infoWindow#onTap", arguments: ["annotationId": flutterAnnotation.id])
-        }
     }
     
     // onIdle
@@ -95,10 +93,19 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
     }
     
     public func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView)  {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.calloutTapped(_:)))
+        view.addGestureRecognizer(tapGesture)
         if let annotation :FlutterAnnotation = view.annotation as? FlutterAnnotation  {
+            self.currentlySelectedAnnotation = annotation.id
             self.annotationController.onAnnotationClick(annotation: annotation)
         }
     }
+    
+    public func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
+        self.currentlySelectedAnnotation = nil
+        view.removeGestureRecognizer(self.onCalloutTapGestureRecognizer!)
+    }
+
     
     public func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         if annotation is MKUserLocation {
@@ -118,6 +125,12 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
             return circleController.circleRenderer(overlay: overlay)
         }
         return MKOverlayRenderer()
+    }
+    
+    @objc func calloutTapped(_ sender: UITapGestureRecognizer? = nil) {
+        if self.currentlySelectedAnnotation != nil {
+            self.channel.invokeMethod("infoWindow#onTap", arguments: ["annotationId": self.currentlySelectedAnnotation!])
+        }
     }
     
     private func setMethodCallHandlers() {

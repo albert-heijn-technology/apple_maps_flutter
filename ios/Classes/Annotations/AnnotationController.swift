@@ -108,9 +108,6 @@ class AnnotationController: NSObject {
     }
 
     private func initInfoWindow(annotation: FlutterAnnotation, annotationView: MKAnnotationView) {
-        if annotation.infoWindowConsumesTapEvents {
-            annotationView.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
-        }
         if #available(iOS 9.0, *) {
             let lines = annotation.subtitle?.split(whereSeparator: \.isNewline)
             if lines != nil {
