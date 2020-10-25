@@ -1,3 +1,7 @@
+## 0.1.2+3
+
+* Fixed the offset of custom markers
+
 ## 0.1.2+2
 
 * Fixed the onTap event for Annotation Callouts
