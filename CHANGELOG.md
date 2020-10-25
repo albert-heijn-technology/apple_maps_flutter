@@ -1,3 +1,8 @@
+## 0.1.2+1
+
+* Added custom annotation icons from byte data
+* Fixed scaling of icons from assets => see: https://flutter.dev/docs/development/ui/assets-and-images#declaring-resolution-aware-image-assets
+
 ## 0.1.2
 
 * Annotation rework:
