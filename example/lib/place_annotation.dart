@@ -4,12 +4,15 @@
 
 import 'dart:async';
 import 'dart:math';
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:apple_maps_flutter/apple_maps_flutter.dart';
+import 'package:flutter/services.dart';
 
 import 'page.dart';
+import 'dart:ui' as ui;
 
 class PlaceAnnotationPage extends ExamplePage {
   PlaceAnnotationPage() : super(const Icon(Icons.place), 'Place annotation');
@@ -38,6 +41,8 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
   AnnotationId selectedAnnotation;
   int _annotationIdCounter = 1;
   BitmapDescriptor _annotationIcon;
+  BitmapDescriptor _iconFromBytes;
+  double _devicePixelRatio = 3.0;
 
   void _onMapCreated(AppleMapController controller) {
     this.controller = controller;
@@ -79,7 +84,9 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
           ? BitmapDescriptor.markerAnnotation
           : iconType == 'pin'
               ? BitmapDescriptor.defaultAnnotation
-              : _annotationIcon,
+              : iconType == 'customAnnotationFromBytes'
+                  ? _iconFromBytes
+                  : _annotationIcon,
       position: LatLng(
         center.latitude + sin(_annotationIdCounter * pi / 6.0) / 20.0,
         center.longitude + cos(_annotationIdCounter * pi / 6.0) / 20.0,
@@ -164,10 +171,11 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
     });
   }
 
-  Future<void> _createAnnotationImageFromAsset(BuildContext context) async {
+  Future<void> _createAnnotationImageFromAsset(
+      BuildContext context, double devicelPixelRatio) async {
     if (_annotationIcon == null) {
       final ImageConfiguration imageConfiguration =
-          createLocalImageConfiguration(context);
+          ImageConfiguration(devicePixelRatio: devicelPixelRatio);
       BitmapDescriptor.fromAssetImage(
               imageConfiguration, 'assets/red_square.png')
           .then(_updateBitmap);
@@ -199,9 +207,21 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
         .isMarkerInfoWindowShown(annotation.annotationId);
   }
 
+  Future<void> _getBytesFromAsset(String path, int width) async {
+    ByteData data = await rootBundle.load(path);
+    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
+        targetWidth: width);
+    ui.FrameInfo fi = await codec.getNextFrame();
+    _iconFromBytes = BitmapDescriptor.fromBytes(
+        (await fi.image.toByteData(format: ui.ImageByteFormat.png))
+            .buffer
+            .asUint8List());
+  }
+
   @override
   Widget build(BuildContext context) {
-    _createAnnotationImageFromAsset(context);
+    _createAnnotationImageFromAsset(context, _devicePixelRatio);
+    _getBytesFromAsset('assets/red_square.png', 10);
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -240,6 +260,10 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
                         FlatButton(
                           child: const Text('add customAnnotation'),
                           onPressed: () => _add('customAnnotation'),
+                        ),
+                        FlatButton(
+                          child: const Text('customAnnotation from bytes'),
+                          onPressed: () => _add('customAnnotationFromBytes'),
                         ),
                         FlatButton(
                           child: const Text('remove'),

@@ -51,8 +51,9 @@ class BitmapDescriptor {
     String assetName, {
     AssetBundle bundle,
     String package,
+    bool mipmaps = true,
   }) async {
-    if (configuration.devicePixelRatio != null) {
+    if (!mipmaps && configuration.devicePixelRatio != null) {
       return BitmapDescriptor._(<dynamic>[
         'fromAssetImage',
         assetName,
@@ -68,6 +69,12 @@ class BitmapDescriptor {
       assetBundleImageKey.name,
       assetBundleImageKey.scale,
     ]);
+  }
+
+  /// Creates a BitmapDescriptor using an array of bytes that must be encoded
+  /// as PNG.
+  static BitmapDescriptor fromBytes(Uint8List byteData) {
+    return BitmapDescriptor._(<dynamic>['fromBytes', byteData]);
   }
 
   final dynamic _json;

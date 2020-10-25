@@ -29,7 +29,7 @@ class AnnotationController: NSObject {
                 annotationView = getPinAnnotationView(annotation: annotation, id: identifier)
             } else if annotation.icon.iconType == IconType.MARKER {
                 annotationView = getMarkerAnnotationView(annotation: annotation, id: identifier)
-            } else if annotation.icon.iconType == IconType.CUSTOM {
+            } else if annotation.icon.iconType == .CUSTOM_FROM_ASSET || annotation.icon.iconType == .CUSTOM_FROM_BYTES {
                 annotationView = getCustomAnnotationView(annotation: annotation, id: identifier)
             }
         }
@@ -44,7 +44,7 @@ class AnnotationController: NSObject {
             annotationView!.isDraggable = false
             return annotationView!
         }
-        if annotation.icon.iconType == .CUSTOM || annotation.icon.iconType == .PIN {
+        if annotation.icon.iconType != .MARKER {
             initInfoWindow(annotation: annotation, annotationView: annotationView!)
         }
         annotationView!.canShowCallout = true

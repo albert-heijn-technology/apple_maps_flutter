@@ -42,17 +42,19 @@ class FlutterAnnotation: NSObject, MKAnnotation {
     }
     
     static private func getAnnotationIcon(iconData: Array<Any>, registrar: FlutterPluginRegistrar, annotationId: String) -> AnnotationIcon {
-        let iconTypeMap: Dictionary<String, IconType> = ["fromAssetImage": IconType.CUSTOM, "defaultAnnotation": IconType.PIN, "markerAnnotation": IconType.MARKER]
+        let iconTypeMap: Dictionary<String, IconType> = ["fromAssetImage": .CUSTOM_FROM_ASSET, "fromBytes": .CUSTOM_FROM_BYTES, "defaultAnnotation": .PIN, "markerAnnotation": .MARKER]
         var icon: AnnotationIcon
         let iconType: IconType = iconTypeMap[iconData[0] as! String] ?? .PIN
         var scaleParam: CGFloat?
        
-        if iconType == .CUSTOM {
+        if iconType == .CUSTOM_FROM_ASSET {
             let assetPath: String = iconData[1] as! String
             scaleParam = CGFloat(iconData[2] as? Double ?? 1.0)
-            icon = AnnotationIcon(named: registrar.lookupKey(forAsset: assetPath), iconType: iconType, id: annotationId, iconScale: scaleParam)
-        } else {
-            icon = AnnotationIcon(named: "", iconType: iconType, id: annotationId)
+            icon = AnnotationIcon(named: registrar.lookupKey(forAsset: assetPath), id: annotationId, iconScale: scaleParam)
+        } else if iconType == .CUSTOM_FROM_BYTES {
+            icon = AnnotationIcon(fromBytes: iconData[1] as! FlutterStandardTypedData, id: annotationId)
+        }else {
+            icon = AnnotationIcon(id: annotationId, iconType: iconType)
         }
         return icon
     }
