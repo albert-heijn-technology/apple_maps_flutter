@@ -146,6 +146,7 @@ class Annotation {
   const Annotation({
     @required this.annotationId,
     this.alpha = 1.0,
+    this.anchor = const Offset(0.5, 1.0),
     this.draggable = false,
     this.icon = BitmapDescriptor.defaultAnnotation,
     this.infoWindow = InfoWindow.noText,
@@ -162,6 +163,13 @@ class Annotation {
   ///
   /// 0.0 means fully transparent, 1.0 means fully opaque.
   final double alpha;
+
+  /// The icon image point that will be placed at the [position] of the marker.
+  ///
+  /// The image point is specified in normalized coordinates: An anchor of
+  /// (0.0, 0.0) means the top left corner of the image. An anchor
+  /// of (1.0, 1.0) means the bottom right corner of the image.
+  final Offset anchor;
 
   /// True if the annotation is draggable by user touch events.
   final bool draggable;
@@ -189,6 +197,7 @@ class Annotation {
   /// unless overwritten by the specified parameters.
   Annotation copyWith({
     double alphaParam,
+    Offset anchorParam,
     bool consumeTapEventsParam,
     bool draggableParam,
     BitmapDescriptor iconParam,
@@ -200,6 +209,7 @@ class Annotation {
   }) {
     return Annotation(
       annotationId: annotationId,
+      anchor: anchorParam ?? anchor,
       alpha: alphaParam ?? alpha,
       draggable: draggableParam ?? draggable,
       icon: iconParam ?? icon,
@@ -222,6 +232,7 @@ class Annotation {
 
     addIfPresent('annotationId', annotationId.value);
     addIfPresent('alpha', alpha);
+    addIfPresent('anchor', _offsetToJson(anchor));
     addIfPresent('draggable', draggable);
     addIfPresent('icon', icon?._toJson());
     addIfPresent('infoWindow', infoWindow?._toJson());

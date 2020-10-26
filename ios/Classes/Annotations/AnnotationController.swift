@@ -47,7 +47,9 @@ class AnnotationController: NSObject {
         if annotation.icon.iconType != .MARKER {
             initInfoWindow(annotation: annotation, annotationView: annotationView!)
             if annotation.icon.iconType != .PIN {
-                annotationView!.centerOffset = CGPoint(x: 0, y: -annotationView!.frame.size.height / 2)
+                let x = (0.5 - annotation.anchor.x) * Double(annotationView!.frame.size.width)
+                let y = (0.5 - annotation.anchor.y) * Double(annotationView!.frame.size.height)
+                annotationView!.centerOffset = CGPoint(x: x, y: y)
             }
         }
         annotationView!.canShowCallout = true
@@ -111,7 +113,6 @@ class AnnotationController: NSObject {
     }
 
     private func initInfoWindow(annotation: FlutterAnnotation, annotationView: MKAnnotationView) {
-\(CGFloat(annotation.calloutOffset.y))")
         let x = self.getInfoWindowXOffset(annotationView: annotationView, annotation: annotation)
         let y = self.getInfoWindowYOffset(annotationView: annotationView, annotation: annotation)
         annotationView.calloutOffset = CGPoint(x: x, y: y)
@@ -190,14 +191,14 @@ class AnnotationController: NSObject {
         annotationView?.image = annotation.icon.image
         return annotationView!
     }
-    
+
     private func getInfoWindowXOffset(annotationView: MKAnnotationView, annotation: FlutterAnnotation) -> CGFloat {
         if annotation.icon.iconType == .PIN {
             return annotationView.frame.origin.x - (annotationView.frame.origin.x * CGFloat(annotation.calloutOffset.x))
         }
         return annotationView.frame.origin.x + (annotationView.frame.width * CGFloat(annotation.calloutOffset.x))
     }
-    
+
     private func getInfoWindowYOffset(annotationView: MKAnnotationView, annotation: FlutterAnnotation) -> CGFloat {
         return annotationView.frame.height * CGFloat(annotation.calloutOffset.y)
     }

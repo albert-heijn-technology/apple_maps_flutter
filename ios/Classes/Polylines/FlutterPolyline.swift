@@ -41,7 +41,7 @@ class FlutterPolyline: MKPolyline {
     
     static func == (lhs: FlutterPolyline, rhs: FlutterPolyline) -> Bool {
         return lhs.color == rhs.color && lhs.isConsumingTapEvents == rhs.isConsumingTapEvents && lhs.width ==  rhs.width
-            && lhs.isVisible == rhs.isVisible && lhs.capType == rhs.capType && lhs.pattern == rhs.pattern && lhs.lineJoin == rhs.lineJoin && rhs.zIndex == lhs.zIndex
+            && lhs.isVisible == rhs.isVisible && lhs.capType == rhs.capType && lhs.pattern == rhs.pattern && lhs.lineJoin == rhs.lineJoin && rhs.zIndex == lhs.zIndex && lhs.coordinate.latitude == rhs.coordinate.latitude && lhs.coordinate.longitude == rhs.coordinate.longitude
     }
     
     static func != (lhs: FlutterPolyline, rhs: FlutterPolyline) -> Bool {

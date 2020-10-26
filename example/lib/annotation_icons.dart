@@ -23,7 +23,7 @@ class AnnotationIconsBody extends StatefulWidget {
   State<StatefulWidget> createState() => AnnotationIconsBodyState();
 }
 
-const LatLng _kMapCenter = LatLng(52.4478, -3.5402);
+const LatLng _kMapCenter = LatLng(52.707755, -2.7540658);
 
 class AnnotationIconsBodyState extends State<AnnotationIconsBody> {
   AppleMapController controller;
@@ -43,7 +43,7 @@ class AnnotationIconsBodyState extends State<AnnotationIconsBody> {
             child: AppleMap(
               initialCameraPosition: const CameraPosition(
                 target: _kMapCenter,
-                zoom: 7,
+                zoom: 8,
               ),
               annotations: _createAnnotation(),
               onMapCreated: _onMapCreated,
@@ -58,6 +58,7 @@ class AnnotationIconsBodyState extends State<AnnotationIconsBody> {
     return <Annotation>[
       Annotation(
         annotationId: AnnotationId("annotation_1"),
+        anchor: Offset(0.5, -4),
         position: LatLng(52.707755, -2.7540658),
         icon: _annotationIcon,
       ),

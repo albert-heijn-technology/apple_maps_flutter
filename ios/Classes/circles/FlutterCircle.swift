@@ -32,7 +32,7 @@ class FlutterCircle: MKCircle {
     }
     
     static func == (lhs: FlutterCircle, rhs: FlutterCircle) -> Bool {
-        return lhs.strokeColor == rhs.strokeColor && lhs.fillColor == rhs.fillColor && lhs.isConsumingTapEvents == rhs.isConsumingTapEvents && lhs.strokeWidth ==  rhs.strokeWidth && lhs.isVisible == rhs.isVisible && lhs.zIndex == rhs.zIndex
+        return lhs.strokeColor == rhs.strokeColor && lhs.fillColor == rhs.fillColor && lhs.isConsumingTapEvents == rhs.isConsumingTapEvents && lhs.strokeWidth ==  rhs.strokeWidth && lhs.isVisible == rhs.isVisible && lhs.zIndex == rhs.zIndex && lhs.coordinate.latitude == rhs.coordinate.latitude && lhs.coordinate.longitude == rhs.coordinate.longitude
     }
     
     static func != (lhs: FlutterCircle, rhs: FlutterCircle) -> Bool {
