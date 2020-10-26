@@ -1,5 +1,13 @@
 ## 0.1.2+4
 
+* Fixed build failure
+* Added anchor param to Annotation
+* Added missing comparison of Overlay coordinates, which caused
+  Circles, Annotations, Polylines and Ploygons to not update correctly
+  on coordinate changes.
+
+## 0.1.2+4
+
 * Added configurable Anchor for infoWindows
 
 ## 0.1.2+3
