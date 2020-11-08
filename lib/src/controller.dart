@@ -219,6 +219,11 @@ class AppleMapController {
     });
   }
 
+  /// Returns the current zoomLevel.
+  Future<double> getZoomLevel() async {
+    return channel.invokeMethod<double>('camera#getZoomLevel');
+  }
+
   /// Return [LatLngBounds] defining the region that is visible in a map.
   Future<LatLngBounds> getVisibleRegion() async {
     final Map<String, dynamic> latLngBounds =
