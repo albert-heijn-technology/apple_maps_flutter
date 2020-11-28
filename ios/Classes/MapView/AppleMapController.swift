@@ -234,6 +234,8 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
                     result(self.mapView.isMyLocationButtonShowing ?? false)
                 case "map#getMinMaxZoomLevels":
                     result([self.mapView.minZoomLevel, self.mapView.maxZoomLevel])
+                case "camera#getZoomLevel":
+                    result(self.mapView.calculatedZoomLevel)
                 default:
                     result(FlutterMethodNotImplemented)
                     return
