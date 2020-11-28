@@ -1,4 +1,4 @@
-## 0.1.2+4
+## 0.1.2+5
 
 * Fixed build failure
 * Added anchor param to Annotation
