@@ -196,14 +196,25 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
     }
     
     public func setUserLocation() {
-        if CLLocationManager.authorizationStatus() == .notDetermined {
+        let authorizationStatus = CLLocationManager.authorizationStatus()
+        
+        switch authorizationStatus {
+        case .notDetermined:
             locationManager.requestWhenInUseAuthorization()
-        } else if CLLocationManager.authorizationStatus() ==  .authorizedWhenInUse {
+            break
+            
+        case .authorizedAlways:
+            fallthrough
+        case .authorizedWhenInUse:
             locationManager.requestWhenInUseAuthorization()
             locationManager.desiredAccuracy = kCLLocationAccuracyBest
             locationManager.distanceFilter = kCLDistanceFilterNone
             locationManager.startUpdatingLocation()
             self.showsUserLocation = true
+            break
+            
+        default:
+            print("\(authorizationStatus.rawValue) is not supported.")
         }
     }
     
