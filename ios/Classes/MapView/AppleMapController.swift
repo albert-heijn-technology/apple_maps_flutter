@@ -29,6 +29,7 @@ public class AppleMapViewFactory: NSObject, FlutterPlatformViewFactory {
     }
 }
 
+let isClusteringEnabled = true
 
 public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelegate {
     var mapView: FlutterMapView!
@@ -59,6 +60,18 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
         super.init()
         
         self.mapView.delegate = self
+        
+        if isClusteringEnabled {
+            if #available(iOS 11.0, *) {
+                mapView.register(
+                    ClusterableAnnotationView.self,
+                    forAnnotationViewWithReuseIdentifier: MKMapViewDefaultAnnotationViewReuseIdentifier)
+                mapView.register(
+                    ClusterAnnotationView.self,
+                    forAnnotationViewWithReuseIdentifier: MKMapViewDefaultClusterAnnotationViewReuseIdentifier)
+            }
+        }
+        
         self.mapView.setCenterCoordinate(initialCameraPosition, animated: false)
         self.setMethodCallHandlers()
         
@@ -93,13 +106,26 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
     }
     
     public func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView)  {
-        if let annotation :FlutterAnnotation = view.annotation as? FlutterAnnotation  {
-            if annotation.infoWindowConsumesTapEvents {
-                view.addGestureRecognizer(self.onCalloutTapGestureRecognizer!)
+        let annotationCandidate: MKAnnotation?
+        print("didSelectView called")
+        
+        if #available(iOS 11.0, *) {
+            if let cluster = view.annotation as? MKClusterAnnotation {
+                annotationCandidate = cluster.memberAnnotations.first
+            } else {
+                annotationCandidate = view.annotation
             }
-            self.currentlySelectedAnnotation = annotation.id
-            self.annotationController.onAnnotationClick(annotation: annotation)
+        } else {
+            annotationCandidate = view.annotation
         }
+        
+        guard let annotation :FlutterAnnotation = annotationCandidate as? FlutterAnnotation else  { return }
+        
+        if annotation.infoWindowConsumesTapEvents {
+            view.addGestureRecognizer(self.onCalloutTapGestureRecognizer!)
+        }
+        self.currentlySelectedAnnotation = annotation.id
+        self.annotationController.onAnnotationClick(annotation: annotation)
     }
     
     public func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
@@ -109,6 +135,9 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
 
     
     public func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        guard !isClusteringEnabled else {
+            return nil
+        }
         if annotation is MKUserLocation {
             return nil
         } else if let flutterAnnotation = annotation as? FlutterAnnotation {
