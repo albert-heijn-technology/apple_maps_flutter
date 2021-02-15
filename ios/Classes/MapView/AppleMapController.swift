@@ -29,8 +29,6 @@ public class AppleMapViewFactory: NSObject, FlutterPlatformViewFactory {
     }
 }
 
-let isClusteringEnabled = true
-
 public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelegate {
     var mapView: FlutterMapView!
     var registrar: FlutterPluginRegistrar
@@ -44,6 +42,8 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
     var onCalloutTapGestureRecognizer: UITapGestureRecognizer?
     var currentlySelectedAnnotation: String?
     
+    var isClusteringEnabled = false
+    
     public init(withFrame frame: CGRect, withRegistrar registrar: FlutterPluginRegistrar, withargs args: Dictionary<String, Any> ,withId id: Int64) {
         self.options = args["options"] as! [String: Any]
         self.channel = FlutterMethodChannel(name: "apple_maps_plugin.luisthein.de/apple_maps_\(id)", binaryMessenger: registrar.messenger())
@@ -56,7 +56,7 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
         self.polygonController = PolygonController(mapView: mapView, channel: channel, registrar: registrar)
         self.circleController = CircleController(mapView: mapView, channel: channel, registrar: registrar)
         self.initialCameraPosition = args["initialCameraPosition"]! as! Dictionary<String, Any>
-        
+        self.isClusteringEnabled = args["clusteringEnabled"] as! Bool
         super.init()
         
         self.mapView.delegate = self
