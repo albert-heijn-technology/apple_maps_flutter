@@ -15,7 +15,7 @@ class ClusterableAnnotationView: MKAnnotationView {
     override var annotation: MKAnnotation? {
         didSet {
             guard let mapItem = annotation as? FlutterAnnotation, mapItem != lastAnnotation else { return }
-            clusteringIdentifier = "MapItem"
+            clusteringIdentifier = "apple_maps_flutter_ci"
             image = mapItem.icon.image
             lastAnnotation = mapItem
         }
