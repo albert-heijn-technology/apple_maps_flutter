@@ -14,9 +14,9 @@ EXTERNAL SOURCES:
     :path: Flutter
 
 SPEC CHECKSUMS:
-  apple_maps_flutter: c59725efea39e13e703cde52a1d2b14866ad68a8
+  apple_maps_flutter: a2682659ffca031c41420f5b5e66484c86ecdb19
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
 
 PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.10.0
