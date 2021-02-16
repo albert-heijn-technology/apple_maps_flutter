@@ -107,7 +107,6 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
     
     public func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView)  {
         let annotationCandidate: MKAnnotation?
-        print("didSelectView called")
         
         if #available(iOS 11.0, *) {
             if let cluster = view.annotation as? MKClusterAnnotation {
@@ -173,7 +172,7 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
                             self.annotationController.annotationsToAdd(annotations: annotationsToAdd)
                         }
                     }
-                    if let annotationsToChange = args["annotationsToChange"] as? NSArray {
+                    if !self.isClusteringEnabled, let annotationsToChange = args["annotationsToChange"] as? NSArray {
                         if annotationsToChange.count > 0 {
                             self.annotationController.annotationsToChange(annotations: annotationsToChange)
                         }
