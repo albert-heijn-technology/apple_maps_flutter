@@ -114,6 +114,11 @@ class LatLngBounds {
         o.northeast == northeast;
   }
 
+  /// Converts this object to something serializable in JSON.
+  dynamic _toJson() {
+    return <dynamic>[southwest._toJson(), northeast._toJson()];
+  }
+
   @override
   int get hashCode => hashValues(southwest, northeast);
 }
