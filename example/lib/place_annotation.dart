@@ -255,6 +255,18 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
                           onPressed: () => _add('pin'),
                         ),
                         FlatButton(
+                          child: const Text('Get Visible Region Bounds'),
+                          onPressed: () async {
+                            final point = await controller.getScreenCoordinate(LatLng(
+                                center.latitude +
+                                    sin(_annotationIdCounter * pi / 6.0) / 20.0,
+                                center.longitude +
+                                    cos(_annotationIdCounter * pi / 6.0) /
+                                        20.0));
+                            print("Point $point");
+                          },
+                        ),
+                        FlatButton(
                           child: const Text('add markerAnnotation'),
                           onPressed: () => _add('marker'),
                         ),
