@@ -199,13 +199,21 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
                 case "camera#animate":
                     let positionData :Dictionary<String, Any> = self.toPositionData(data: args["cameraUpdate"] as! Array<Any>, animated: true)
                     if !positionData.isEmpty {
-                        self.mapView.setCenterCoordinate(positionData, animated: true)
+                        guard let _ = positionData["moveToBounds"] else {
+                            self.mapView.setCenterCoordinate(positionData, animated: true)
+                            return
+                        }
+                        self.mapView.setBounds(positionData, animated: true)
                     }
                     result(nil)
                 case "camera#move":
                     let positionData :Dictionary<String, Any> = self.toPositionData(data: args["cameraUpdate"] as! Array<Any>, animated: false)
                     if !positionData.isEmpty {
-                        self.mapView.setCenterCoordinate(positionData, animated: false)
+                        guard let _ = positionData["moveToBounds"] else {
+                            self.mapView.setCenterCoordinate(positionData, animated: false)
+                            return
+                        }
+                        self.mapView.setBounds(positionData, animated: false)
                     }
                     result(nil)
                 default:
@@ -260,6 +268,11 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
                 if let _positionData: Array<Any> = data[1] as? Array<Any> {
                     let zoom: Double = data[2] as? Double ?? 0
                     positionData = ["target": _positionData, "zoom": zoom]
+                }
+            case "newLatLngBounds":
+                if let _positionData: Array<Any> = data[1] as? Array<Any> {
+                    let padding: Double = data[2] as? Double ?? 0
+                    positionData = ["target": _positionData, "padding": padding, "moveToBounds": true]
                 }
             case "zoomBy":
                 if let zoomBy: Double = data[1] as? Double {
