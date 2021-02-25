@@ -136,6 +136,16 @@ public extension MKMapView {
         }
     }
     
+    func setBounds(_ positionData: Dictionary<String, Any>, animated: Bool) {
+        guard let targetList :Array<Array<CLLocationDegrees>> = positionData["target"] as? Array<Array<CLLocationDegrees>> else { return }
+        let padding :Double = positionData["padding"] as? Double ?? 0
+        let coodinates: Array<CLLocationCoordinate2D> = targetList.map { (coordinate : Array<CLLocationDegrees>) in
+            return CLLocationCoordinate2D(latitude:  coordinate[0], longitude: coordinate[1])
+        }
+        guard let mapRect = coodinates.mapRect() else { return }
+        self.setVisibleMapRect(mapRect, edgePadding: UIEdgeInsets(top: CGFloat(padding), left: CGFloat(padding), bottom: CGFloat(padding), right: CGFloat(padding)), animated: animated)
+    }
+    
     func setCenterCoordinateRegion(centerCoordinate: CLLocationCoordinate2D, zoomLevel: Double, animated: Bool) {
         // clamp large numbers to 28
         let zoomL = min(zoomLevel, 28);
@@ -313,5 +323,36 @@ public extension MKMapView {
         Holder._zoomLevel = newZoomLevel
         Holder._pitch = newPitch
         Holder._heading = newHeading
+    }
+}
+
+extension Array where Element == CLLocationCoordinate2D {
+    func mapRect() -> MKMapRect? {
+        return map(MKMapPoint.init).mapRect()
+    }
+}
+
+extension Array where Element == CLLocation {
+    func mapRect() -> MKMapRect? {
+        return map { MKMapPoint($0.coordinate) }.mapRect()
+    }
+}
+
+extension Array where Element == MKMapPoint {
+    func mapRect() -> MKMapRect? {
+        guard count > 0 else { return nil }
+
+        let xs = map { $0.x }
+        let ys = map { $0.y }
+
+        let west = xs.min()!
+        let east = xs.max()!
+        let width = east - west
+
+        let south = ys.min()!
+        let north = ys.max()!
+        let height = north - south
+
+        return MKMapRect(x: west, y: south, width: width, height: height)
     }
 }
