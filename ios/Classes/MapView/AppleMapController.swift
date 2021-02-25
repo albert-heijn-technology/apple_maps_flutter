@@ -216,6 +216,13 @@ public class AppleMapController : NSObject, FlutterPlatformView, MKMapViewDelega
                         self.mapView.setBounds(positionData, animated: false)
                     }
                     result(nil)
+                case "camera#convert":
+                    guard let annotation = args["annotation"] as? Array<Double> else {
+                        result(nil)
+                        return
+                    }
+                    let point = self.mapView.convert(CLLocationCoordinate2D(latitude: annotation[0] , longitude: annotation[1]), toPointTo: self.view())
+                    result(["point": [point.x, point.y]])
                 default:
                     result(FlutterMethodNotImplemented)
                     return
