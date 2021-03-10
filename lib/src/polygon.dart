@@ -10,7 +10,7 @@ part of apple_maps_flutter;
 @immutable
 class PolygonId {
   /// Creates an immutable identifier for a [Polygon].
-  PolygonId(this.value) : assert(value != null);
+  PolygonId(this.value);
 
   /// value of the [PolygonId].
   final String value;
@@ -18,7 +18,7 @@ class PolygonId {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    if (other.runtimeType != runtimeType) return false;
+    if (other is! PolygonId) return false;
     final PolygonId typedOther = other;
     return value == typedOther.value;
   }
@@ -37,7 +37,7 @@ class PolygonId {
 class Polygon {
   /// Creates an immutable representation of a polygon through geographical locations on the map.
   const Polygon({
-    @required this.polygonId,
+    required this.polygonId,
     this.consumeTapEvents = false,
     this.fillColor = Colors.black,
     this.points = const <LatLng>[],
@@ -73,7 +73,7 @@ class Polygon {
   ///
   /// Overlays are drawn in order of z-index, so that lower values means drawn
   /// earlier, and thus appearing to be closer to the surface of the Earth.
-  final int zIndex;
+  final int? zIndex;
 
   /// Line color in ARGB format, the same format used by Color. The default value is black (0xff000000).
   final Color strokeColor;
@@ -85,19 +85,19 @@ class Polygon {
   final int strokeWidth;
 
   /// Callbacks to receive tap events for polygon placed on this map.
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   /// Creates a new [Polygon] object whose values are the same as this instance,
   /// unless overwritten by the specified parameters.
   Polygon copyWith({
-    bool consumeTapEventsParam,
-    List<LatLng> pointsParam,
-    Color strokeColorParam,
-    Color fillColorParam,
-    int strokeWidthParam,
-    bool visibleParam,
-    int zIndexParam,
-    VoidCallback onTapParam,
+    bool? consumeTapEventsParam,
+    List<LatLng>? pointsParam,
+    Color? strokeColorParam,
+    Color? fillColorParam,
+    int? strokeWidthParam,
+    bool? visibleParam,
+    int? zIndexParam,
+    VoidCallback? onTapParam,
   }) {
     return Polygon(
       polygonId: polygonId,
@@ -134,9 +134,7 @@ class Polygon {
     addIfPresent('visible', visible);
     addIfPresent('zIndex', zIndex);
 
-    if (points != null) {
-      json['points'] = _pointsToJson();
-    }
+    json['points'] = _pointsToJson();
 
     return json;
   }
@@ -144,7 +142,7 @@ class Polygon {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    if (other.runtimeType != runtimeType) return false;
+    if (other is! Polygon) return false;
     final Polygon typedOther = other;
     return polygonId == typedOther.polygonId &&
         consumeTapEvents == typedOther.consumeTapEvents &&
@@ -169,7 +167,7 @@ class Polygon {
   }
 }
 
-Map<PolygonId, Polygon> _keyByPolygonId(Iterable<Polygon> polygons) {
+Map<PolygonId, Polygon> _keyByPolygonId(Iterable<Polygon>? polygons) {
   if (polygons == null) {
     return <PolygonId, Polygon>{};
   }
@@ -177,7 +175,7 @@ Map<PolygonId, Polygon> _keyByPolygonId(Iterable<Polygon> polygons) {
       MapEntry<PolygonId, Polygon>(polygon.polygonId, polygon.clone())));
 }
 
-List<Map<String, dynamic>> _serializePolygonSet(Set<Polygon> polygons) {
+List<Map<String, dynamic>>? _serializePolygonSet(Set<Polygon>? polygons) {
   if (polygons == null) {
     return null;
   }

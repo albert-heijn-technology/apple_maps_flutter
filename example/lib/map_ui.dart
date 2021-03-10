@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/material.dart';
 import 'package:apple_maps_flutter/apple_maps_flutter.dart';
+import 'package:flutter/material.dart';
 
 import 'page.dart';
 
@@ -17,7 +17,7 @@ class MapUiPage extends ExamplePage {
 
   @override
   Widget build(BuildContext context) {
-    return const MapUiBody();
+    return SafeArea(child: const MapUiBody());
   }
 }
 
@@ -49,7 +49,6 @@ class MapUiBodyState extends State<MapUiBody> {
   bool _zoomGesturesEnabled = true;
   bool _myLocationEnabled = true;
   TrackingMode _trackingMode = TrackingMode.none;
-  AppleMapController _controller;
   @override
   void initState() {
     super.initState();
@@ -61,7 +60,7 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _compassToggler() {
-    return FlatButton(
+    return TextButton(
       child: Text('${_compassEnabled ? 'disable' : 'enable'} compass'),
       onPressed: () {
         setState(() {
@@ -72,7 +71,7 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _zoomBoundsToggler() {
-    return FlatButton(
+    return TextButton(
       child: Text(_minMaxZoomPreference.minZoom == null
           ? 'bound zoom'
           : 'release zoom'),
@@ -89,7 +88,7 @@ class MapUiBodyState extends State<MapUiBody> {
   Widget _mapTypeCycler() {
     final MapType nextType =
         MapType.values[(_mapType.index + 1) % MapType.values.length];
-    return FlatButton(
+    return TextButton(
       child: Text('change map type to $nextType'),
       onPressed: () {
         setState(() {
@@ -100,7 +99,7 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _rotateToggler() {
-    return FlatButton(
+    return TextButton(
       child: Text('${_rotateGesturesEnabled ? 'disable' : 'enable'} rotate'),
       onPressed: () {
         setState(() {
@@ -111,7 +110,7 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _scrollToggler() {
-    return FlatButton(
+    return TextButton(
       child: Text('${_scrollGesturesEnabled ? 'disable' : 'enable'} scroll'),
       onPressed: () {
         setState(() {
@@ -122,7 +121,7 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _tiltToggler() {
-    return FlatButton(
+    return TextButton(
       child: Text('${_pitchGesturesEnabled ? 'disable' : 'enable'} tilt'),
       onPressed: () {
         setState(() {
@@ -133,7 +132,7 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _zoomToggler() {
-    return FlatButton(
+    return TextButton(
       child: Text('${_zoomGesturesEnabled ? 'disable' : 'enable'} zoom'),
       onPressed: () {
         setState(() {
@@ -144,7 +143,7 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _myLocationToggler() {
-    return FlatButton(
+    return TextButton(
       child: Text(
           '${_myLocationEnabled ? 'disable' : 'enable'} my location annotation'),
       onPressed: () {
@@ -156,7 +155,7 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _myLocationButtonToggler() {
-    return FlatButton(
+    return TextButton(
       child: Text(
           '${_myLocationButtonEnabled ? 'disable' : 'enable'} my location button'),
       onPressed: () {
@@ -187,23 +186,15 @@ class MapUiBodyState extends State<MapUiBody> {
     );
 
     final List<Widget> columnChildren = <Widget>[
-      Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Center(
-          child: SizedBox(
-            width: 300.0,
-            height: 200.0,
-            child: appleMap,
-          ),
-        ),
-      ),
+      Expanded(child: appleMap),
     ];
 
     if (_isMapCreated) {
-      columnChildren.add(
-        Expanded(
-          child: ListView(
-            children: <Widget>[
+      columnChildren.addAll([
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
               Text('camera bearing: ${_position.heading}'),
               Text(
                   'camera target: ${_position.target.latitude.toStringAsFixed(4)},'
@@ -211,25 +202,26 @@ class MapUiBodyState extends State<MapUiBody> {
               Text('camera zoom: ${_position.zoom}'),
               Text('camera tilt: ${_position.pitch}'),
               Text(_isMoving ? '(Camera moving)' : '(Camera idle)'),
-              _compassToggler(),
-              _mapTypeCycler(),
-              _zoomBoundsToggler(),
-              _rotateToggler(),
-              _scrollToggler(),
-              _tiltToggler(),
-              _zoomToggler(),
-              _myLocationToggler(),
-              _myLocationButtonToggler(),
+              Wrap(
+                alignment: WrapAlignment.spaceEvenly,
+                children: <Widget>[
+                  _compassToggler(),
+                  _mapTypeCycler(),
+                  _zoomBoundsToggler(),
+                  _rotateToggler(),
+                  _scrollToggler(),
+                  _tiltToggler(),
+                  _zoomToggler(),
+                  _myLocationToggler(),
+                  _myLocationButtonToggler(),
+                ],
+              ),
             ],
           ),
         ),
-      );
+      ]);
     }
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: columnChildren,
-    );
+    return Column(children: columnChildren);
   }
 
   void _updateCameraPosition(CameraPosition position) {
@@ -240,7 +232,6 @@ class MapUiBodyState extends State<MapUiBody> {
 
   void onMapCreated(AppleMapController controller) {
     setState(() {
-      _controller = controller;
       _isMapCreated = true;
     });
   }

@@ -4,10 +4,10 @@
 
 import 'dart:async';
 
+import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 
 import 'apple_map_inspector.dart';
 import 'test_widgets.dart';
@@ -43,7 +43,7 @@ void main() {
     ));
 
     final AppleMapInspector inspector = await inspectorCompleter.future;
-    bool compassEnabled = await inspector.isCompassEnabled();
+    bool compassEnabled = (await inspector.isCompassEnabled())!;
     expect(compassEnabled, false);
 
     await pumpWidget(Directionality(
@@ -58,7 +58,7 @@ void main() {
       ),
     ));
 
-    compassEnabled = await inspector.isCompassEnabled();
+    compassEnabled = (await inspector.isCompassEnabled())!;
     expect(compassEnabled, true);
   });
 
@@ -126,7 +126,7 @@ void main() {
     ));
 
     final AppleMapInspector inspector = await inspectorCompleter.future;
-    bool zoomGesturesEnabled = await inspector.isZoomGesturesEnabled();
+    bool zoomGesturesEnabled = (await inspector.isZoomGesturesEnabled())!;
     expect(zoomGesturesEnabled, false);
 
     await pumpWidget(Directionality(
@@ -141,7 +141,7 @@ void main() {
       ),
     ));
 
-    zoomGesturesEnabled = await inspector.isZoomGesturesEnabled();
+    zoomGesturesEnabled = (await inspector.isZoomGesturesEnabled())!;
     expect(zoomGesturesEnabled, true);
   });
 
@@ -166,7 +166,7 @@ void main() {
     ));
 
     final AppleMapInspector inspector = await inspectorCompleter.future;
-    bool rotateGesturesEnabled = await inspector.isRotateGesturesEnabled();
+    bool rotateGesturesEnabled = (await inspector.isRotateGesturesEnabled())!;
     expect(rotateGesturesEnabled, false);
 
     await pumpWidget(Directionality(
@@ -181,7 +181,7 @@ void main() {
       ),
     ));
 
-    rotateGesturesEnabled = await inspector.isRotateGesturesEnabled();
+    rotateGesturesEnabled = (await inspector.isRotateGesturesEnabled())!;
     expect(rotateGesturesEnabled, true);
   });
 
@@ -206,7 +206,7 @@ void main() {
     ));
 
     final AppleMapInspector inspector = await inspectorCompleter.future;
-    bool pitchGesturesEnabled = await inspector.isPitchGesturesEnabled();
+    bool pitchGesturesEnabled = (await inspector.isPitchGesturesEnabled())!;
     expect(pitchGesturesEnabled, false);
 
     await pumpWidget(Directionality(
@@ -221,7 +221,7 @@ void main() {
       ),
     ));
 
-    pitchGesturesEnabled = await inspector.isPitchGesturesEnabled();
+    pitchGesturesEnabled = (await inspector.isPitchGesturesEnabled())!;
     expect(pitchGesturesEnabled, true);
   });
 
@@ -246,7 +246,7 @@ void main() {
     ));
 
     final AppleMapInspector inspector = await inspectorCompleter.future;
-    bool scrollGesturesEnabled = await inspector.isScrollGesturesEnabled();
+    bool scrollGesturesEnabled = (await inspector.isScrollGesturesEnabled())!;
     expect(scrollGesturesEnabled, false);
 
     await pumpWidget(Directionality(
@@ -261,7 +261,7 @@ void main() {
       ),
     ));
 
-    scrollGesturesEnabled = await inspector.isScrollGesturesEnabled();
+    scrollGesturesEnabled = (await inspector.isScrollGesturesEnabled())!;
     expect(scrollGesturesEnabled, true);
   });
 
@@ -350,7 +350,8 @@ void main() {
     ));
 
     final AppleMapInspector inspector = await inspectorCompleter.future;
-    bool myLocationButtonEnabled = await inspector.isMyLocationButtonEnabled();
+    bool myLocationButtonEnabled =
+        (await inspector.isMyLocationButtonEnabled())!;
     expect(myLocationButtonEnabled, true);
 
     await pumpWidget(Directionality(
@@ -366,7 +367,7 @@ void main() {
       ),
     ));
 
-    myLocationButtonEnabled = await inspector.isMyLocationButtonEnabled();
+    myLocationButtonEnabled = (await inspector.isMyLocationButtonEnabled())!;
     expect(myLocationButtonEnabled, false);
   });
 
@@ -393,7 +394,7 @@ void main() {
 
     final AppleMapInspector inspector = await inspectorCompleter.future;
     final bool myLocationButtonEnabled =
-        await inspector.isMyLocationButtonEnabled();
+        (await inspector.isMyLocationButtonEnabled())!;
     expect(myLocationButtonEnabled, false);
   });
 
@@ -420,7 +421,7 @@ void main() {
 
     final AppleMapInspector inspector = await inspectorCompleter.future;
     final bool myLocationButtonEnabled =
-        await inspector.isMyLocationButtonEnabled();
-    expect(myLocationButtonEnabled, true);
+        (await inspector.isMyLocationButtonEnabled())!;
+    expect(myLocationButtonEnabled, false);
   });
 }

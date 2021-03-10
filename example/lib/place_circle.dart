@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 // ignore_for_file: public_member_api_docs
 
 import 'package:flutter/material.dart';
-import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 
 import 'page.dart';
 
@@ -28,10 +28,10 @@ class PlaceCircleBody extends StatefulWidget {
 class PlaceCircleBodyState extends State<PlaceCircleBody> {
   PlaceCircleBodyState();
 
-  AppleMapController controller;
+  late AppleMapController controller;
   Map<CircleId, Circle> circles = <CircleId, Circle>{};
   int _circleIdCounter = 1;
-  CircleId selectedCircle;
+  CircleId? selectedCircle;
 
   // Values when toggling circle color
   int fillColorsIndex = 0;
@@ -101,36 +101,36 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
   }
 
   void _toggleVisible() {
-    final Circle circle = circles[selectedCircle];
+    final Circle circle = circles[selectedCircle]!;
     setState(() {
-      circles[selectedCircle] = circle.copyWith(
+      circles[selectedCircle!] = circle.copyWith(
         visibleParam: !circle.visible,
       );
     });
   }
 
   void _changeFillColor() {
-    final Circle circle = circles[selectedCircle];
+    final Circle circle = circles[selectedCircle]!;
     setState(() {
-      circles[selectedCircle] = circle.copyWith(
+      circles[selectedCircle!] = circle.copyWith(
         fillColorParam: colors[++fillColorsIndex % colors.length],
       );
     });
   }
 
   void _changeStrokeColor() {
-    final Circle circle = circles[selectedCircle];
+    final Circle circle = circles[selectedCircle]!;
     setState(() {
-      circles[selectedCircle] = circle.copyWith(
+      circles[selectedCircle!] = circle.copyWith(
         strokeColorParam: colors[++strokeColorsIndex % colors.length],
       );
     });
   }
 
   void _changeStrokeWidth() {
-    final Circle circle = circles[selectedCircle];
+    final Circle circle = circles[selectedCircle]!;
     setState(() {
-      circles[selectedCircle] = circle.copyWith(
+      circles[selectedCircle!] = circle.copyWith(
         strokeWidthParam: widths[++widthsIndex % widths.length],
       );
     });
@@ -138,14 +138,10 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        Center(
-          child: SizedBox(
-            width: 350.0,
-            height: 300.0,
+    return SafeArea(
+      child: Column(
+        children: <Widget>[
+          Expanded(
             child: AppleMap(
               initialCameraPosition: const CameraPosition(
                 target: LatLng(52.4478, -3.5402),
@@ -155,72 +151,49 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
               onMapCreated: _onMapCreated,
             ),
           ),
-        ),
-        Expanded(
-          child: SingleChildScrollView(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Column(
-                      children: <Widget>[
-                        FlatButton(
-                          child: const Text('add'),
-                          onPressed: _add,
-                        ),
-                        FlatButton(
-                          child: const Text('remove'),
-                          onPressed: (selectedCircle == null) ? null : _remove,
-                        ),
-                        FlatButton(
-                          child: const Text('toggle visible'),
-                          onPressed:
-                              (selectedCircle == null) ? null : _toggleVisible,
-                        ),
-                        FlatButton(
-                          child: const Text('change zIndex'),
-                          onPressed: _changeZIndex,
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: <Widget>[
-                        FlatButton(
-                          child: const Text('change stroke width'),
-                          onPressed: (selectedCircle == null)
-                              ? null
-                              : _changeStrokeWidth,
-                        ),
-                        FlatButton(
-                          child: const Text('change stroke color'),
-                          onPressed: (selectedCircle == null)
-                              ? null
-                              : _changeStrokeColor,
-                        ),
-                        FlatButton(
-                          child: const Text('change fill color'),
-                          onPressed: (selectedCircle == null)
-                              ? null
-                              : _changeFillColor,
-                        ),
-                      ],
-                    )
-                  ],
-                )
-              ],
-            ),
+          Wrap(
+            alignment: WrapAlignment.spaceEvenly,
+            children: [
+              TextButton(
+                child: const Text('add'),
+                onPressed: _add,
+              ),
+              TextButton(
+                child: const Text('remove'),
+                onPressed: (selectedCircle == null) ? null : _remove,
+              ),
+              TextButton(
+                child: const Text('toggle visible'),
+                onPressed: (selectedCircle == null) ? null : _toggleVisible,
+              ),
+              TextButton(
+                child: const Text('change zIndex'),
+                onPressed: _changeZIndex,
+              ),
+              TextButton(
+                child: const Text('change stroke width'),
+                onPressed: (selectedCircle == null) ? null : _changeStrokeWidth,
+              ),
+              TextButton(
+                child: const Text('change stroke color'),
+                onPressed: (selectedCircle == null) ? null : _changeStrokeColor,
+              ),
+              TextButton(
+                child: const Text('change fill color'),
+                onPressed: (selectedCircle == null) ? null : _changeFillColor,
+              ),
+            ],
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   Future<void> _changeZIndex() async {
-    final Circle circle = circles[selectedCircle];
+    final Circle circle = circles[selectedCircle]!;
     final int current = circle.zIndex ?? 0;
     setState(() {
-      circles[selectedCircle] = circle.copyWith(
+      circles[selectedCircle!] = circle.copyWith(
         zIndexParam: current == 12 ? 0 : current + 1,
       );
     });

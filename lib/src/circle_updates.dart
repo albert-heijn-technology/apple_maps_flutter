@@ -9,7 +9,7 @@ part of apple_maps_flutter;
 /// Used in [AppleMapController] when the map is updated.
 class _CircleUpdates {
   /// Computes [_CircleUpdates] given previous and current [Circle]s.
-  _CircleUpdates.from(Set<Circle> previous, Set<Circle> current) {
+  _CircleUpdates.from(Set<Circle>? previous, Set<Circle>? current) {
     if (previous == null) {
       previous = Set<Circle>.identity();
     }
@@ -25,7 +25,7 @@ class _CircleUpdates {
     final Set<CircleId> currentCircleIds = currentCircles.keys.toSet();
 
     Circle idToCurrentCircle(CircleId id) {
-      return currentCircles[id];
+      return currentCircles[id]!;
     }
 
     final Set<CircleId> _circleIdsToRemove =
@@ -39,7 +39,7 @@ class _CircleUpdates {
     /// Returns `true` if [current] is not equals to previous one with the
     /// same id.
     bool hasChanged(Circle current) {
-      final Circle previous = previousCircles[current.circleId];
+      final Circle? previous = previousCircles[current.circleId];
       return current != previous;
     }
 
@@ -54,9 +54,9 @@ class _CircleUpdates {
     circlesToChange = _circlesToChange;
   }
 
-  Set<Circle> circlesToAdd;
-  Set<CircleId> circleIdsToRemove;
-  Set<Circle> circlesToChange;
+  late Set<Circle> circlesToAdd;
+  late Set<CircleId> circleIdsToRemove;
+  late Set<Circle> circlesToChange;
 
   Map<String, dynamic> _toMap() {
     final Map<String, dynamic> updateMap = <String, dynamic>{};
@@ -78,7 +78,7 @@ class _CircleUpdates {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    if (other.runtimeType != runtimeType) return false;
+    if (other is! _CircleUpdates) return false;
     final _CircleUpdates typedOther = other;
     return setEquals(circlesToAdd, typedOther.circlesToAdd) &&
         setEquals(circleIdsToRemove, typedOther.circleIdsToRemove) &&

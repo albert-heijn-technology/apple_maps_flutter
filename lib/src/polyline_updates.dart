@@ -9,7 +9,7 @@ part of apple_maps_flutter;
 /// Used in [AppleMapController] when the map is updated.
 class _PolylineUpdates {
   /// Computes [_PolylineUpdates] given previous and current [Polyline]s.
-  _PolylineUpdates.from(Set<Polyline> previous, Set<Polyline> current) {
+  _PolylineUpdates.from(Set<Polyline>? previous, Set<Polyline>? current) {
     if (previous == null) {
       previous = Set<Polyline>.identity();
     }
@@ -27,7 +27,7 @@ class _PolylineUpdates {
     final Set<PolylineId> currentPolylineIds = currentPolylines.keys.toSet();
 
     Polyline idToCurrentPolyline(PolylineId id) {
-      return currentPolylines[id];
+      return currentPolylines[id]!;
     }
 
     final Set<PolylineId> _polylineIdsToRemove =
@@ -48,9 +48,9 @@ class _PolylineUpdates {
     polylinesToChange = _polylinesToChange;
   }
 
-  Set<Polyline> polylinesToAdd;
-  Set<PolylineId> polylineIdsToRemove;
-  Set<Polyline> polylinesToChange;
+  late Set<Polyline> polylinesToAdd;
+  late Set<PolylineId> polylineIdsToRemove;
+  late Set<Polyline> polylinesToChange;
 
   Map<String, dynamic> _toMap() {
     final Map<String, dynamic> updateMap = <String, dynamic>{};
@@ -72,7 +72,7 @@ class _PolylineUpdates {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    if (other.runtimeType != runtimeType) return false;
+    if (other is! _PolylineUpdates) return false;
     final _PolylineUpdates typedOther = other;
     return setEquals(polylinesToAdd, typedOther.polylinesToAdd) &&
         setEquals(polylineIdsToRemove, typedOther.polylineIdsToRemove) &&

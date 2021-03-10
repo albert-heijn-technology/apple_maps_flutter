@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/material.dart';
 import 'package:apple_maps_flutter/apple_maps_flutter.dart';
+import 'package:flutter/material.dart';
+
 import 'page.dart';
 
 class PaddingPage extends ExamplePage {
@@ -11,7 +12,7 @@ class PaddingPage extends ExamplePage {
 
   @override
   Widget build(BuildContext context) {
-    return const MarkerIconsBody();
+    return SafeArea(child: const MarkerIconsBody());
   }
 }
 
@@ -25,7 +26,7 @@ class MarkerIconsBody extends StatefulWidget {
 const LatLng _kMapCenter = LatLng(52.4478, -3.5402);
 
 class MarkerIconsBodyState extends State<MarkerIconsBody> {
-  AppleMapController controller;
+  late AppleMapController controller;
 
   EdgeInsets _padding = const EdgeInsets.all(0);
 
@@ -41,34 +42,23 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
     );
 
     final List<Widget> columnChildren = <Widget>[
+      Expanded(child: appleMap),
       Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Center(
-          child: SizedBox(
-            width: 300.0,
-            height: 200.0,
-            child: appleMap,
-          ),
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Text(
+              "Enter Padding Below",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+          ],
         ),
       ),
-      Padding(
-        padding: const EdgeInsets.only(top: 20),
-        child: Center(
-          child: Text(
-            "Enter Padding Below",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-        ),
-      ),
+      _paddingInput(),
+      _buttons()
     ];
 
-    columnChildren.addAll(<Widget>[_paddingInput(), _buttons()]);
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: columnChildren,
-    );
+    return Column(children: columnChildren);
   }
 
   void _onMapCreated(AppleMapController controllerParam) {
@@ -145,20 +135,20 @@ class MarkerIconsBodyState extends State<MarkerIconsBody> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-          FlatButton(
+          TextButton(
             child: const Text("Set Padding"),
             onPressed: () {
               setState(() {
                 _padding = EdgeInsets.fromLTRB(
-                  double.tryParse(_leftController.value?.text) ?? 50,
-                  double.tryParse(_topController.value?.text) ?? 50,
-                  double.tryParse(_rightController.value?.text) ?? 50,
-                  double.tryParse(_bottomController.value?.text) ?? 50,
+                  double.tryParse(_leftController.value.text) ?? 50,
+                  double.tryParse(_topController.value.text) ?? 50,
+                  double.tryParse(_rightController.value.text) ?? 50,
+                  double.tryParse(_bottomController.value.text) ?? 50,
                 );
               });
             },
           ),
-          FlatButton(
+          TextButton(
             child: const Text("Reset Padding"),
             onPressed: () {
               setState(() {

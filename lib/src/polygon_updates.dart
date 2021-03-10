@@ -9,7 +9,7 @@ part of apple_maps_flutter;
 /// Used in [AppleMapController] when the map is updated.
 class _PolygonUpdates {
   /// Computes [_PolygonUpdates] given previous and current [Polygon]s.
-  _PolygonUpdates.from(Set<Polygon> previous, Set<Polygon> current) {
+  _PolygonUpdates.from(Set<Polygon>? previous, Set<Polygon>? current) {
     if (previous == null) {
       previous = Set<Polygon>.identity();
     }
@@ -25,7 +25,7 @@ class _PolygonUpdates {
     final Set<PolygonId> currentPolygonIds = currentPolygons.keys.toSet();
 
     Polygon idToCurrentPolygon(PolygonId id) {
-      return currentPolygons[id];
+      return currentPolygons[id]!;
     }
 
     final Set<PolygonId> _polygonIdsToRemove =
@@ -39,7 +39,7 @@ class _PolygonUpdates {
     /// Returns `true` if [current] is not equals to previous one with the
     /// same id.
     bool hasChanged(Polygon current) {
-      final Polygon previous = previousPolygons[current.polygonId];
+      final Polygon? previous = previousPolygons[current.polygonId];
       return current != previous;
     }
 
@@ -54,9 +54,9 @@ class _PolygonUpdates {
     polygonsToChange = _polygonsToChange;
   }
 
-  Set<Polygon> polygonsToAdd;
-  Set<PolygonId> polygonIdsToRemove;
-  Set<Polygon> polygonsToChange;
+  late Set<Polygon> polygonsToAdd;
+  late Set<PolygonId> polygonIdsToRemove;
+  late Set<Polygon> polygonsToChange;
 
   Map<String, dynamic> _toMap() {
     final Map<String, dynamic> updateMap = <String, dynamic>{};
@@ -78,7 +78,7 @@ class _PolygonUpdates {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    if (other.runtimeType != runtimeType) return false;
+    if (other is! _PolygonUpdates) return false;
     final _PolygonUpdates typedOther = other;
     return setEquals(polygonsToAdd, typedOther.polygonsToAdd) &&
         setEquals(polygonIdsToRemove, typedOther.polygonIdsToRemove) &&

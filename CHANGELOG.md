@@ -1,3 +1,9 @@
+## 1.0.0
+
+* Adds null safety.
+* Refreshes the example app.
+* Updates .gitignore and removes files that should not be tracked.
+
 ## 0.1.2+5
 
 * Fixed build failure
