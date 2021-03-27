@@ -1,3 +1,10 @@
+## 0.1.3
+
+* Animate to bounds was added. (Thanks to @nghiashiyi)
+* Fixed an issue where the user location was only displayed in `authorizationInUse` status. (Thanks to @zgosalvez)
+
+* minor fixes
+
 ## 0.1.2+5
 
 * Fixed build failure
