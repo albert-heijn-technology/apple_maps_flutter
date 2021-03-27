@@ -117,7 +117,7 @@ class AnnotationController: NSObject {
         let y = self.getInfoWindowYOffset(annotationView: annotationView, annotation: annotation)
         annotationView.calloutOffset = CGPoint(x: x, y: y)
         if #available(iOS 9.0, *) {
-            let lines = annotation.subtitle?.split(whereSeparator: \.isNewline)
+            let lines = annotation.subtitle?.split(whereSeparator: { $0.isNewline })
             if lines != nil {
                 let customCallout = UIStackView()
                 customCallout.axis = .vertical
