@@ -5,6 +5,7 @@
 import 'package:apple_maps_flutter_example/map_update.dart';
 import 'package:apple_maps_flutter_example/padding.dart';
 import 'package:apple_maps_flutter_example/place_annotation.dart';
+import 'package:apple_maps_flutter_example/place_annotation_clustered.dart';
 import 'package:apple_maps_flutter_example/place_circle.dart';
 import 'package:apple_maps_flutter_example/place_polyline.dart';
 import 'package:apple_maps_flutter_example/place_polygon.dart';
@@ -26,6 +27,7 @@ final List<ExamplePage> _allPages = <ExamplePage>[
   MoveCameraPage(),
   PaddingPage(),
   PlaceAnnotationPage(),
+  PlaceAnnotationClusteredPage(),
   AnnotationIconsPage(),
   PlacePolylinePage(),
   PlacePolygonPage(),
