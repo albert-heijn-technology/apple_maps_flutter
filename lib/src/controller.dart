@@ -233,4 +233,21 @@ class AppleMapController {
 
     return LatLngBounds(northeast: northeast, southwest: southwest);
   }
+
+
+  /// A projection is used to translate between on screen location and geographic coordinates.
+  /// Screen location is in screen pixels (not display pixels) with respect to the top left corner
+  /// of the map, not necessarily of the whole screen.
+  Future<Offset> getScreenCoordinate(LatLng latLng) async {
+    final point = await channel
+        .invokeMapMethod<String, dynamic>(
+        'camera#convert', <String, dynamic>{
+      'annotation': [latLng.latitude, latLng.longitude]
+    });
+    if (!point.containsKey('point')) {
+      return null;
+    }
+    final doubles = List<double>.from(point['point']);
+    return Offset(doubles.first, doubles.last);
+  }
 }

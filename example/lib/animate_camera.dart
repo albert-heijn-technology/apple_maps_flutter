@@ -89,6 +89,19 @@ class AnimateCameraState extends State<AnimateCamera> {
                   },
                   child: const Text('newLatLngZoom'),
                 ),
+                FlatButton(
+                  onPressed: () {
+                    mapController.animateCamera(
+                      CameraUpdate.newLatLngBounds(
+                        LatLngBounds(
+                            southwest: LatLng(37.749146, -122.71829295684518),
+                            northeast: LatLng(37.94134713198227, -122.498971)
+                        ),
+                        11.0,
+                      ),
+                    );
+                  },
+                  child: const Text('newLatLngBounds'))
               ],
             ),
             Column(

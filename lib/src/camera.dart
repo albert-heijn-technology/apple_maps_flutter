@@ -109,6 +109,18 @@ class CameraUpdate {
     );
   }
 
+  /// Returns a camera update that transforms the camera so that the specified
+  /// geographical bounding box is centered in the map view at the greatest
+  /// possible zoom level. A non-zero [padding] insets the bounding box from the
+  /// map view's edges. The camera's new tilt and bearing will both be 0.0.
+  static CameraUpdate newLatLngBounds(LatLngBounds bounds, double padding) {
+    return CameraUpdate._(<dynamic>[
+      'newLatLngBounds',
+      bounds._toJson(),
+      padding,
+    ]);
+  }
+
   /// Returns a camera update that modifies the camera zoom level by the
   /// specified amount. The optional [focus] is a screen point whose underlying
   /// geographical location should be invariant, if possible, by the movement.
