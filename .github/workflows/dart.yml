@@ -1,0 +1,36 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Dart
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-java@v1
+      with:
+        java-version: '12.x'
+    - name: Install Flutter
+      uses: subosito/flutter-action@v1
+      with:
+        flutter-version: '2.0.3'
+    - name: Install dependencies
+      run: flutter pub get
+    - name: Run dart analyze
+      run: dart analyze
+    - name: run tests
+      run: flutter test
+    - name: build example project
+      working-directory: ./example
+      run: flutter build ios --release --no-codesign
+    - name: publish --dry-run
+      run: flutter pub publish --dry-run
