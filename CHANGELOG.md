@@ -1,5 +1,6 @@
 ## 1.0.0
 
+Tanks to @jonbhanson
 * Adds null safety.
 * Refreshes the example app.
 * Updates .gitignore and removes files that should not be tracked.
