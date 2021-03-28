@@ -57,7 +57,7 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
     final Annotation? tappedAnnotation = annotations[annotationId];
     if (tappedAnnotation != null) {
       setState(() {
-        if (annotations.containsKey(selectedAnnotation)) {
+        if (annotations.containsKey(tappedAnnotation)) {
           final Annotation resetOld =
               annotations[selectedAnnotation]!.copyWith();
           annotations[selectedAnnotation] = resetOld;

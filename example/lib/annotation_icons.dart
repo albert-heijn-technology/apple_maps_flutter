@@ -50,7 +50,7 @@ class AnnotationIconsBodyState extends State<AnnotationIconsBody> {
         annotationId: AnnotationId("annotation_1"),
         anchor: Offset(0.5, -4),
         position: LatLng(52.707755, -2.7540658),
-        icon: _annotationIcon!,
+        icon: _annotationIcon ?? BitmapDescriptor.defaultAnnotation,
       ),
     ].toSet();
   }
