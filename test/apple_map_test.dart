@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 import 'package:flutter/foundation.dart'
     show debugDefaultTargetPlatformOverride;
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 import 'fake_maps_controllers.dart';
 
@@ -36,7 +36,7 @@ void main() {
     );
 
     final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformAppleMap.cameraPosition,
         const CameraPosition(target: LatLng(10.0, 15.0)));
@@ -65,7 +65,7 @@ void main() {
     );
 
     final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformAppleMap.cameraPosition,
         const CameraPosition(target: LatLng(10.0, 15.0)));
@@ -85,7 +85,7 @@ void main() {
     );
 
     final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformAppleMap.compassEnabled, false);
 
@@ -116,7 +116,7 @@ void main() {
     );
 
     final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformAppleMap.mapType, MapType.hybrid);
 
@@ -147,7 +147,7 @@ void main() {
     );
 
     final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformAppleMap.minMaxZoomPreference,
         const MinMaxZoomPreference(1.0, 3.0));
@@ -180,7 +180,7 @@ void main() {
     );
 
     final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformAppleMap.rotateGesturesEnabled, false);
 
@@ -211,7 +211,7 @@ void main() {
     );
 
     final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformAppleMap.scrollGesturesEnabled, false);
 
@@ -242,7 +242,7 @@ void main() {
     );
 
     final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformAppleMap.pitchGesturesEnabled, false);
 
@@ -273,7 +273,7 @@ void main() {
     );
 
     final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformAppleMap.zoomGesturesEnabled, false);
 
@@ -304,7 +304,7 @@ void main() {
     );
 
     final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformAppleMap.myLocationEnabled, false);
 
@@ -336,7 +336,7 @@ void main() {
     );
 
     final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformAppleMap.myLocationButtonEnabled, true);
 

@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:apple_maps_flutter/apple_maps_flutter.dart';
+
 import 'page.dart';
 
 const CameraPosition _kInitialPosition = CameraPosition(
@@ -17,7 +18,7 @@ class MapClickPage extends ExamplePage {
 
   @override
   Widget build(BuildContext context) {
-    return const _MapClickBody();
+    return SafeArea(child: const _MapClickBody());
   }
 }
 
@@ -31,9 +32,9 @@ class _MapClickBody extends StatefulWidget {
 class _MapClickBodyState extends State<_MapClickBody> {
   _MapClickBodyState();
 
-  AppleMapController mapController;
-  LatLng _lastTap;
-  LatLng _lastLongPress;
+  AppleMapController? mapController;
+  LatLng? _lastTap;
+  LatLng? _lastLongPress;
 
   @override
   Widget build(BuildContext context) {
@@ -52,36 +53,23 @@ class _MapClickBodyState extends State<_MapClickBody> {
       },
     );
 
-    final List<Widget> columnChildren = <Widget>[
-      Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Center(
-          child: SizedBox(
-            width: 300.0,
-            height: 200.0,
-            child: appleMap,
-          ),
-        ),
-      ),
-    ];
+    final List<Widget> columnChildren = <Widget>[Expanded(child: appleMap)];
 
     if (mapController != null) {
       final String lastTap = 'Tap:\n${_lastTap ?? ""}\n';
       final String lastLongPress = 'Long press:\n${_lastLongPress ?? ""}';
-      columnChildren
-          .add(Center(child: Text(lastTap, textAlign: TextAlign.center)));
-      columnChildren.add(Center(
-          child: Text(
-        lastLongPress,
-        textAlign: TextAlign.center,
-      )));
+      columnChildren.add(Padding(
+        padding: EdgeInsets.all(8),
+        child: Column(
+          children: [
+            Text(lastTap, textAlign: TextAlign.center),
+            Text(lastLongPress, textAlign: TextAlign.center)
+          ],
+        ),
+      ));
     }
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: columnChildren,
-    );
+    return Column(children: columnChildren);
   }
 
   void onMapCreated(AppleMapController controller) async {

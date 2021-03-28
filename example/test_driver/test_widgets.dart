@@ -8,5 +8,5 @@ import 'package:flutter/widgets.dart';
 
 Future<void> pumpWidget(Widget widget) {
   runApp(widget);
-  return WidgetsBinding.instance.endOfFrame;
+  return WidgetsBinding.instance!.endOfFrame;
 }

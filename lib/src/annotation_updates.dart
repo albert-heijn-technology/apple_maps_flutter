@@ -9,7 +9,7 @@ part of apple_maps_flutter;
 /// Used in [AppleMapController] when the map is updated.
 class _AnnotationUpdates {
   /// Computes [_AnnotationUpdates] given previous and current [Annotation]s.
-  _AnnotationUpdates.from(Set<Annotation> previous, Set<Annotation> current) {
+  _AnnotationUpdates.from(Set<Annotation>? previous, Set<Annotation>? current) {
     if (previous == null) {
       previous = Set<Annotation>.identity();
     }
@@ -29,7 +29,7 @@ class _AnnotationUpdates {
         currentAnnotations.keys.toSet();
 
     Annotation idToCurrentAnnotation(AnnotationId id) {
-      return currentAnnotations[id];
+      return currentAnnotations[id]!;
     }
 
     final Set<AnnotationId> _annotationIdsToRemove =
@@ -50,9 +50,9 @@ class _AnnotationUpdates {
     annotationsToChange = _annotationsToChange;
   }
 
-  Set<Annotation> annotationsToAdd;
-  Set<AnnotationId> annotationIdsToRemove;
-  Set<Annotation> annotationsToChange;
+  late Set<Annotation> annotationsToAdd;
+  late Set<AnnotationId> annotationIdsToRemove;
+  late Set<Annotation> annotationsToChange;
 
   Map<String, dynamic> _toMap() {
     final Map<String, dynamic> updateMap = <String, dynamic>{};
@@ -78,7 +78,7 @@ class _AnnotationUpdates {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    if (other.runtimeType != runtimeType) return false;
+    if (other is! _AnnotationUpdates) return false;
     final _AnnotationUpdates typedOther = other;
     return setEquals(annotationsToAdd, typedOther.annotationsToAdd) &&
         setEquals(annotationIdsToRemove, typedOther.annotationIdsToRemove) &&

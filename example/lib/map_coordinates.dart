@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:apple_maps_flutter/apple_maps_flutter.dart';
+
 import 'page.dart';
 
 const CameraPosition _kInitialPosition = CameraPosition(
@@ -17,7 +18,7 @@ class MapCoordinatesPage extends ExamplePage {
 
   @override
   Widget build(BuildContext context) {
-    return const _MapCoordinatesBody();
+    return SafeArea(child: const _MapCoordinatesBody());
   }
 }
 
@@ -31,7 +32,7 @@ class _MapCoordinatesBody extends StatefulWidget {
 class _MapCoordinatesBodyState extends State<_MapCoordinatesBody> {
   _MapCoordinatesBodyState();
 
-  AppleMapController mapController;
+  AppleMapController? mapController;
   LatLngBounds _visibleRegion = LatLngBounds(
     southwest: const LatLng(0, 0),
     northeast: const LatLng(0, 0),
@@ -44,32 +45,24 @@ class _MapCoordinatesBodyState extends State<_MapCoordinatesBody> {
       initialCameraPosition: _kInitialPosition,
     );
 
-    final List<Widget> columnChildren = <Widget>[
-      Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Center(
-          child: SizedBox(
-            width: 300.0,
-            height: 200.0,
-            child: appleMap,
-          ),
-        ),
-      ),
-    ];
+    final List<Widget> columnChildren = <Widget>[Expanded(child: appleMap)];
 
     if (mapController != null) {
       final String currentVisibleRegion = 'VisibleRegion:'
           '\nnortheast: ${_visibleRegion.northeast},'
           '\nsouthwest: ${_visibleRegion.southwest}';
-      columnChildren.add(Center(child: Text(currentVisibleRegion)));
-      columnChildren.add(_getVisibleRegionButton());
+      columnChildren.add(Padding(
+        padding: EdgeInsets.all(8),
+        child: Column(
+          children: [
+            Center(child: Text(currentVisibleRegion)),
+            _getVisibleRegionButton(),
+          ],
+        ),
+      ));
     }
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: columnChildren,
-    );
+    return Column(children: columnChildren);
   }
 
   void onMapCreated(AppleMapController controller) async {
@@ -83,11 +76,11 @@ class _MapCoordinatesBodyState extends State<_MapCoordinatesBody> {
   Widget _getVisibleRegionButton() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: RaisedButton(
+      child: ElevatedButton(
         child: const Text('Get Visible Region Bounds'),
         onPressed: () async {
           final LatLngBounds visibleRegion =
-              await mapController.getVisibleRegion();
+              (await mapController?.getVisibleRegion())!;
           setState(() {
             _visibleRegion = visibleRegion;
           });

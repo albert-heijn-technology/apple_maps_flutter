@@ -9,7 +9,7 @@ part of apple_maps_flutter;
 /// This does not have to be globally unique, only unique among the list.
 @immutable
 class PolylineId {
-  PolylineId(this.value) : assert(value != null);
+  PolylineId(this.value);
 
   /// value of the [PolylineId].
   final String value;
@@ -17,7 +17,7 @@ class PolylineId {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    if (other.runtimeType != runtimeType) return false;
+    if (other is! PolylineId) return false;
     final PolylineId typedOther = other;
     return value == typedOther.value;
   }
@@ -35,7 +35,7 @@ class PolylineId {
 @immutable
 class Polyline {
   const Polyline({
-    @required this.polylineId,
+    required this.polylineId,
     this.consumeTapEvents = false,
     this.color = Colors.black,
     this.polylineCap = Cap.buttCap,
@@ -109,25 +109,25 @@ class Polyline {
   ///
   /// Overlays are drawn in order of z-index, so that lower values means drawn
   /// earlier, and thus appearing to be closer to the surface of the Earth.
-  final int zIndex;
+  final int? zIndex;
 
   /// Callbacks to receive tap events for polyline placed on this map.
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   /// Creates a new [Polyline] object whose values are the same as this instance,
   /// unless overwritten by the specified parameters.
   Polyline copyWith({
-    Color colorParam,
-    bool consumeTapEventsParam,
-    Cap polylineCapParam,
-    bool geodesicParam,
-    JointType jointTypeParam,
-    List<PatternItem> patternsParam,
-    List<LatLng> pointsParam,
-    bool visibleParam,
-    int widthParam,
-    int zIndexParam,
-    VoidCallback onTapParam,
+    Color? colorParam,
+    bool? consumeTapEventsParam,
+    Cap? polylineCapParam,
+    bool? geodesicParam,
+    JointType? jointTypeParam,
+    List<PatternItem>? patternsParam,
+    List<LatLng>? pointsParam,
+    bool? visibleParam,
+    int? widthParam,
+    int? zIndexParam,
+    VoidCallback? onTapParam,
   }) {
     return Polyline(
       polylineId: polylineId,
@@ -156,19 +156,14 @@ class Polyline {
     addIfPresent('polylineId', polylineId.value);
     addIfPresent('consumeTapEvents', consumeTapEvents);
     addIfPresent('color', color.value);
-    addIfPresent('polylineCap', polylineCap?._toJson());
-    addIfPresent('jointType', jointType?.value);
+    addIfPresent('polylineCap', polylineCap._toJson());
+    addIfPresent('jointType', jointType.value);
     addIfPresent('visible', visible);
     addIfPresent('width', width);
     addIfPresent('zIndex', zIndex);
 
-    if (points != null) {
-      json['points'] = _pointsToJson();
-    }
-
-    if (patterns != null) {
-      json['pattern'] = _patternToJson();
-    }
+    json['points'] = _pointsToJson();
+    json['pattern'] = _patternToJson();
 
     return json;
   }
@@ -176,7 +171,7 @@ class Polyline {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    if (other.runtimeType != runtimeType) return false;
+    if (other is! Polyline) return false;
     final Polyline typedOther = other;
     return polylineId == typedOther.polylineId;
   }
@@ -195,15 +190,13 @@ class Polyline {
   dynamic _patternToJson() {
     final List<dynamic> result = <dynamic>[];
     for (final PatternItem patternItem in patterns) {
-      if (patternItem != null) {
-        result.add(patternItem._toJson());
-      }
+      result.add(patternItem._toJson());
     }
     return result;
   }
 }
 
-Map<PolylineId, Polyline> _keyByPolylineId(Iterable<Polyline> polylines) {
+Map<PolylineId, Polyline> _keyByPolylineId(Iterable<Polyline>? polylines) {
   if (polylines == null) {
     return <PolylineId, Polyline>{};
   }
@@ -212,7 +205,7 @@ Map<PolylineId, Polyline> _keyByPolylineId(Iterable<Polyline> polylines) {
           MapEntry<PolylineId, Polyline>(polyline.polylineId, polyline)));
 }
 
-List<Map<String, dynamic>> _serializePolylineSet(Set<Polyline> polylines) {
+List<Map<String, dynamic>>? _serializePolylineSet(Set<Polyline>? polylines) {
   if (polylines == null) {
     return null;
   }

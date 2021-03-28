@@ -10,7 +10,7 @@ part of apple_maps_flutter;
 @immutable
 class CircleId {
   /// Creates an immutable identifier for a [Circle].
-  CircleId(this.value) : assert(value != null);
+  CircleId(this.value);
 
   /// value of the [CircleId].
   final String value;
@@ -18,7 +18,7 @@ class CircleId {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    if (other.runtimeType != runtimeType) return false;
+    if (other is! CircleId) return false;
     final CircleId typedOther = other;
     return value == typedOther.value;
   }
@@ -37,7 +37,7 @@ class CircleId {
 class Circle {
   /// Creates an immutable representation of a [Circle] to draw on [AppleMap].
   const Circle({
-    @required this.circleId,
+    required this.circleId,
     this.consumeTapEvents = false,
     this.fillColor = Colors.transparent,
     this.center = const LatLng(0.0, 0.0),
@@ -84,23 +84,23 @@ class Circle {
   ///
   /// Overlays are drawn in order of z-index, so that lower values means drawn
   /// earlier, and thus appearing to be closer to the surface of the Earth.
-  final int zIndex;
+  final int? zIndex;
 
   /// Callbacks to receive tap events for circle placed on this map.
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   /// Creates a new [Circle] object whose values are the same as this instance,
   /// unless overwritten by the specified parameters.
   Circle copyWith({
-    bool consumeTapEventsParam,
-    Color fillColorParam,
-    LatLng centerParam,
-    double radiusParam,
-    Color strokeColorParam,
-    int strokeWidthParam,
-    bool visibleParam,
-    int zIndexParam,
-    VoidCallback onTapParam,
+    bool? consumeTapEventsParam,
+    Color? fillColorParam,
+    LatLng? centerParam,
+    double? radiusParam,
+    Color? strokeColorParam,
+    int? strokeWidthParam,
+    bool? visibleParam,
+    int? zIndexParam,
+    VoidCallback? onTapParam,
   }) {
     return Circle(
       circleId: circleId,
@@ -144,7 +144,7 @@ class Circle {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    if (other.runtimeType != runtimeType) return false;
+    if (other is! Circle) return false;
     final Circle typedOther = other;
     return circleId == typedOther.circleId &&
         consumeTapEvents == typedOther.consumeTapEvents &&
@@ -162,7 +162,7 @@ class Circle {
   int get hashCode => circleId.hashCode;
 }
 
-Map<CircleId, Circle> _keyByCircleId(Iterable<Circle> circles) {
+Map<CircleId, Circle> _keyByCircleId(Iterable<Circle>? circles) {
   if (circles == null) {
     return <CircleId, Circle>{};
   }
@@ -170,7 +170,7 @@ Map<CircleId, Circle> _keyByCircleId(Iterable<Circle> circles) {
       MapEntry<CircleId, Circle>(circle.circleId, circle.clone())));
 }
 
-List<Map<String, dynamic>> _serializeCircleSet(Set<Circle> circles) {
+List<Map<String, dynamic>>? _serializeCircleSet(Set<Circle>? circles) {
   if (circles == null) {
     return null;
   }

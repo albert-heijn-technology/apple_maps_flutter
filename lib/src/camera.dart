@@ -9,14 +9,11 @@ part of apple_maps_flutter;
 /// location, its [zoom] level, [pitch] angle, and [heading].
 class CameraPosition {
   const CameraPosition({
-    @required this.target,
+    required this.target,
     this.heading = 0.0,
     this.pitch = 0.0,
     this.zoom = 0,
-  })  : assert(target != null),
-        assert(heading != null),
-        assert(pitch != null),
-        assert(zoom != null);
+  });
 
   /// The camera's bearing in degrees, measured clockwise from north.
   ///
@@ -52,13 +49,13 @@ class CameraPosition {
       };
 
   @visibleForTesting
-  static CameraPosition fromMap(dynamic json) {
+  static CameraPosition? fromMap(dynamic json) {
     if (json == null) {
       return null;
     }
     return CameraPosition(
       heading: json['heading'],
-      target: LatLng._fromJson(json['target']),
+      target: LatLng._fromJson(json['target'])!,
       pitch: json['pitch'],
       zoom: json['zoom'],
     );
@@ -124,7 +121,7 @@ class CameraUpdate {
   /// Returns a camera update that modifies the camera zoom level by the
   /// specified amount. The optional [focus] is a screen point whose underlying
   /// geographical location should be invariant, if possible, by the movement.
-  static CameraUpdate zoomBy(double amount, [Offset focus]) {
+  static CameraUpdate zoomBy(double amount, [Offset? focus]) {
     if (focus == null) {
       return CameraUpdate._(<dynamic>['zoomBy', amount]);
     } else {

@@ -14,9 +14,7 @@ class LatLng {
   /// The longitude is normalized to the half-open interval from -180.0
   /// (inclusive) to +180.0 (exclusive)
   const LatLng(double latitude, double longitude)
-      : assert(latitude != null),
-        assert(longitude != null),
-        latitude =
+      : latitude =
             (latitude < -90.0 ? -90.0 : (90.0 < latitude ? 90.0 : latitude)),
         longitude = (longitude + 180.0) % 360.0 - 180.0;
 
@@ -30,7 +28,7 @@ class LatLng {
     return <double>[latitude, longitude];
   }
 
-  static LatLng _fromJson(dynamic json) {
+  static LatLng? _fromJson(dynamic json) {
     if (json == null) {
       return null;
     }
@@ -62,10 +60,8 @@ class LatLngBounds {
   ///
   /// The latitude of the southwest corner cannot be larger than the
   /// latitude of the northeast corner.
-  LatLngBounds({@required this.southwest, @required this.northeast})
-      : assert(southwest != null),
-        assert(northeast != null),
-        assert(southwest.latitude <= northeast.latitude);
+  LatLngBounds({required this.southwest, required this.northeast})
+      : assert(southwest.latitude <= northeast.latitude);
 
   /// The southwest corner of the rectangle.
   final LatLng southwest;
@@ -92,13 +88,13 @@ class LatLngBounds {
   }
 
   @visibleForTesting
-  static LatLngBounds fromList(dynamic json) {
+  static LatLngBounds? fromList(dynamic json) {
     if (json == null) {
       return null;
     }
     return LatLngBounds(
-      southwest: LatLng._fromJson(json[0]),
-      northeast: LatLng._fromJson(json[1]),
+      southwest: LatLng._fromJson(json[0])!,
+      northeast: LatLng._fromJson(json[1])!,
     );
   }
 
