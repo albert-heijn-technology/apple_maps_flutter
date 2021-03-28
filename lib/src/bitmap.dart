@@ -28,7 +28,6 @@ class BitmapDescriptor {
   /// annotation image. For convenience, there is a predefined set of [AnnotationColors].
   /// See e.g. [AnnotationColor.RED].
   static BitmapDescriptor markerAnnotationWithColor(AnnotationColor color) {
-    assert(color != null);
     return BitmapDescriptor._(<dynamic>['markerAnnotation', color.index]);
   }
 
@@ -36,7 +35,6 @@ class BitmapDescriptor {
   /// annotation image. For convenience, there is a predefined set of [AnnotationColors].
   /// See e.g. [AnnotationColor.RED].
   static BitmapDescriptor defaultAnnotationWithColor(AnnotationColor color) {
-    assert(color != null);
     return BitmapDescriptor._(<dynamic>['defaultAnnotation', color.index]);
   }
 
@@ -49,8 +47,8 @@ class BitmapDescriptor {
   static Future<BitmapDescriptor> fromAssetImage(
     ImageConfiguration configuration,
     String assetName, {
-    AssetBundle bundle,
-    String package,
+    AssetBundle? bundle,
+    String? package,
     bool mipmaps = true,
   }) async {
     if (!mipmaps && configuration.devicePixelRatio != null) {

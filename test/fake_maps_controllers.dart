@@ -4,9 +4,9 @@
 
 import 'dart:typed_data';
 
+import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 
 class FakePlatformAppleMap {
   FakePlatformAppleMap(int id, Map<dynamic, dynamic> params) {
@@ -21,51 +21,51 @@ class FakePlatformAppleMap {
     updateCircles(params);
   }
 
-  MethodChannel channel;
+  late MethodChannel channel;
 
-  CameraPosition cameraPosition;
+  CameraPosition? cameraPosition;
 
-  bool compassEnabled;
+  bool? compassEnabled;
 
-  MapType mapType;
+  MapType? mapType;
 
-  MinMaxZoomPreference minMaxZoomPreference;
+  MinMaxZoomPreference? minMaxZoomPreference;
 
-  bool rotateGesturesEnabled;
+  bool? rotateGesturesEnabled;
 
-  bool scrollGesturesEnabled;
+  bool? scrollGesturesEnabled;
 
-  bool pitchGesturesEnabled;
+  bool? pitchGesturesEnabled;
 
-  bool zoomGesturesEnabled;
+  bool? zoomGesturesEnabled;
 
-  bool myLocationEnabled;
+  bool? myLocationEnabled;
 
-  bool myLocationButtonEnabled;
+  bool? myLocationButtonEnabled;
 
-  Set<AnnotationId> annotationIdsToRemove;
+  Set<AnnotationId>? annotationIdsToRemove;
 
-  Set<Annotation> annotationsToAdd;
+  Set<Annotation>? annotationsToAdd;
 
-  Set<Annotation> annotationsToChange;
+  Set<Annotation>? annotationsToChange;
 
-  Set<PolylineId> polylineIdsToRemove;
+  Set<PolylineId>? polylineIdsToRemove;
 
-  Set<Polyline> polylinesToAdd;
+  Set<Polyline>? polylinesToAdd;
 
-  Set<Polyline> polylinesToChange;
+  Set<Polyline>? polylinesToChange;
 
-  Set<PolygonId> polygonIdsToRemove;
+  Set<PolygonId>? polygonIdsToRemove;
 
-  Set<Polygon> polygonsToAdd;
+  Set<Polygon>? polygonsToAdd;
 
-  Set<Polygon> polygonsToChange;
+  Set<Polygon>? polygonsToChange;
 
-  Set<CircleId> circleIdsToRemove;
+  Set<CircleId>? circleIdsToRemove;
 
-  Set<Circle> circlesToAdd;
+  Set<Circle>? circlesToAdd;
 
-  Set<Circle> circlesToChange;
+  Set<Circle>? circlesToChange;
 
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
@@ -89,7 +89,7 @@ class FakePlatformAppleMap {
     }
   }
 
-  void updateAnnotations(Map<dynamic, dynamic> annotationUpdates) {
+  void updateAnnotations(Map<dynamic, dynamic>? annotationUpdates) {
     if (annotationUpdates == null) {
       return;
     }
@@ -101,7 +101,7 @@ class FakePlatformAppleMap {
         _deserializeAnnotations(annotationUpdates['annotationsToChange']);
   }
 
-  Set<AnnotationId> _deserializeAnnotationIds(List<dynamic> annotationIds) {
+  Set<AnnotationId> _deserializeAnnotationIds(List<dynamic>? annotationIds) {
     if (annotationIds == null) {
       return Set<AnnotationId>();
     }
@@ -142,7 +142,7 @@ class FakePlatformAppleMap {
     return result;
   }
 
-  void updatePolylines(Map<dynamic, dynamic> polylineUpdates) {
+  void updatePolylines(Map<dynamic, dynamic>? polylineUpdates) {
     if (polylineUpdates == null) {
       return;
     }
@@ -153,7 +153,7 @@ class FakePlatformAppleMap {
         _deserializePolylines(polylineUpdates['polylinesToChange']);
   }
 
-  Set<PolylineId> _deserializePolylineIds(List<dynamic> polylineIds) {
+  Set<PolylineId> _deserializePolylineIds(List<dynamic>? polylineIds) {
     if (polylineIds == null) {
       return Set<PolylineId>();
     }
@@ -183,7 +183,7 @@ class FakePlatformAppleMap {
     return result;
   }
 
-  void updatePolygons(Map<dynamic, dynamic> polygonUpdates) {
+  void updatePolygons(Map<dynamic, dynamic>? polygonUpdates) {
     if (polygonUpdates == null) {
       return;
     }
@@ -193,7 +193,7 @@ class FakePlatformAppleMap {
     polygonsToChange = _deserializePolygons(polygonUpdates['polygonsToChange']);
   }
 
-  Set<PolygonId> _deserializePolygonIds(List<dynamic> polygonIds) {
+  Set<PolygonId> _deserializePolygonIds(List<dynamic>? polygonIds) {
     if (polygonIds == null) {
       return Set<PolygonId>();
     }
@@ -231,7 +231,7 @@ class FakePlatformAppleMap {
     }).toList();
   }
 
-  void updateCircles(Map<dynamic, dynamic> circleUpdates) {
+  void updateCircles(Map<dynamic, dynamic>? circleUpdates) {
     if (circleUpdates == null) {
       return;
     }
@@ -241,7 +241,7 @@ class FakePlatformAppleMap {
     circlesToChange = _deserializeCircles(circleUpdates['circlesToChange']);
   }
 
-  Set<CircleId> _deserializeCircleIds(List<dynamic> circleIds) {
+  Set<CircleId>? _deserializeCircleIds(List<dynamic>? circleIds) {
     if (circleIds == null) {
       return Set<CircleId>();
     }
@@ -303,7 +303,7 @@ class FakePlatformAppleMap {
 }
 
 class FakePlatformViewsController {
-  FakePlatformAppleMap lastCreatedView;
+  FakePlatformAppleMap? lastCreatedView;
 
   Future<dynamic> fakePlatformViewsMethodHandler(MethodCall call) {
     switch (call.method) {

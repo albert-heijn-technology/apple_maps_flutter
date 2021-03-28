@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 // ignore_for_file: public_member_api_docs
 
 import 'package:flutter/material.dart';
-import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 
 import 'page.dart';
 
@@ -14,7 +14,9 @@ class PlacePolygonPage extends ExamplePage {
 
   @override
   Widget build(BuildContext context) {
-    return const PlacePolygonBody();
+    return SafeArea(
+      child: const PlacePolygonBody(),
+    );
   }
 }
 
@@ -28,10 +30,10 @@ class PlacePolygonBody extends StatefulWidget {
 class PlacePolygonBodyState extends State<PlacePolygonBody> {
   PlacePolygonBodyState();
 
-  AppleMapController controller;
+  late AppleMapController controller;
   Map<PolygonId, Polygon> polygons = <PolygonId, Polygon>{};
   int _polygonIdCounter = 1;
-  PolygonId selectedPolygon;
+  PolygonId? selectedPolygon;
 
   // Values when toggling polygon color
   int strokeColorsIndex = 0;
@@ -100,46 +102,46 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
   }
 
   void _toggleVisible() {
-    final Polygon polygon = polygons[selectedPolygon];
+    final Polygon polygon = polygons[selectedPolygon]!;
     setState(() {
-      polygons[selectedPolygon] = polygon.copyWith(
+      polygons[selectedPolygon!] = polygon.copyWith(
         visibleParam: !polygon.visible,
       );
     });
   }
 
   Future<void> _changeZIndex() async {
-    final Polygon polygon = polygons[selectedPolygon];
+    final Polygon polygon = polygons[selectedPolygon]!;
     final int current = polygon.zIndex ?? 0;
     setState(() {
-      polygons[selectedPolygon] = polygon.copyWith(
+      polygons[selectedPolygon!] = polygon.copyWith(
         zIndexParam: current == 12 ? 0 : current + 1,
       );
     });
   }
 
   void _changeStrokeColor() {
-    final Polygon polygon = polygons[selectedPolygon];
+    final Polygon polygon = polygons[selectedPolygon]!;
     setState(() {
-      polygons[selectedPolygon] = polygon.copyWith(
+      polygons[selectedPolygon!] = polygon.copyWith(
         strokeColorParam: colors[++strokeColorsIndex % colors.length],
       );
     });
   }
 
   void _changeFillColor() {
-    final Polygon polygon = polygons[selectedPolygon];
+    final Polygon polygon = polygons[selectedPolygon]!;
     setState(() {
-      polygons[selectedPolygon] = polygon.copyWith(
+      polygons[selectedPolygon!] = polygon.copyWith(
         fillColorParam: colors[++fillColorsIndex % colors.length],
       );
     });
   }
 
   void _changeWidth() {
-    final Polygon polygon = polygons[selectedPolygon];
+    final Polygon polygon = polygons[selectedPolygon]!;
     setState(() {
-      polygons[selectedPolygon] = polygon.copyWith(
+      polygons[selectedPolygon!] = polygon.copyWith(
         strokeWidthParam: widths[++widthsIndex % widths.length],
       );
     });
@@ -148,76 +150,52 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        Center(
-          child: SizedBox(
-            width: 350.0,
-            height: 300.0,
-            child: AppleMap(
-              initialCameraPosition: const CameraPosition(
-                target: LatLng(52.4478, -3.5402),
-                zoom: 7.0,
-              ),
-              polygons: Set<Polygon>.of(polygons.values),
-              onMapCreated: _onMapCreated,
+        Expanded(
+          child: AppleMap(
+            initialCameraPosition: const CameraPosition(
+              target: LatLng(52.4478, -3.5402),
+              zoom: 7.0,
             ),
+            polygons: Set<Polygon>.of(polygons.values),
+            onMapCreated: _onMapCreated,
           ),
         ),
-        Expanded(
-          child: SingleChildScrollView(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Column(
-                      children: <Widget>[
-                        FlatButton(
-                          child: const Text('add'),
-                          onPressed: _add,
-                        ),
-                        FlatButton(
-                          child: const Text('remove'),
-                          onPressed: (selectedPolygon == null) ? null : _remove,
-                        ),
-                        FlatButton(
-                          child: const Text('toggle visible'),
-                          onPressed:
-                              (selectedPolygon == null) ? null : _toggleVisible,
-                        ),
-                        FlatButton(
-                          child: const Text('change zIndex'),
-                          onPressed: _changeZIndex,
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: <Widget>[
-                        FlatButton(
-                          child: const Text('change stroke width'),
-                          onPressed:
-                              (selectedPolygon == null) ? null : _changeWidth,
-                        ),
-                        FlatButton(
-                          child: const Text('change stroke color'),
-                          onPressed: (selectedPolygon == null)
-                              ? null
-                              : _changeStrokeColor,
-                        ),
-                        FlatButton(
-                          child: const Text('change fill color'),
-                          onPressed: (selectedPolygon == null)
-                              ? null
-                              : _changeFillColor,
-                        ),
-                      ],
-                    )
-                  ],
-                )
-              ],
-            ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Wrap(
+            alignment: WrapAlignment.spaceEvenly,
+            children: [
+              TextButton(
+                child: const Text('add'),
+                onPressed: _add,
+              ),
+              TextButton(
+                child: const Text('remove'),
+                onPressed: (selectedPolygon == null) ? null : _remove,
+              ),
+              TextButton(
+                child: const Text('toggle visible'),
+                onPressed: (selectedPolygon == null) ? null : _toggleVisible,
+              ),
+              TextButton(
+                child: const Text('change zIndex'),
+                onPressed: _changeZIndex,
+              ),
+              TextButton(
+                child: const Text('change stroke width'),
+                onPressed: (selectedPolygon == null) ? null : _changeWidth,
+              ),
+              TextButton(
+                child: const Text('change stroke color'),
+                onPressed:
+                    (selectedPolygon == null) ? null : _changeStrokeColor,
+              ),
+              TextButton(
+                child: const Text('change fill color'),
+                onPressed: (selectedPolygon == null) ? null : _changeFillColor,
+              ),
+            ],
           ),
         ),
       ],

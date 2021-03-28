@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 // ignore_for_file: public_member_api_docs
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 
 import 'page.dart';
 
@@ -28,20 +28,19 @@ class ScrollingMapBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: <Widget>[
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 30.0),
-            child: Column(
-              children: <Widget>[
-                const Padding(
-                  padding: EdgeInsets.only(bottom: 12.0),
-                  child: Text('This map consumes all touch events.'),
-                ),
-                Center(
-                  child: SizedBox(
-                    width: 300.0,
+    return SafeArea(
+      child: ListView(
+        children: <Widget>[
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: <Widget>[
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 12.0),
+                    child: Text('This map consumes all touch events.'),
+                  ),
+                  SizedBox(
                     height: 300.0,
                     child: AppleMap(
                       initialCameraPosition: CameraPosition(
@@ -56,60 +55,59 @@ class ScrollingMapBody extends StatelessWidget {
                       ].toSet(),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 30.0),
-            child: Column(
-              children: <Widget>[
-                const Text('This map doesn\'t consume the vertical drags.'),
-                const Padding(
-                  padding: EdgeInsets.only(bottom: 12.0),
-                  child:
-                      Text('It still gets other gestures (e.g scale or tap).'),
-                ),
-                Center(
-                  child: SizedBox(
-                    width: 300.0,
-                    height: 300.0,
-                    child: AppleMap(
-                      initialCameraPosition: CameraPosition(
-                        target: center,
-                        zoom: 11.0,
-                      ),
-                      annotations: Set<Annotation>.of(
-                        <Annotation>[
-                          Annotation(
-                            annotationId: AnnotationId("test_Annotation_id"),
-                            position: LatLng(
-                              center.latitude,
-                              center.longitude,
-                            ),
-                            infoWindow: const InfoWindow(
-                              title: 'An interesting location',
-                              snippet: '*',
-                            ),
-                          )
-                        ],
-                      ),
-                      gestureRecognizers:
-                          <Factory<OneSequenceGestureRecognizer>>[
-                        Factory<OneSequenceGestureRecognizer>(
-                          () => ScaleGestureRecognizer(),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: <Widget>[
+                  const Text('This map doesn\'t consume the vertical drags.'),
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 12.0),
+                    child: Text(
+                        'It still gets other gestures (e.g scale or tap).'),
+                  ),
+                  Center(
+                    child: SizedBox(
+                      height: 300.0,
+                      child: AppleMap(
+                        initialCameraPosition: CameraPosition(
+                          target: center,
+                          zoom: 11.0,
                         ),
-                      ].toSet(),
+                        annotations: Set<Annotation>.of(
+                          <Annotation>[
+                            Annotation(
+                              annotationId: AnnotationId("test_Annotation_id"),
+                              position: LatLng(
+                                center.latitude,
+                                center.longitude,
+                              ),
+                              infoWindow: const InfoWindow(
+                                title: 'An interesting location',
+                                snippet: '*',
+                              ),
+                            )
+                          ],
+                        ),
+                        gestureRecognizers:
+                            <Factory<OneSequenceGestureRecognizer>>[
+                          Factory<OneSequenceGestureRecognizer>(
+                            () => ScaleGestureRecognizer(),
+                          ),
+                        ].toSet(),
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

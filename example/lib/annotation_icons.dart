@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/material.dart';
 import 'package:apple_maps_flutter/apple_maps_flutter.dart';
+import 'package:flutter/material.dart';
 
 import 'page.dart';
 
@@ -26,31 +26,21 @@ class AnnotationIconsBody extends StatefulWidget {
 const LatLng _kMapCenter = LatLng(52.707755, -2.7540658);
 
 class AnnotationIconsBodyState extends State<AnnotationIconsBody> {
-  AppleMapController controller;
-  BitmapDescriptor _annotationIcon;
+  late AppleMapController controller;
+  BitmapDescriptor? _annotationIcon;
 
   @override
   Widget build(BuildContext context) {
     _createAnnotationImageFromAsset(context);
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        Center(
-          child: SizedBox(
-            width: 350.0,
-            height: 300.0,
-            child: AppleMap(
-              initialCameraPosition: const CameraPosition(
-                target: _kMapCenter,
-                zoom: 8,
-              ),
-              annotations: _createAnnotation(),
-              onMapCreated: _onMapCreated,
-            ),
-          ),
-        )
-      ],
+    return SafeArea(
+      child: AppleMap(
+        initialCameraPosition: const CameraPosition(
+          target: _kMapCenter,
+          zoom: 8,
+        ),
+        annotations: _createAnnotation(),
+        onMapCreated: _onMapCreated,
+      ),
     );
   }
 
@@ -60,7 +50,7 @@ class AnnotationIconsBodyState extends State<AnnotationIconsBody> {
         annotationId: AnnotationId("annotation_1"),
         anchor: Offset(0.5, -4),
         position: LatLng(52.707755, -2.7540658),
-        icon: _annotationIcon,
+        icon: _annotationIcon!,
       ),
     ].toSet();
   }

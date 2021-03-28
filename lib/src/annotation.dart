@@ -4,7 +4,7 @@
 
 part of apple_maps_flutter;
 
-dynamic _offsetToJson(Offset offset) {
+dynamic _offsetToJson(Offset? offset) {
   if (offset == null) {
     return null;
   }
@@ -26,12 +26,12 @@ class InfoWindow {
   /// Text displayed in an info window when the user taps the annotation.
   ///
   /// A null value means no title.
-  final String title;
+  final String? title;
 
   /// Additional text displayed below the [title].
   ///
   /// A null value means no additional text.
-  final String snippet;
+  final String? snippet;
 
   /// The icon image point that will be the anchor of the info window when
   /// displayed.
@@ -42,15 +42,15 @@ class InfoWindow {
   final Offset anchor;
 
   /// onTap callback for this [InfoWindow].
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   /// Creates a new [InfoWindow] object whose values are the same as this instance,
   /// unless overwritten by the specified parameters.
   InfoWindow copyWith({
-    String titleParam,
-    String snippetParam,
-    Offset anchorParam,
-    VoidCallback onTapParam,
+    String? titleParam,
+    String? snippetParam,
+    Offset? anchorParam,
+    VoidCallback? onTapParam,
   }) {
     return InfoWindow(
       title: titleParam ?? title,
@@ -80,7 +80,7 @@ class InfoWindow {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    if (other.runtimeType != runtimeType) return false;
+    if (other is! InfoWindow) return false;
     final InfoWindow typedOther = other;
     return title == typedOther.title &&
         snippet == typedOther.snippet &&
@@ -102,7 +102,7 @@ class InfoWindow {
 /// This does not have to be globally unique, only unique among the list.
 @immutable
 class AnnotationId {
-  AnnotationId(this.value) : assert(value != null);
+  AnnotationId(this.value);
 
   /// value of the [AnnotationId].
   final String value;
@@ -110,7 +110,7 @@ class AnnotationId {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    if (other.runtimeType != runtimeType) return false;
+    if (other is! AnnotationId) return false;
     final AnnotationId typedOther = other;
     return value == typedOther.value;
   }
@@ -144,7 +144,7 @@ class Annotation {
   /// * is positioned at 0, 0; [position] is `LatLng(0.0, 0.0)`
   /// * is visible; [visible] is true
   const Annotation({
-    @required this.annotationId,
+    required this.annotationId,
     this.alpha = 1.0,
     this.anchor = const Offset(0.5, 1.0),
     this.draggable = false,
@@ -154,7 +154,7 @@ class Annotation {
     this.onTap,
     this.visible = true,
     this.onDragEnd,
-  }) : assert(alpha == null || (0.0 <= alpha && alpha <= 1.0));
+  }) : assert(0.0 <= alpha && alpha <= 1.0);
 
   /// Uniquely identifies a [Annotation].
   final AnnotationId annotationId;
@@ -186,26 +186,26 @@ class Annotation {
   final LatLng position;
 
   /// Callbacks to receive tap events for annotations placed on this map.
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   /// True if the annotation is visible.
   final bool visible;
 
-  final ValueChanged<LatLng> onDragEnd;
+  final ValueChanged<LatLng>? onDragEnd;
 
   /// Creates a new [Annotation] object whose values are the same as this instance,
   /// unless overwritten by the specified parameters.
   Annotation copyWith({
-    double alphaParam,
-    Offset anchorParam,
-    bool consumeTapEventsParam,
-    bool draggableParam,
-    BitmapDescriptor iconParam,
-    InfoWindow infoWindowParam,
-    LatLng positionParam,
-    bool visibleParam,
-    VoidCallback onTapParam,
-    ValueChanged<LatLng> onDragEndParam,
+    double? alphaParam,
+    Offset? anchorParam,
+    bool? consumeTapEventsParam,
+    bool? draggableParam,
+    BitmapDescriptor? iconParam,
+    InfoWindow? infoWindowParam,
+    LatLng? positionParam,
+    bool? visibleParam,
+    VoidCallback? onTapParam,
+    ValueChanged<LatLng>? onDragEndParam,
   }) {
     return Annotation(
       annotationId: annotationId,
@@ -234,17 +234,17 @@ class Annotation {
     addIfPresent('alpha', alpha);
     addIfPresent('anchor', _offsetToJson(anchor));
     addIfPresent('draggable', draggable);
-    addIfPresent('icon', icon?._toJson());
-    addIfPresent('infoWindow', infoWindow?._toJson());
+    addIfPresent('icon', icon._toJson());
+    addIfPresent('infoWindow', infoWindow._toJson());
     addIfPresent('visible', visible);
-    addIfPresent('position', position?._toJson());
+    addIfPresent('position', position._toJson());
     return json;
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    if (other.runtimeType != runtimeType) return false;
+    if (other is! Annotation) return false;
     final Annotation typedOther = other;
     return annotationId == typedOther.annotationId;
   }
@@ -260,7 +260,7 @@ class Annotation {
 }
 
 Map<AnnotationId, Annotation> _keyByAnnotationId(
-    Iterable<Annotation> annotations) {
+    Iterable<Annotation>? annotations) {
   if (annotations == null) {
     return <AnnotationId, Annotation>{};
   }
@@ -269,8 +269,8 @@ Map<AnnotationId, Annotation> _keyByAnnotationId(
           annotation.annotationId, annotation)));
 }
 
-List<Map<String, dynamic>> _serializeAnnotationSet(
-    Set<Annotation> annotations) {
+List<Map<String, dynamic>>? _serializeAnnotationSet(
+    Set<Annotation>? annotations) {
   if (annotations == null) {
     return null;
   }

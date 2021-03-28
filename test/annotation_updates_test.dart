@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 import 'package:flutter/foundation.dart'
     show debugDefaultTargetPlatformOverride;
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 import 'fake_maps_controllers.dart';
 
-Set<Annotation> _toSet({Annotation m1, Annotation m2, Annotation m3}) {
+Set<Annotation> _toSet({Annotation? m1, Annotation? m2, Annotation? m3}) {
   final Set<Annotation> res = Set<Annotation>.identity();
   if (m1 != null) {
     res.add(m1);
@@ -25,7 +25,7 @@ Set<Annotation> _toSet({Annotation m1, Annotation m2, Annotation m3}) {
   return res;
 }
 
-Widget _mapWithAnnotations(Set<Annotation> annotations) {
+Widget _mapWithAnnotations(Set<Annotation>? annotations) {
   debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
   return Directionality(
     textDirection: TextDirection.ltr,
@@ -56,14 +56,14 @@ void main() {
     await tester.pumpWidget(_mapWithAnnotations(_toSet(m1: m1)));
 
     final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView;
-    expect(platformAppleMap.annotationsToAdd.length, 1);
+        fakePlatformViewsController.lastCreatedView!;
+    expect(platformAppleMap.annotationsToAdd!.length, 1);
 
     final Annotation initializedAnnotation =
-        platformAppleMap.annotationsToAdd.first;
+        platformAppleMap.annotationsToAdd!.first;
     expect(initializedAnnotation, equals(m1));
-    expect(platformAppleMap.annotationIdsToRemove.isEmpty, true);
-    expect(platformAppleMap.annotationsToChange.isEmpty, true);
+    expect(platformAppleMap.annotationIdsToRemove!.isEmpty, true);
+    expect(platformAppleMap.annotationsToChange!.isEmpty, true);
     debugDefaultTargetPlatformOverride = null;
   });
 
@@ -78,15 +78,15 @@ void main() {
     await tester.pumpWidget(_mapWithAnnotations(_toSet(m1: m1, m2: m2)));
 
     final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView;
-    expect(platformAppleMap.annotationsToAdd.length, 1);
+        fakePlatformViewsController.lastCreatedView!;
+    expect(platformAppleMap.annotationsToAdd!.length, 1);
 
-    final Annotation addedAnnotation = platformAppleMap.annotationsToAdd.first;
+    final Annotation addedAnnotation = platformAppleMap.annotationsToAdd!.first;
     expect(addedAnnotation, equals(m2));
-    expect(platformAppleMap.annotationIdsToRemove.isEmpty, true);
+    expect(platformAppleMap.annotationIdsToRemove!.isEmpty, true);
 
-    expect(platformAppleMap.annotationsToChange.length, 1);
-    expect(platformAppleMap.annotationsToChange.first, equals(m1));
+    expect(platformAppleMap.annotationsToChange!.length, 1);
+    expect(platformAppleMap.annotationsToChange!.first, equals(m1));
     debugDefaultTargetPlatformOverride = null;
   });
 
@@ -99,13 +99,13 @@ void main() {
     await tester.pumpWidget(_mapWithAnnotations(null));
 
     final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView;
-    expect(platformAppleMap.annotationIdsToRemove.length, 1);
+        fakePlatformViewsController.lastCreatedView!;
+    expect(platformAppleMap.annotationIdsToRemove!.length, 1);
     expect(
-        platformAppleMap.annotationIdsToRemove.first, equals(m1.annotationId));
+        platformAppleMap.annotationIdsToRemove!.first, equals(m1.annotationId));
 
-    expect(platformAppleMap.annotationsToChange.isEmpty, true);
-    expect(platformAppleMap.annotationsToAdd.isEmpty, true);
+    expect(platformAppleMap.annotationsToChange!.isEmpty, true);
+    expect(platformAppleMap.annotationsToAdd!.isEmpty, true);
     debugDefaultTargetPlatformOverride = null;
   });
 
@@ -120,12 +120,12 @@ void main() {
     await tester.pumpWidget(_mapWithAnnotations(_toSet(m1: m2)));
 
     final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView;
-    expect(platformAppleMap.annotationsToChange.length, 1);
-    expect(platformAppleMap.annotationsToChange.first, equals(m2));
+        fakePlatformViewsController.lastCreatedView!;
+    expect(platformAppleMap.annotationsToChange!.length, 1);
+    expect(platformAppleMap.annotationsToChange!.first, equals(m2));
 
-    expect(platformAppleMap.annotationIdsToRemove.isEmpty, true);
-    expect(platformAppleMap.annotationsToAdd.isEmpty, true);
+    expect(platformAppleMap.annotationIdsToRemove!.isEmpty, true);
+    expect(platformAppleMap.annotationsToAdd!.isEmpty, true);
     debugDefaultTargetPlatformOverride = null;
   });
 
@@ -142,10 +142,10 @@ void main() {
     await tester.pumpWidget(_mapWithAnnotations(_toSet(m1: m2)));
 
     final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView;
-    expect(platformAppleMap.annotationsToChange.length, 1);
+        fakePlatformViewsController.lastCreatedView!;
+    expect(platformAppleMap.annotationsToChange!.length, 1);
 
-    final Annotation update = platformAppleMap.annotationsToChange.first;
+    final Annotation update = platformAppleMap.annotationsToChange!.first;
     expect(update, equals(m2));
     expect(update.infoWindow.snippet, 'changed');
     debugDefaultTargetPlatformOverride = null;
@@ -165,11 +165,11 @@ void main() {
     await tester.pumpWidget(_mapWithAnnotations(cur));
 
     final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
     expect(platformAppleMap.annotationsToChange, cur);
-    expect(platformAppleMap.annotationIdsToRemove.isEmpty, true);
-    expect(platformAppleMap.annotationsToAdd.isEmpty, true);
+    expect(platformAppleMap.annotationIdsToRemove!.isEmpty, true);
+    expect(platformAppleMap.annotationsToAdd!.isEmpty, true);
     debugDefaultTargetPlatformOverride = null;
   });
 
@@ -191,16 +191,16 @@ void main() {
     await tester.pumpWidget(_mapWithAnnotations(cur));
 
     final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView;
+        fakePlatformViewsController.lastCreatedView!;
 
-    expect(platformAppleMap.annotationsToChange.length, 1);
-    expect(platformAppleMap.annotationsToAdd.length, 1);
-    expect(platformAppleMap.annotationIdsToRemove.length, 1);
+    expect(platformAppleMap.annotationsToChange!.length, 1);
+    expect(platformAppleMap.annotationsToAdd!.length, 1);
+    expect(platformAppleMap.annotationIdsToRemove!.length, 1);
 
-    expect(platformAppleMap.annotationsToChange.first, equals(m2));
-    expect(platformAppleMap.annotationsToAdd.first, equals(m1));
+    expect(platformAppleMap.annotationsToChange!.first, equals(m2));
+    expect(platformAppleMap.annotationsToAdd!.first, equals(m1));
     expect(
-        platformAppleMap.annotationIdsToRemove.first, equals(m3.annotationId));
+        platformAppleMap.annotationIdsToRemove!.first, equals(m3.annotationId));
     debugDefaultTargetPlatformOverride = null;
   });
 
@@ -220,11 +220,11 @@ void main() {
       await tester.pumpWidget(_mapWithAnnotations(cur));
 
       final FakePlatformAppleMap platformAppleMap =
-          fakePlatformViewsController.lastCreatedView;
+          fakePlatformViewsController.lastCreatedView!;
 
       expect(platformAppleMap.annotationsToChange, _toSet(m2: m2));
-      expect(platformAppleMap.annotationIdsToRemove.isEmpty, true);
-      expect(platformAppleMap.annotationsToAdd.isEmpty, true);
+      expect(platformAppleMap.annotationIdsToRemove!.isEmpty, true);
+      expect(platformAppleMap.annotationsToAdd!.isEmpty, true);
       debugDefaultTargetPlatformOverride = null;
     },
     skip: true,

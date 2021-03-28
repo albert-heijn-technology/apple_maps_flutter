@@ -10,7 +10,7 @@ class AppleMapController {
     this.channel,
     CameraPosition initialCameraPosition,
     this._appleMapState,
-  ) : assert(channel != null) {
+  ) {
     channel.setMethodCallHandler(_handleMethodCall);
   }
 
@@ -19,7 +19,6 @@ class AppleMapController {
     CameraPosition initialCameraPosition,
     _AppleMapState appleMapState,
   ) async {
-    assert(id != null);
     final MethodChannel channel =
         MethodChannel('apple_maps_plugin.luisthein.de/apple_maps_$id');
     // await channel.invokeMethod<void>('map#waitForMap');
@@ -38,21 +37,15 @@ class AppleMapController {
   Future<dynamic> _handleMethodCall(MethodCall call) async {
     switch (call.method) {
       case 'camera#onMoveStarted':
-        if (_appleMapState.widget.onCameraMoveStarted != null) {
-          _appleMapState.widget.onCameraMoveStarted();
-        }
+        _appleMapState.widget.onCameraMoveStarted?.call();
         break;
       case 'camera#onMove':
-        if (_appleMapState.widget.onCameraMove != null) {
-          _appleMapState.widget.onCameraMove(
-            CameraPosition.fromMap(call.arguments['position']),
-          );
-        }
+        _appleMapState.widget.onCameraMove?.call(
+          CameraPosition.fromMap(call.arguments['position'])!,
+        );
         break;
       case 'camera#onIdle':
-        if (_appleMapState.widget.onCameraIdle != null) {
-          _appleMapState.widget.onCameraIdle();
-        }
+        _appleMapState.widget.onCameraIdle?.call();
         break;
       case 'annotation#onTap':
         _appleMapState.onAnnotationTap(call.arguments['annotationId']);
@@ -68,17 +61,17 @@ class AppleMapController {
         break;
       case 'annotation#onDragEnd':
         _appleMapState.onAnnotationDragEnd(call.arguments['annotationId'],
-            LatLng._fromJson(call.arguments['position']));
+            LatLng._fromJson(call.arguments['position'])!);
         break;
       case 'infoWindow#onTap':
         _appleMapState.onInfoWindowTap(call.arguments['annotationId']);
         break;
       case 'map#onTap':
-        _appleMapState.onTap(LatLng._fromJson(call.arguments['position']));
+        _appleMapState.onTap(LatLng._fromJson(call.arguments['position'])!);
         break;
       case 'map#onLongPress':
         _appleMapState
-            .onLongPress(LatLng._fromJson(call.arguments['position']));
+            .onLongPress(LatLng._fromJson(call.arguments['position'])!);
         break;
       default:
         throw MissingPluginException();
@@ -92,7 +85,6 @@ class AppleMapController {
   ///
   /// The returned [Future] completes after listeners have been notified.
   Future<void> _updateMapOptions(Map<String, dynamic> optionsUpdate) async {
-    assert(optionsUpdate != null);
     await channel.invokeMethod<void>(
       'map#update',
       <String, dynamic>{
@@ -108,7 +100,6 @@ class AppleMapController {
   ///
   /// The returned [Future] completes after listeners have been notified.
   Future<void> _updateAnnotations(_AnnotationUpdates annotationUpdates) async {
-    assert(annotationUpdates != null);
     await channel.invokeMethod<void>(
       'annotations#update',
       annotationUpdates._toMap(),
@@ -122,7 +113,6 @@ class AppleMapController {
   ///
   /// The returned [Future] completes after listeners have been notified.
   Future<void> _updatePolylines(_PolylineUpdates polylineUpdates) async {
-    assert(polylineUpdates != null);
     await channel.invokeMethod<void>(
       'polylines#update',
       polylineUpdates._toMap(),
@@ -136,7 +126,6 @@ class AppleMapController {
   ///
   /// The returned [Future] completes after listeners have been notified.
   Future<void> _updatePolygons(_PolygonUpdates polygonUpdates) async {
-    assert(polygonUpdates != null);
     await channel.invokeMethod<void>(
       'polygons#update',
       polygonUpdates._toMap(),
@@ -150,7 +139,6 @@ class AppleMapController {
   ///
   /// The returned [Future] completes after listeners have been notified.
   Future<void> _updateCircles(_CircleUpdates circleUpdates) async {
-    assert(circleUpdates != null);
     await channel.invokeMethod<void>(
       'circles#update',
       circleUpdates._toMap(),
@@ -176,7 +164,6 @@ class AppleMapController {
   ///   * [hideMarkerInfoWindow] to hide the Info Window.
   ///   * [isMarkerInfoWindowShown] to check if the Info Window is showing.
   Future<void> showMarkerInfoWindow(AnnotationId annotationId) {
-    assert(annotationId != null);
     return channel.invokeMethod<void>('annotations#showInfoWindow',
         <String, String>{'annotationId': annotationId.value});
   }
@@ -190,7 +177,6 @@ class AppleMapController {
   ///   * [showMarkerInfoWindow] to show the Info Window.
   ///   * [isMarkerInfoWindowShown] to check if the Info Window is showing.
   Future<void> hideMarkerInfoWindow(AnnotationId annotationId) {
-    assert(annotationId != null);
     return channel.invokeMethod<void>('annotations#hideInfoWindow',
         <String, String>{'annotationId': annotationId.value});
   }
@@ -203,8 +189,7 @@ class AppleMapController {
   /// * See also:
   ///   * [showMarkerInfoWindow] to show the Info Window.
   ///   * [hideMarkerInfoWindow] to hide the Info Window.
-  Future<bool> isMarkerInfoWindowShown(AnnotationId annotationId) {
-    assert(annotationId != null);
+  Future<bool?> isMarkerInfoWindowShown(AnnotationId annotationId) {
     return channel.invokeMethod<bool>('annotations#isInfoWindowShown',
         <String, String>{'annotationId': annotationId.value});
   }
@@ -220,16 +205,16 @@ class AppleMapController {
   }
 
   /// Returns the current zoomLevel.
-  Future<double> getZoomLevel() async {
+  Future<double?> getZoomLevel() async {
     return channel.invokeMethod<double>('camera#getZoomLevel');
   }
 
   /// Return [LatLngBounds] defining the region that is visible in a map.
   Future<LatLngBounds> getVisibleRegion() async {
-    final Map<String, dynamic> latLngBounds =
+    final Map<String, dynamic>? latLngBounds =
         await channel.invokeMapMethod<String, dynamic>('map#getVisibleRegion');
-    final LatLng southwest = LatLng._fromJson(latLngBounds['southwest']);
-    final LatLng northeast = LatLng._fromJson(latLngBounds['northeast']);
+    final LatLng southwest = LatLng._fromJson(latLngBounds?['southwest'])!;
+    final LatLng northeast = LatLng._fromJson(latLngBounds?['northeast'])!;
 
     return LatLngBounds(northeast: northeast, southwest: southwest);
   }
