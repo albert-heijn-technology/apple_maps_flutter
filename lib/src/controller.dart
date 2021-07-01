@@ -233,4 +233,9 @@ class AppleMapController {
     final doubles = List<double>.from(point?['point']);
     return Offset(doubles.first, doubles.last);
   }
+
+  /// Returns the image bytes of the map
+  Future<Uint8List?> takeSnapshot() {
+    return channel.invokeMethod<Uint8List>('map#takeSnapshot');
+  }
 }

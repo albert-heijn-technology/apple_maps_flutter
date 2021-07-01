@@ -16,6 +16,7 @@ import 'package:apple_maps_flutter_example/place_circle.dart';
 import 'package:apple_maps_flutter_example/place_polygon.dart';
 import 'package:apple_maps_flutter_example/place_polyline.dart';
 import 'package:apple_maps_flutter_example/scrolling_map.dart';
+import 'package:apple_maps_flutter_example/snapshot.dart';
 import 'package:flutter/material.dart';
 
 final List<ExamplePage> _allPages = <ExamplePage>[
@@ -32,6 +33,7 @@ final List<ExamplePage> _allPages = <ExamplePage>[
   PlaceCirclePage(),
   ScrollingMapPage(),
   MapUpdatePage(),
+  SnapshotPage(),
 ];
 
 class MapsDemo extends StatelessWidget {

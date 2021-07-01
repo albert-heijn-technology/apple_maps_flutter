@@ -16,6 +16,8 @@ public class AppleMapController: NSObject, FlutterPlatformView {
     var options: [String: Any]
     var onCalloutTapGestureRecognizer: UITapGestureRecognizer?
     var currentlySelectedAnnotation: String?
+    var snapShotOptions: MKMapSnapshotter.Options = MKMapSnapshotter.Options()
+    var snapShot: MKMapSnapshotter?
     
     let availableCaps: Dictionary<String, CGLineCap> = [
         "buttCap": CGLineCap.butt,
@@ -78,7 +80,7 @@ public class AppleMapController: NSObject, FlutterPlatformView {
     }
     
     private func setMethodCallHandlers() {
-        channel.setMethodCallHandler({ [unowned self] (call: FlutterMethodCall, result: FlutterResult) -> Void in
+        channel.setMethodCallHandler({ [unowned self] (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
             if let args :Dictionary<String, Any> = call.arguments as? Dictionary<String,Any> {
                 switch(call.method) {
                 case "annotations#update":
@@ -151,6 +153,10 @@ public class AppleMapController: NSObject, FlutterPlatformView {
                 case "map#isMyLocationButtonEnabled":
                     result(self.mapView.isMyLocationButtonShowing ?? false)
                     break
+                case "map#takeSnapshot":
+                    self.takeSnapshot(onCompletion: { (snapshot: FlutterStandardTypedData?, error: Error?) -> Void in
+                        result(snapshot ?? error)
+                    })
                 case "map#getMinMaxZoomLevels":
                     result([self.mapView.minZoomLevel, self.mapView.maxZoomLevel])
                     break
@@ -339,5 +345,27 @@ extension AppleMapController: MKMapViewDelegate {
             return self.circleRenderer(overlay: overlay)
         }
         return MKOverlayRenderer()
+    }
+}
+
+extension AppleMapController {
+    private func takeSnapshot(onCompletion: @escaping (FlutterStandardTypedData?, Error?) -> Void) {
+        // MKMapSnapShotOptions setting.
+        snapShotOptions.region = self.mapView.region
+        snapShotOptions.size = self.mapView.frame.size
+        snapShotOptions.scale = UIScreen.main.scale
+        
+        // Set MKMapSnapShotOptions to MKMapSnapShotter.
+        snapShot = MKMapSnapshotter(options: snapShotOptions)
+        
+        snapShot?.cancel()
+        
+        snapShot?.start(completionHandler: {(snapshot: MKMapSnapshotter.Snapshot?, error: Error?) -> Void in
+            if let imageData = snapshot?.image.pngData() {
+                onCompletion(FlutterStandardTypedData.init(bytes: imageData), nil)
+            } else {
+                onCompletion(nil, error)
+            }
+        })
     }
 }
