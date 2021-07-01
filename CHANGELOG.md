@@ -1,6 +1,10 @@
+## 1.0.1
+
+* Fixes memory leak
+* Adds ability to take snapshots of the map
 ## 1.0.0
 
-Tanks to @jonbhanson
+Thanks to @jonbhanson
 * Adds null safety.
 * Refreshes the example app.
 * Updates .gitignore and removes files that should not be tracked.
