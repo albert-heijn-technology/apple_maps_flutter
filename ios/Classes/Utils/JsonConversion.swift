@@ -10,7 +10,7 @@ import MapKit
 
 class JsonConversions {
     
-    static  func convertLocation(data: Any?) -> CLLocationCoordinate2D? {
+    static func convertLocation(data: Any?) -> CLLocationCoordinate2D? {
         if let updatedPosition = data as? Array<CLLocationDegrees> {
             let lat: Double = updatedPosition[0]
             let lon: Double = updatedPosition[1]

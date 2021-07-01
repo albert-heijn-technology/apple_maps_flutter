@@ -15,12 +15,12 @@ enum BUTTON_IDS: Int {
 
 
 class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
+    weak var mapContainerView: UIView?
+    weak var channel: FlutterMethodChannel?
     var oldBounds: CGRect?
-    var mapContainerView: UIView?
-    var channel: FlutterMethodChannel?
     var options: Dictionary<String, Any>?
     var isMyLocationButtonShowing: Bool? = false
-    fileprivate let locationManager:CLLocationManager = CLLocationManager()
+    fileprivate let locationManager: CLLocationManager = CLLocationManager()
     
     let mapTypes: Array<MKMapType> = [
         MKMapType.standard,
@@ -195,7 +195,7 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
         }
     }
     
-    public func setUserLocation() {
+    func setUserLocation() {
         let authorizationStatus = CLLocationManager.authorizationStatus()
         
         switch authorizationStatus {
@@ -218,7 +218,7 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
         }
     }
     
-    public func removeUserLocation() {
+    func removeUserLocation() {
         locationManager.stopUpdatingLocation()
         self.showsUserLocation = false
     }
@@ -318,19 +318,17 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
         }
     }
     
-    public func updateCameraValues() {
+    func updateCameraValues() {
         if oldBounds != nil && oldBounds != CGRect.zero {
             self.updateStoredCameraValues(newZoomLevel: calculatedZoomLevel, newPitch: camera.pitch, newHeading: actualHeading)
         }
     }
     
     // Always allow multiple gestureRecognizers
-    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer,
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer,
         shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
     }
-    
-    
     
     func distanceOfCGPoints(_ a: CGPoint, _ b: CGPoint) -> CGFloat {
         let xDist = a.x - b.x

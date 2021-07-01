@@ -8,18 +8,8 @@
 import Foundation
 import MapKit
 
-class CircleController {
+extension AppleMapController: CircleDelegate {
     
-    var mapView: MKMapView
-    var channel: FlutterMethodChannel
-    var registrar: FlutterPluginRegistrar
-
-    init(mapView: MKMapView, channel: FlutterMethodChannel, registrar: FlutterPluginRegistrar) {
-        self.mapView = mapView
-        self.channel = channel
-        self.registrar = registrar
-    }
-
     func circleRenderer(overlay: MKOverlay) -> MKOverlayRenderer {
         // Make sure we are rendering a circle.
         guard let circle = overlay as? MKCircle else {
@@ -50,14 +40,14 @@ class CircleController {
     
     private func addCircle(circle: FlutterCircle) {
         if circle.zIndex == nil || circle.zIndex == -1 {
-            mapView.addOverlay(circle)
+            self.mapView.addOverlay(circle)
         } else {
-            mapView.insertOverlay(circle, at: circle.zIndex ?? 0)
+            self.mapView.insertOverlay(circle, at: circle.zIndex ?? 0)
         }
     }
 
     func changeCircles(circleData data: NSArray) {
-        let oldOverlays: [MKOverlay] = mapView.overlays
+        let oldOverlays: [MKOverlay] = self.mapView.overlays
         for oldOverlay in oldOverlays {
             if oldOverlay is FlutterCircle {
                 let oldFlutterCircle = oldOverlay as! FlutterCircle
@@ -75,17 +65,25 @@ class CircleController {
     }
 
     func removeCircles(circleIds: NSArray) {
-        for overlay in mapView.overlays {
+        for overlay in self.mapView.overlays {
             if let circle = overlay as? FlutterCircle {
                 if circleIds.contains(circle.id!) {
-                    mapView.removeOverlay(circle)
+                    self.mapView.removeOverlay(circle)
                 }
             }
         }
     }
     
+    func removeAllCircles() {
+        for overlay in self.mapView.overlays {
+            if let circle = overlay as? FlutterCircle {
+                self.mapView.removeOverlay(circle)
+            }
+        }
+    }
+    
     private func updateCirclesOnMap(oldCircle: FlutterCircle, newCircle: FlutterCircle) {
-        mapView.removeOverlay(oldCircle)
+        self.mapView.removeOverlay(oldCircle)
         addCircle(circle: newCircle)
     }
 }

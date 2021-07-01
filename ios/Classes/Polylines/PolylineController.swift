@@ -8,30 +8,8 @@
 import Foundation
 import MapKit
 
-class PolylineController {
+extension AppleMapController: PolylineDelegate {
     
-    let availableCaps: Dictionary<String, CGLineCap> = [
-        "buttCap": CGLineCap.butt,
-        "roundCap": CGLineCap.round,
-        "squareCap": CGLineCap.square
-    ]
-    
-    let availableJointTypes: Array<CGLineJoin> = [
-        CGLineJoin.miter,
-        CGLineJoin.bevel,
-        CGLineJoin.round
-    ]
-    
-    var mapView: MKMapView
-    var channel: FlutterMethodChannel
-    var registrar: FlutterPluginRegistrar
-
-    init(mapView: MKMapView, channel: FlutterMethodChannel, registrar: FlutterPluginRegistrar) {
-        self.mapView = mapView
-        self.channel = channel
-        self.registrar = registrar
-    }
-
     func polylineRenderer(overlay: MKOverlay) -> MKOverlayRenderer {
         // Make sure we are rendering a polyline.
         guard let polyline = overlay as? MKPolyline else {
@@ -67,7 +45,7 @@ class PolylineController {
     }
 
     func changePolylines(polylineData data: NSArray) {
-        let oldOverlays: [MKOverlay] = mapView.overlays
+        let oldOverlays: [MKOverlay] = self.mapView.overlays
         for oldOverlay in oldOverlays {
             if oldOverlay is FlutterPolyline {
                 let oldFlutterPolyline = oldOverlay as! FlutterPolyline
@@ -85,25 +63,33 @@ class PolylineController {
     }
 
     func removePolylines(polylineIds: NSArray) {
-        for overlay in mapView.overlays {
+        for overlay in self.mapView.overlays {
             if let polyline = overlay as? FlutterPolyline {
                 if polylineIds.contains(polyline.id!) {
-                    mapView.removeOverlay(polyline)
+                    self.mapView.removeOverlay(polyline)
                 }
             }
         }
     }
     
+    func removeAllPolylines() {
+        for overlay in self.mapView.overlays {
+            if let polyline = overlay as? FlutterPolyline {
+                self.mapView.removeOverlay(polyline)
+            }
+        }
+    }
+    
     private func updatePolylinesOnMap(oldPolyline: FlutterPolyline, newPolyline: FlutterPolyline) {
-        mapView.removeOverlay(oldPolyline)
+        self.mapView.removeOverlay(oldPolyline)
         addPolyline(polyline: newPolyline)
     }
     
     private func addPolyline(polyline: FlutterPolyline) {
         if polyline.zIndex == nil || polyline.zIndex == -1 {
-            mapView.addOverlay(polyline)
+            self.mapView.addOverlay(polyline)
         } else {
-            mapView.insertOverlay(polyline, at: polyline.zIndex ?? 0)
+            self.mapView.insertOverlay(polyline, at: polyline.zIndex ?? 0)
         }
     }
     

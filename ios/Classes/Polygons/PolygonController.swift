@@ -9,18 +9,7 @@
 import Foundation
 import MapKit
 
-class PolygonController {
-    
-    var mapView: MKMapView
-    var channel: FlutterMethodChannel
-    var registrar: FlutterPluginRegistrar
-
-    init(mapView: MKMapView, channel: FlutterMethodChannel, registrar: FlutterPluginRegistrar) {
-        self.mapView = mapView
-        self.channel = channel
-        self.registrar = registrar
-    }
-
+extension AppleMapController: PolygonDelegate {
     func polygonRenderer(overlay: MKOverlay) -> MKOverlayRenderer {
         // Make sure we are rendering a polygon.
         guard let polygon = overlay as? MKPolygon else {
@@ -49,16 +38,8 @@ class PolygonController {
         }
     }
     
-    private func addPolygon(polygon: FlutterPolygon) {
-        if polygon.zIndex == nil || polygon.zIndex == -1 {
-            mapView.addOverlay(polygon)
-        } else {
-            mapView.insertOverlay(polygon, at: polygon.zIndex ?? 0)
-        }
-    }
-
     func changePolygons(polygonData data: NSArray) {
-        let oldOverlays: [MKOverlay] = mapView.overlays
+        let oldOverlays: [MKOverlay] = self.mapView.overlays
         for oldOverlay in oldOverlays {
             if oldOverlay is FlutterPolygon {
                 let oldFlutterPolygon = oldOverlay as! FlutterPolygon
@@ -76,17 +57,33 @@ class PolygonController {
     }
 
     func removePolygons(polygonIds: NSArray) {
-        for overlay in mapView.overlays {
+        for overlay in self.mapView.overlays {
             if let polygon = overlay as? FlutterPolygon {
                 if polygonIds.contains(polygon.id!) {
-                    mapView.removeOverlay(polygon)
+                    self.mapView.removeOverlay(polygon)
                 }
             }
         }
     }
     
+    func removeAllPolygons() {
+        for overlay in self.mapView.overlays {
+            if let polygon = overlay as? FlutterPolygon {
+                self.mapView.removeOverlay(polygon)
+            }
+        }
+    }
+    
     private func updatePolygonsOnMap(oldPolygon: FlutterPolygon, newPolygon: FlutterPolygon) {
-        mapView.removeOverlay(oldPolygon)
+        self.mapView.removeOverlay(oldPolygon)
         addPolygon(polygon: newPolygon)
+    }
+    
+    private func addPolygon(polygon: FlutterPolygon) {
+        if polygon.zIndex == nil || polygon.zIndex == -1 {
+            self.mapView.addOverlay(polygon)
+        } else {
+            self.mapView.insertOverlay(polygon, at: polygon.zIndex ?? 0)
+        }
     }
 }
