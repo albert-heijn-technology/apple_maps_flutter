@@ -194,7 +194,7 @@ class AppleMapController {
         <String, String>{'annotationId': annotationId.value});
   }
 
-  /// Changes the map camera position.
+  /// Changes the map camera position without animating the transition.
   ///
   /// The returned [Future] completes after the change has been made on the
   /// platform side.
