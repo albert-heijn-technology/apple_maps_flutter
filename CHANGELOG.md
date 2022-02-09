@@ -1,3 +1,7 @@
+## 1.0.2
+
+* Removed Android folder to fix build failures
+
 ## 1.0.1
 
 * Fixes memory leak
