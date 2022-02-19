@@ -16,12 +16,14 @@ class FlutterCircle: MKCircle {
     var isVisible: Bool?
     var id: String?
     var zIndex: Int? = -1
+    var circleRadius: Double?
     
     convenience init(fromDictionaray circleData: Dictionary<String, Any>) {
         let _center = circleData["center"] as! NSArray
-        let center: CLLocationCoordinate2D = CLLocationCoordinate2D.init(latitude: _center[0] as! CLLocationDegrees, longitude: _center[1] as! CLLocationDegrees)
+        let centerCoordinates: CLLocationCoordinate2D = CLLocationCoordinate2D.init(latitude: _center[0] as! CLLocationDegrees, longitude: _center[1] as! CLLocationDegrees)
         let radius = circleData["radius"] as? Double ?? 10
-        self.init(center: center, radius: radius)
+        self.init(center: centerCoordinates, radius: radius)
+        self.circleRadius = radius
         self.strokeColor = JsonConversions.convertColor(data: circleData["strokeColor"] as! NSNumber)
         self.fillColor = JsonConversions.convertColor(data: circleData["fillColor"] as! NSNumber)
         self.isConsumingTapEvents = circleData["consumeTapEvents"] as? Bool
@@ -39,6 +41,33 @@ class FlutterCircle: MKCircle {
         return !(lhs == rhs)
     }
 }
+
+extension FlutterCircle: FlutterOverlay {
+    func getCAShapeLayer(snapshot: MKMapSnapshotter.Snapshot) -> CAShapeLayer {
+        let shapeLayer = CAShapeLayer()
+        
+        if !(self.isVisible ?? true) {
+            return shapeLayer
+        }
+        
+        let centerPoint = snapshot.point(for: self.coordinate)
+        
+        let offsetPoint = snapshot.point(for: Utils.coordinateWithLAtitudeOffset(coordinate: self.coordinate, meters: radius))
+        
+        let radius = centerPoint.y - offsetPoint.y
+        
+        let circlePath = UIBezierPath(arcCenter: centerPoint, radius: radius, startAngle: CGFloat(0), endAngle: CGFloat(Double.pi * 2), clockwise: true)
+        
+        // Thus we use snapshot.point() to save the pain.
+        shapeLayer.path = circlePath.cgPath
+        shapeLayer.lineWidth = self.strokeWidth ?? 0
+        shapeLayer.strokeColor = self.strokeColor?.cgColor ?? UIColor.clear.cgColor
+        shapeLayer.fillColor = self.fillColor?.cgColor ?? UIColor.clear.cgColor
+        
+        return shapeLayer
+    }
+}
+
 
 public extension MKCircle {
     func contains(coordinate: CLLocationCoordinate2D) -> Bool {

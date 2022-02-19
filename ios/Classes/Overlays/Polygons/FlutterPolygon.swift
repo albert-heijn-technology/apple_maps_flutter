@@ -16,6 +16,7 @@ class FlutterPolygon: MKPolygon {
     var isVisible: Bool?
     var id: String?
     var zIndex: Int? = -1
+    var coordinates: [CLLocationCoordinate2D]?
     
     convenience init(fromDictionaray polygonData: Dictionary<String, Any>) {
         let points = polygonData["points"] as! NSArray
@@ -26,6 +27,7 @@ class FlutterPolygon: MKPolygon {
            }
         }
         self.init(coordinates: _points, count: points.count)
+        self.coordinates = _points
         self.strokeColor = JsonConversions.convertColor(data: polygonData["strokeColor"] as! NSNumber)
         self.fillColor = JsonConversions.convertColor(data: polygonData["fillColor"] as! NSNumber)
         self.isConsumingTapEvents = polygonData["consumeTapEvents"] as? Bool
@@ -41,6 +43,36 @@ class FlutterPolygon: MKPolygon {
     
     static func != (lhs: FlutterPolygon, rhs: FlutterPolygon) -> Bool {
         return !(lhs == rhs)
+    }
+}
+
+extension FlutterPolygon: FlutterOverlay {
+    func getCAShapeLayer(snapshot: MKMapSnapshotter.Snapshot) -> CAShapeLayer {
+        let path = UIBezierPath()
+        let shapeLayer = CAShapeLayer()
+        
+        if !(self.isVisible ?? true) {
+            return shapeLayer
+        }
+            
+
+        // Thus we use snapshot.point() to save the pain.
+        path.move(to: snapshot.point(for: self.coordinates![0]))
+        for coordinate in self.coordinates! {
+            path.addLine(to: snapshot.point(for: coordinate))
+        }
+        
+        path.addLine(to: snapshot.point(for: self.coordinates![0]))
+        path.close()
+        
+        shapeLayer.path = path.cgPath
+        shapeLayer.lineWidth = self.width ?? 0
+        shapeLayer.strokeColor = self.strokeColor?.cgColor ?? UIColor.clear.cgColor
+        shapeLayer.fillColor = self.fillColor?.cgColor ?? UIColor.clear.cgColor
+        shapeLayer.lineCap = .round
+        shapeLayer.lineJoin = .round
+        
+        return shapeLayer
     }
 }
 

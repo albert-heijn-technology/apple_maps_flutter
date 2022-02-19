@@ -37,8 +37,9 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
   static final LatLng center = const LatLng(-33.86711, 151.1947171);
 
   late AppleMapController controller;
+  Uint8List? _imageBytes;
   Map<AnnotationId, Annotation> annotations = <AnnotationId, Annotation>{};
-  late AnnotationId selectedAnnotation;
+  late AnnotationId selectedAnnotationId;
   int _annotationIdCounter = 1;
   BitmapDescriptor? _annotationIcon;
   late BitmapDescriptor _iconFromBytes;
@@ -59,10 +60,10 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
       setState(() {
         if (annotations.containsKey(tappedAnnotation)) {
           final Annotation resetOld =
-              annotations[selectedAnnotation]!.copyWith();
-          annotations[selectedAnnotation] = resetOld;
+              annotations[selectedAnnotationId]!.copyWith();
+          annotations[selectedAnnotationId] = resetOld;
         }
-        selectedAnnotation = annotationId;
+        selectedAnnotationId = annotationId;
       });
     }
   }
@@ -91,6 +92,7 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
         center.latitude + sin(_annotationIdCounter * pi / 6.0) / 20.0,
         center.longitude + cos(_annotationIdCounter * pi / 6.0) / 20.0,
       ),
+      zIndex: annotationCount.toDouble(),
       infoWindow: InfoWindow(
           title: annotationIdVal,
           anchor: Offset(0.5, 0.0),
@@ -108,21 +110,21 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
 
   void _remove() {
     setState(() {
-      if (annotations.containsKey(selectedAnnotation)) {
-        annotations.remove(selectedAnnotation);
+      if (annotations.containsKey(selectedAnnotationId)) {
+        annotations.remove(selectedAnnotationId);
       }
     });
   }
 
   void _changePosition() {
-    final Annotation annotation = annotations[selectedAnnotation]!;
+    final Annotation annotation = annotations[selectedAnnotationId]!;
     final LatLng current = annotation.position;
     final Offset offset = Offset(
       center.latitude - current.latitude,
       center.longitude - current.longitude,
     );
     setState(() {
-      annotations[selectedAnnotation] = annotation.copyWith(
+      annotations[selectedAnnotationId] = annotation.copyWith(
         positionParam: LatLng(
           center.latitude + offset.dy,
           center.longitude + offset.dx,
@@ -132,20 +134,20 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
   }
 
   Future<void> _toggleDraggable() async {
-    final Annotation annotation = annotations[selectedAnnotation]!;
+    final Annotation annotation = annotations[selectedAnnotationId]!;
     setState(() {
-      annotations[selectedAnnotation] = annotation.copyWith(
+      annotations[selectedAnnotationId] = annotation.copyWith(
         draggableParam: !annotation.draggable,
       );
     });
   }
 
   Future<void> _changeInfo() async {
-    final Annotation annotation = annotations[selectedAnnotation]!;
+    final Annotation annotation = annotations[selectedAnnotationId]!;
     final String newSnippet = annotation.infoWindow.snippet! +
         (annotation.infoWindow.snippet!.length % 10 == 0 ? '\n' : '*');
     setState(() {
-      annotations[selectedAnnotation] = annotation.copyWith(
+      annotations[selectedAnnotationId] = annotation.copyWith(
         infoWindowParam: annotation.infoWindow.copyWith(
           snippetParam: newSnippet,
         ),
@@ -154,19 +156,19 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
   }
 
   Future<void> _changeAlpha() async {
-    final Annotation annotation = annotations[selectedAnnotation]!;
+    final Annotation annotation = annotations[selectedAnnotationId]!;
     final double current = annotation.alpha;
     setState(() {
-      annotations[selectedAnnotation] = annotation.copyWith(
+      annotations[selectedAnnotationId] = annotation.copyWith(
         alphaParam: current < 0.1 ? 1.0 : current * 0.75,
       );
     });
   }
 
   Future<void> _toggleVisible() async {
-    final Annotation annotation = annotations[selectedAnnotation]!;
+    final Annotation annotation = annotations[selectedAnnotationId]!;
     setState(() {
-      annotations[selectedAnnotation] = annotation.copyWith(
+      annotations[selectedAnnotationId] = annotation.copyWith(
         visibleParam: !annotation.visible,
       );
     });
@@ -190,17 +192,17 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
   }
 
   Future<void> _showInfoWindow() async {
-    final Annotation annotation = annotations[selectedAnnotation]!;
+    final Annotation annotation = annotations[selectedAnnotationId]!;
     await this.controller.showMarkerInfoWindow(annotation.annotationId);
   }
 
   Future<void> _hideInfoWindow() async {
-    final Annotation annotation = annotations[selectedAnnotation]!;
+    final Annotation annotation = annotations[selectedAnnotationId]!;
     this.controller.hideMarkerInfoWindow(annotation.annotationId);
   }
 
   Future<bool> _isInfoWindowShown() async {
-    final Annotation annotation = annotations[selectedAnnotation]!;
+    final Annotation annotation = annotations[selectedAnnotationId]!;
     print(
         'Is InfowWindow visible: ${await this.controller.isMarkerInfoWindowShown(annotation.annotationId)}');
     return (await this
@@ -219,10 +221,20 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
             .asUint8List());
   }
 
+  Future<void> _changeZIndex(AnnotationId annotationId) async {
+    final Annotation annotation = annotations[annotationId]!;
+    final double current = annotation.zIndex;
+    setState(() {
+      annotations[annotationId] = annotation.copyWith(
+        zIndexParam: current >= 12.0 ? 0.0 : current + 1.0,
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     _createAnnotationImageFromAsset(context, _devicePixelRatio);
-    _getBytesFromAsset('assets/red_square.png', 40);
+    _getBytesFromAsset('assets/creator.png', 160);
     return SafeArea(
       child: Column(
         children: <Widget>[
@@ -292,6 +304,25 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
                 TextButton(
                   child: const Text('hide infoWindow'),
                   onPressed: _hideInfoWindow,
+                ),
+                TextButton(
+                  child: const Text('change zIndex'),
+                  onPressed: () => _changeZIndex(selectedAnnotationId),
+                ),
+                TextButton(
+                  child: Text('Take a snapshot'),
+                  onPressed: () async {
+                    final imageBytes = await this.controller.takeSnapshot();
+                    setState(() {
+                      _imageBytes = imageBytes;
+                    });
+                  },
+                ),
+                Container(
+                  decoration: BoxDecoration(color: Colors.blueGrey[50]),
+                  height: 180,
+                  child:
+                      _imageBytes != null ? Image.memory(_imageBytes!) : null,
                 ),
               ],
             ),

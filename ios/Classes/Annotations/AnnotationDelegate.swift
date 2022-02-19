@@ -14,7 +14,7 @@ protocol AnnotationDelegate: AnyObject {
     func annotationsToChange(annotations: NSArray)
     func annotationsIdsToRemove(annotationIds: NSArray)
     func onAnnotationClick(annotation :MKAnnotation)
-    func showAnnotation(with id: String)
+    func selectAnnotation(with id: String)
     func hideAnnotation(with id: String)
     func isAnnotationSelected(with id: String) -> Bool
     func removeAllAnnotations()

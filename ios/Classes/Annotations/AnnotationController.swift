@@ -10,21 +10,51 @@ import MapKit
 
 extension AppleMapController: AnnotationDelegate {
 
+    public func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView)  {
+        if let annotation: FlutterAnnotation = view.annotation as? FlutterAnnotation  {
+            self.currentlySelectedAnnotation = annotation.id
+            if !annotation.selectedProgrammatically {
+                if !self.isAnnoationInFront(zIndex: annotation.zIndex) {
+                    self.moveToFront(annotation: annotation)
+                }
+                self.onAnnotationClick(annotation: annotation)
+            } else {
+                annotation.selectedProgrammatically = false
+            }
+            
+            if annotation.infoWindowConsumesTapEvents {
+                let tapGestureRecognizer = InfoWindowTapGestureRecognizer(target: self, action: #selector(onCalloutTapped))
+                tapGestureRecognizer.annotationId = annotation.id
+                tapGestureRecognizer.annotationView = view
+                view.addGestureRecognizer(tapGestureRecognizer)
+            }
+        }
+    }
+    
+    public func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        if annotation is MKUserLocation {
+            return nil
+        } else if let flutterAnnotation = annotation as? FlutterAnnotation {
+            return self.getAnnotationView(annotation: flutterAnnotation)
+        }
+        return nil
+    }
+    
     func getAnnotationView(annotation: FlutterAnnotation) -> MKAnnotationView {
         let identifier: String = annotation.id
         var annotationView = self.mapView.dequeueReusableAnnotationView(withIdentifier: identifier)
         let oldflutterAnnoation = annotationView?.annotation as? FlutterAnnotation
         if annotationView == nil || oldflutterAnnoation?.icon.iconType != annotation.icon.iconType {
-            if annotation.icon.iconType == IconType.PIN {
-                annotationView = getPinAnnotationView(annotation: annotation, id: identifier)
-            } else if annotation.icon.iconType == IconType.MARKER {
+            if #available(iOS 11.0, *), annotation.icon.iconType == IconType.MARKER {
                 annotationView = getMarkerAnnotationView(annotation: annotation, id: identifier)
             } else if annotation.icon.iconType == .CUSTOM_FROM_ASSET || annotation.icon.iconType == .CUSTOM_FROM_BYTES {
                 annotationView = getCustomAnnotationView(annotation: annotation, id: identifier)
+            } else {
+                annotationView = getPinAnnotationView(annotation: annotation, id: identifier)
             }
         }
         guard annotationView != nil else {
-            return MKAnnotationView()
+            return FlutterAnnotationView()
         }
         annotationView!.annotation = annotation
         // If annotation is not visible set alpha to 0 and don't let the user interact with it
@@ -32,10 +62,10 @@ extension AppleMapController: AnnotationDelegate {
             annotationView!.canShowCallout = false
             annotationView!.alpha = CGFloat(0.0)
             annotationView!.isDraggable = false
-            return annotationView!
+            return annotationView! as! FlutterAnnotationView
         }
         if annotation.icon.iconType != .MARKER {
-            initInfoWindow(annotation: annotation, annotationView: annotationView!)
+            self.initInfoWindow(annotation: annotation, annotationView: annotationView!)
             if annotation.icon.iconType != .PIN {
                 let x = (0.5 - annotation.anchor.x) * Double(annotationView!.frame.size.width)
                 let y = (0.5 - annotation.anchor.y) * Double(annotationView!.frame.size.height)
@@ -45,31 +75,28 @@ extension AppleMapController: AnnotationDelegate {
         annotationView!.canShowCallout = true
         annotationView!.alpha = CGFloat(annotation.alpha ?? 1.00)
         annotationView!.isDraggable = annotation.isDraggable ?? false
+
         return annotationView!
     }
 
-    func annotationsToAdd(annotations :NSArray) {
+    func annotationsToAdd(annotations: NSArray) {
         for annotation in annotations {
-            let annotationData :Dictionary<String, Any> = annotation as! Dictionary<String, Any>
+            let annotationData: Dictionary<String, Any> = annotation as! Dictionary<String, Any>
             addAnnotation(annotationData: annotationData)
         }
     }
 
     func annotationsToChange(annotations: NSArray) {
-        let oldAnnotations :[MKAnnotation] = self.mapView.annotations
+        let oldAnnotations: [MKAnnotation] = self.mapView.annotations
         for annotation in annotations {
-            let annotationData :Dictionary<String, Any> = annotation as! Dictionary<String, Any>
-            for oldAnnotation in oldAnnotations {
-                if let oldFlutterAnnotation = oldAnnotation as? FlutterAnnotation {
-                    if oldFlutterAnnotation.id == (annotationData["annotationId"] as! String) {
-                        let newAnnotation = FlutterAnnotation.init(fromDictionary: annotationData, registrar: registrar)
-                        if oldFlutterAnnotation != newAnnotation {
-                            if !oldFlutterAnnotation.wasDragged {
-                                updateAnnotationOnMap(oldAnnotation: oldFlutterAnnotation, newAnnotation: newAnnotation)
-                            } else {
-                                oldFlutterAnnotation.wasDragged = false
-                            }
-                        }
+            let annotationData: Dictionary<String, Any> = annotation as! Dictionary<String, Any>
+            if let annotationToChange = oldAnnotations.filter({($0 as? FlutterAnnotation)?.id == annotationData["annotationId"] as? String})[0] as? FlutterAnnotation {
+                let newAnnotation = FlutterAnnotation.init(fromDictionary: annotationData, registrar: registrar)
+                if annotationToChange != newAnnotation {
+                    if !annotationToChange.wasDragged {
+                        addAnnotation(annotation: newAnnotation)
+                    } else {
+                        annotationToChange.wasDragged = false
                     }
                 }
             }
@@ -78,37 +105,34 @@ extension AppleMapController: AnnotationDelegate {
 
     func annotationsIdsToRemove(annotationIds: NSArray) {
         for annotationId in annotationIds {
-            if let _annotationId :String = annotationId as? String {
+            if let _annotationId: String = annotationId as? String {
                 removeAnnotation(id: _annotationId)
             }
         }
     }
-    
+
     func removeAllAnnotations() {
         self.mapView.removeAnnotations(self.mapView.annotations)
     }
 
-    func onAnnotationClick(annotation :MKAnnotation) {
-        if let flutterAnnotation :FlutterAnnotation = annotation as? FlutterAnnotation {
+    func onAnnotationClick(annotation: MKAnnotation) {
+        if let flutterAnnotation: FlutterAnnotation = annotation as? FlutterAnnotation {
             flutterAnnotation.wasDragged = true
             channel.invokeMethod("annotation#onTap", arguments: ["annotationId" : flutterAnnotation.id])
         }
     }
-    
-    func showAnnotation(with id: String) {
-        let annotation = self.getAnnotation(with: id)
-        guard annotation != nil else {
-            return
+
+    func selectAnnotation(with id: String) {
+        if let annotation: FlutterAnnotation = self.getAnnotation(with: id) {
+            annotation.selectedProgrammatically = true
+            self.mapView.selectAnnotation(annotation, animated: true)
         }
-        self.mapView.selectAnnotation(annotation!, animated: true)
     }
 
     func hideAnnotation(with id: String) {
-        let annotation = self.getAnnotation(with: id)
-        guard annotation != nil else {
-            return
+        if let annotation: FlutterAnnotation = self.getAnnotation(with: id) {
+            self.mapView.deselectAnnotation(annotation, animated: true)
         }
-        self.mapView.deselectAnnotation(annotation!, animated: true)
     }
 
     func isAnnotationSelected(with id: String) -> Bool {
@@ -117,14 +141,9 @@ extension AppleMapController: AnnotationDelegate {
 
 
     private func removeAnnotation(id: String) {
-        if let flutterAnnotation :FlutterAnnotation = self.getAnnotation(with: id) {
+        if let flutterAnnotation: FlutterAnnotation = self.getAnnotation(with: id) {
             self.mapView.removeAnnotation(flutterAnnotation)
         }
-    }
-
-    private func updateAnnotationOnMap(oldAnnotation: FlutterAnnotation, newAnnotation :FlutterAnnotation) {
-        removeAnnotation(id: oldAnnotation.id)
-        self.mapView.addAnnotation(newAnnotation)
     }
 
     private func initInfoWindow(annotation: FlutterAnnotation, annotationView: MKAnnotationView) {
@@ -147,44 +166,88 @@ extension AppleMapController: AnnotationDelegate {
             }
         }
     }
+    
+    @objc func onCalloutTapped(infoWindowTap: InfoWindowTapGestureRecognizer) {
+        if infoWindowTap.annotationId != nil && self.currentlySelectedAnnotation == infoWindowTap.annotationId! {
+            self.channel.invokeMethod("infoWindow#onTap", arguments: ["annotationId": infoWindowTap.annotationId])
+        }
+        if infoWindowTap.annotationView != nil && self.currentlySelectedAnnotation != infoWindowTap.annotationId! {
+            infoWindowTap.annotationView?.removeGestureRecognizer(infoWindowTap)
+        }
+    }
 
     private func getAnnotation(with id: String) -> FlutterAnnotation? {
         return self.mapView.annotations.filter { annotation in return (annotation as? FlutterAnnotation)?.id == id }.first as? FlutterAnnotation
     }
+    
+    private func annotationExists(with id: String) -> Bool {
+        return self.getAnnotation(with: id) != nil
+    }
 
     private func addAnnotation(annotationData: Dictionary<String, Any>) {
-        let annotation :MKAnnotation = FlutterAnnotation(fromDictionary: annotationData, registrar: registrar)
+        let annotation: FlutterAnnotation = FlutterAnnotation(fromDictionary: annotationData, registrar: registrar)
+        self.addAnnotation(annotation: annotation)
+    }
+    
+    /**
+     Checks if an Annotation with the same id exists and removes it before adding if necessary
+     - Parameter annotation: the FlutterAnnotation that should be added
+     */
+    private func addAnnotation(annotation: FlutterAnnotation) {
+        if self.annotationExists(with: annotation.id) {
+            self.removeAnnotation(id: annotation.id)
+        }
+        if annotation.zIndex == -1 {
+            annotation.zIndex = self.getNextAnnotationZIndex()
+            channel.invokeMethod("annotation#onZIndexChanged", arguments: ["annotationId": annotation.id!, "zIndex": annotation.zIndex])
+        }
         self.mapView.addAnnotation(annotation)
     }
+    
+    private func getNextAnnotationZIndex() -> Double {
+        let mapViewAnnotations = self.mapView.getMapViewAnnotations()
+        if mapViewAnnotations.isEmpty {
+            return 0;
+        }
+        return (mapViewAnnotations.last??.zIndex ?? 0) + 1
+    }
+    
+    private func isAnnoationInFront(zIndex: Double) -> Bool {
+        return (self.mapView.getMapViewAnnotations().last??.zIndex ?? 0) == zIndex
+    }
 
-    private func getPinAnnotationView(annotation: MKAnnotation, id: String) -> MKPinAnnotationView {
+    private func getPinAnnotationView(annotation: FlutterAnnotation, id: String) -> MKPinAnnotationView {
+        var pinAnnotationView: MKPinAnnotationView
         if #available(iOS 11.0, *) {
             self.mapView.register(MKPinAnnotationView.self, forAnnotationViewWithReuseIdentifier: id)
-            return self.mapView.dequeueReusableAnnotationView(withIdentifier: id, for: annotation) as! MKPinAnnotationView
+            pinAnnotationView = self.mapView.dequeueReusableAnnotationView(withIdentifier: id, for: annotation) as! MKPinAnnotationView
         } else {
-            return MKPinAnnotationView.init(annotation: annotation, reuseIdentifier: id)
+            pinAnnotationView = MKPinAnnotationView.init(annotation: annotation, reuseIdentifier: id)
         }
+        
+        pinAnnotationView.layer.zPosition = annotation.zIndex
+        return pinAnnotationView
     }
 
-    private func getMarkerAnnotationView(annotation: MKAnnotation, id: String) -> MKAnnotationView {
-        if #available(iOS 11.0, *) {
-            self.mapView.register(MKMarkerAnnotationView.self, forAnnotationViewWithReuseIdentifier: id)
-            return self.mapView.dequeueReusableAnnotationView(withIdentifier: id, for: annotation)
-        } else {
-            return MKPinAnnotationView.init(annotation: annotation, reuseIdentifier: id)
-        }
+    @available(iOS 11.0, *)
+    private func getMarkerAnnotationView(annotation: FlutterAnnotation, id: String) -> FlutterMarkerAnnotationView {
+        self.mapView.register(FlutterMarkerAnnotationView.self, forAnnotationViewWithReuseIdentifier: id)
+        let markerAnnotationView: FlutterMarkerAnnotationView = self.mapView.dequeueReusableAnnotationView(withIdentifier: id, for: annotation) as! FlutterMarkerAnnotationView
+        markerAnnotationView.stickyZPosition = annotation.zIndex
+        return markerAnnotationView
     }
 
-    private func getCustomAnnotationView(annotation: FlutterAnnotation, id: String) -> MKAnnotationView {
-        let annotationView: MKAnnotationView?
+    private func getCustomAnnotationView(annotation: FlutterAnnotation, id: String) -> FlutterAnnotationView {
+        let annotationView: FlutterAnnotationView
         if #available(iOS 11.0, *) {
-            self.mapView.register(MKAnnotationView.self, forAnnotationViewWithReuseIdentifier: id)
-            annotationView = self.mapView.dequeueReusableAnnotationView(withIdentifier: id, for: annotation)
+            self.mapView.register(FlutterAnnotationView.self, forAnnotationViewWithReuseIdentifier: id)
+            annotationView = self.mapView.dequeueReusableAnnotationView(withIdentifier: id, for: annotation) as! FlutterAnnotationView
         } else {
-            annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: id)
+            annotationView = FlutterAnnotationView(annotation: annotation, reuseIdentifier: id)
         }
-        annotationView?.image = annotation.icon.image
-        return annotationView!
+        annotationView.image = annotation.icon.image
+        annotationView.stickyZPosition = annotation.zIndex
+        return annotationView
     }
 
     private func getInfoWindowXOffset(annotationView: MKAnnotationView, annotation: FlutterAnnotation) -> CGFloat {
@@ -197,4 +260,17 @@ extension AppleMapController: AnnotationDelegate {
     private func getInfoWindowYOffset(annotationView: MKAnnotationView, annotation: FlutterAnnotation) -> CGFloat {
         return annotationView.frame.height * CGFloat(annotation.calloutOffset.y)
     }
+    
+    private func moveToFront(annotation: FlutterAnnotation) {
+        let id: String = annotation.id
+        annotation.zIndex = self.getNextAnnotationZIndex()
+        channel.invokeMethod("annotation#onZIndexChanged", arguments: ["annotationId": id, "zIndex": annotation.zIndex])
+        self.addAnnotation(annotation: annotation)
+        self.selectAnnotation(with: id)
+    }
+}
+
+class InfoWindowTapGestureRecognizer: UITapGestureRecognizer {
+    var annotationView: UIView?
+    var annotationId: String?
 }

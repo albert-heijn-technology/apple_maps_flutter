@@ -66,6 +66,12 @@ class AppleMapController {
       case 'infoWindow#onTap':
         _appleMapState.onInfoWindowTap(call.arguments['annotationId']);
         break;
+      case 'annotation#onZIndexChanged':
+        _appleMapState.onAnnotationZIndexChanged(
+            call.arguments['annotationId'], call.arguments['zIndex']);
+        print(
+            'AnnotationId: ${call.arguments['annotationId']}, got zIndex: ${call.arguments['zIndex']}');
+        break;
       case 'map#onTap':
         _appleMapState.onTap(LatLng._fromJson(call.arguments['position'])!);
         break;
@@ -235,7 +241,9 @@ class AppleMapController {
   }
 
   /// Returns the image bytes of the map
-  Future<Uint8List?> takeSnapshot() {
-    return channel.invokeMethod<Uint8List>('map#takeSnapshot');
+  Future<Uint8List?> takeSnapshot(
+      [SnapshotOptions snapshotOptions = const SnapshotOptions()]) {
+    return channel.invokeMethod<Uint8List>(
+        'map#takeSnapshot', snapshotOptions._toMap());
   }
 }

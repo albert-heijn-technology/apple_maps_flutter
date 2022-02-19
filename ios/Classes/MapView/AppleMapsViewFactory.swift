@@ -16,10 +16,6 @@ public class AppleMapViewFactory: NSObject, FlutterPlatformViewFactory {
         super.init()
     }
     
-    deinit {
-        print("Deinitializing ViewFactory")
-    }
-    
     public func create(withFrame frame: CGRect, viewIdentifier viewId: Int64, arguments args: Any?) -> FlutterPlatformView {
         let argsDictionary =  args as! Dictionary<String, Any>
         

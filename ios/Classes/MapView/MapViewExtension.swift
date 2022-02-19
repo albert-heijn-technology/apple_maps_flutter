@@ -9,11 +9,6 @@ import Foundation
 import UIKit
 import MapKit
 
-enum MapViewConstants: Double {
-    case MERCATOR_OFFSET = 268435456.0
-    case MERCATOR_RADIUS = 85445659.44705395
-}
-
 public extension MKMapView {
     // keeps track of the Map values
     private struct Holder {
@@ -64,20 +59,20 @@ public extension MKMapView {
     
     var calculatedZoomLevel: Double {
         get {
-            let centerPixelSpaceX = self.longitudeToPixelSpaceX(longitude: self.centerCoordinate.longitude)
+            let centerPixelSpaceX = Utils.longitudeToPixelSpaceX(longitude: self.centerCoordinate.longitude)
 
             let lonLeft = self.centerCoordinate.longitude - (self.region.span.longitudeDelta / 2)
 
-            let leftPixelSpaceX = self.longitudeToPixelSpaceX(longitude: lonLeft)
+            let leftPixelSpaceX = Utils.longitudeToPixelSpaceX(longitude: lonLeft)
             let pixelSpaceWidth = abs(centerPixelSpaceX - leftPixelSpaceX) * 2
 
             let zoomScale = pixelSpaceWidth / Double(self.bounds.size.width)
 
-            let zoomExponent = self.logC(val: zoomScale, forBase: 2)
+            let zoomExponent = Utils.logC(val: zoomScale, forBase: 2)
 
             var zoomLevel = 21 - zoomExponent
             
-            zoomLevel = roundToTwoDecimalPlaces(number: zoomLevel)
+            zoomLevel = Utils.roundToTwoDecimalPlaces(number: zoomLevel)
             
             Holder._zoomLevel = zoomLevel
             
@@ -87,35 +82,6 @@ public extension MKMapView {
         set (newZoomLevel) {
             Holder._zoomLevel = newZoomLevel
         }
-    }
-    
-    func longitudeToPixelSpaceX(longitude: Double) -> Double {
-        return round(MapViewConstants.MERCATOR_OFFSET.rawValue + MapViewConstants.MERCATOR_RADIUS.rawValue * longitude * .pi / 180.0)
-    }
-    
-    func latitudeToPixelSpaceY(latitude: Double) -> Double {
-        return round(Double(Float(MapViewConstants.MERCATOR_OFFSET.rawValue) - Float(MapViewConstants.MERCATOR_RADIUS.rawValue) * logf((1 + sinf(Float(latitude * .pi / 180.0))) / (1 - sinf(Float(latitude * .pi / 180.0)))) / Float(2.0)))
-    }
-    
-    func pixelSpaceXToLongitude(pixelX: Double) -> Double {
-        return ((round(pixelX) - MapViewConstants.MERCATOR_OFFSET.rawValue) / MapViewConstants.MERCATOR_RADIUS.rawValue) * 180.0 / .pi
-    }
-    
-    func pixelSpaceYToLatitude(pixelY: Double) -> Double {
-        return (.pi / 2.0 - 2.0 * atan(exp((round(pixelY) - MapViewConstants.MERCATOR_OFFSET.rawValue) / MapViewConstants.MERCATOR_RADIUS.rawValue))) * 180.0 / .pi
-    }
-    
-    func logC(val: Double, forBase base: Double) -> Double {
-        return log(val)/log(base)
-    }
-    
-    func deg2rad(_ number: Double) -> Float {
-        return Float(number * .pi / 180)
-    }
-    
-    func roundToTwoDecimalPlaces(number: Double) -> Double {
-        let doubleStr = String(format: "%.2f", ceil(number*100)/100)
-        return Double(doubleStr)!
     }
     
     func setCenterCoordinate(_ positionData: Dictionary<String, Any>, animated: Bool) {
@@ -167,8 +133,8 @@ public extension MKMapView {
     
     func coordinateSpanWithMapView(centerCoordinate: CLLocationCoordinate2D, zoomLevel: Int) -> MKCoordinateSpan  {
         // convert center coordiate to pixel space
-        let centerPixelX = self.longitudeToPixelSpaceX(longitude: centerCoordinate.longitude)
-        let centerPixelY = self.latitudeToPixelSpaceY(latitude: centerCoordinate.latitude)
+        let centerPixelX = Utils.longitudeToPixelSpaceX(longitude: centerCoordinate.longitude)
+        let centerPixelY = Utils.latitudeToPixelSpaceY(latitude: centerCoordinate.latitude)
     
         // determine the scale value from the zoom level
         let zoomExponent = Double(21 - zoomLevel)
@@ -184,13 +150,13 @@ public extension MKMapView {
         let topLeftPixelY = centerPixelY - (scaledMapHeight / 2);
     
         // find delta between left and right longitudes
-        let minLng = self.pixelSpaceXToLongitude(pixelX: topLeftPixelX)
-        let maxLng = self.pixelSpaceXToLongitude(pixelX: topLeftPixelX + scaledMapWidth)
+        let minLng = Utils.pixelSpaceXToLongitude(pixelX: topLeftPixelX)
+        let maxLng = Utils.pixelSpaceXToLongitude(pixelX: topLeftPixelX + scaledMapWidth)
         let longitudeDelta = maxLng - minLng;
     
         // find delta between top and bottom latitudes
-        let minLat = self.pixelSpaceYToLatitude(pixelY: topLeftPixelY)
-        let maxLat = self.pixelSpaceYToLatitude(pixelY: topLeftPixelY + scaledMapHeight)
+        let minLat = Utils.pixelSpaceYToLatitude(pixelY: topLeftPixelY)
+        let maxLat = Utils.pixelSpaceYToLatitude(pixelY: topLeftPixelY + scaledMapHeight)
         let latitudeDelta = -1 * (maxLat - minLat)
     
         // create and return the lat/lng span
@@ -207,7 +173,7 @@ public extension MKMapView {
     
     private func getCameraAltitude(centerCoordinate: CLLocationCoordinate2D, zoomLevel: Double) -> Double {
         // convert center coordiate to pixel space
-        let centerPixelY = latitudeToPixelSpaceY(latitude: centerCoordinate.latitude)
+        let centerPixelY = Utils.latitudeToPixelSpaceY(latitude: centerCoordinate.latitude)
         // determine the scale value from the zoom level
         let zoomExponent:Double = 21.0 - zoomLevel
         let zoomScale:Double = pow(2.0, zoomExponent)
@@ -217,7 +183,7 @@ public extension MKMapView {
         // figure out the position of the top-left pixel
         let topLeftPixelY = centerPixelY - (scaledMapHeight / 2.0)
         // find delta between left and right longitudes
-        let maxLat = pixelSpaceYToLatitude(pixelY: topLeftPixelY + scaledMapHeight)
+        let maxLat = Utils.pixelSpaceYToLatitude(pixelY: topLeftPixelY + scaledMapHeight)
         let topBottom = CLLocationCoordinate2D.init(latitude: maxLat, longitude: centerCoordinate.longitude)
         
         let distance = MKMapPoint.init(centerCoordinate).distance(to: MKMapPoint.init(topBottom))
@@ -229,8 +195,8 @@ public extension MKMapView {
     func getVisibleRegion() -> Dictionary<String, Array<Double>> {
         if self.bounds.size != CGSize.zero {
             // convert center coordiate to pixel space
-            let centerPixelX = self.longitudeToPixelSpaceX(longitude: self.centerCoordinate.longitude)
-            let centerPixelY = self.latitudeToPixelSpaceY(latitude: self.centerCoordinate.latitude)
+            let centerPixelX = Utils.longitudeToPixelSpaceX(longitude: self.centerCoordinate.longitude)
+            let centerPixelY = Utils.latitudeToPixelSpaceY(latitude: self.centerCoordinate.latitude)
 
             // determine the scale value from the zoom level
             let zoomExponent = Double(21 - Holder._zoomLevel)
@@ -246,12 +212,12 @@ public extension MKMapView {
             let topLeftPixelY = centerPixelY - (scaledMapHeight / 2);
 
             // find the southwest coordinate
-            let minLng = self.pixelSpaceXToLongitude(pixelX: topLeftPixelX)
-            let minLat = self.pixelSpaceYToLatitude(pixelY: topLeftPixelY)
+            let minLng = Utils.pixelSpaceXToLongitude(pixelX: topLeftPixelX)
+            let minLat = Utils.pixelSpaceYToLatitude(pixelY: topLeftPixelY)
 
             // find the northeast coordinate
-            let maxLng = self.pixelSpaceXToLongitude(pixelX: topLeftPixelX + scaledMapWidth)
-            let maxLat = self.pixelSpaceYToLatitude(pixelY: topLeftPixelY + scaledMapHeight)
+            let maxLng = Utils.pixelSpaceXToLongitude(pixelX: topLeftPixelX + scaledMapWidth)
+            let maxLat = Utils.pixelSpaceYToLatitude(pixelY: topLeftPixelY + scaledMapHeight)
 
             return ["northeast": [minLat, maxLng], "southwest": [maxLat, minLng]]
         }

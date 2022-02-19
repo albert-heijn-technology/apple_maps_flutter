@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:typed_data';
+
 import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 // ignore_for_file: public_member_api_docs
 
@@ -32,6 +34,8 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
   Map<CircleId, Circle> circles = <CircleId, Circle>{};
   int _circleIdCounter = 1;
   CircleId? selectedCircle;
+
+  Uint8List? _imageBytes;
 
   // Values when toggling circle color
   int fillColorsIndex = 0;
@@ -181,6 +185,22 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
               TextButton(
                 child: const Text('change fill color'),
                 onPressed: (selectedCircle == null) ? null : _changeFillColor,
+              ),
+              TextButton(
+                child: Text('Take a snapshot'),
+                onPressed: () async {
+                  final imageBytes = await this
+                      .controller
+                      .takeSnapshot(SnapshotOptions(showOverlays: true));
+                  setState(() {
+                    _imageBytes = imageBytes;
+                  });
+                },
+              ),
+              Container(
+                decoration: BoxDecoration(color: Colors.blueGrey[50]),
+                height: 180,
+                child: _imageBytes != null ? Image.memory(_imageBytes!) : null,
               ),
             ],
           ),
