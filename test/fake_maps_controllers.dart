@@ -120,6 +120,7 @@ class FakePlatformAppleMap {
       final String annotationId = annotationData['annotationId'];
       final bool draggable = annotationData['draggable'];
       final bool visible = annotationData['visible'];
+      final double alpha = annotationData['alpha'];
 
       final dynamic infoWindowData = annotationData['infoWindow'];
       InfoWindow infoWindow = InfoWindow.noText;
@@ -131,12 +132,14 @@ class FakePlatformAppleMap {
         );
       }
 
-      result.add(Annotation(
-        annotationId: AnnotationId(annotationId),
-        draggable: draggable,
-        visible: visible,
-        infoWindow: infoWindow,
-      ));
+      result.add(
+        Annotation(
+            annotationId: AnnotationId(annotationId),
+            draggable: draggable,
+            visible: visible,
+            infoWindow: infoWindow,
+            alpha: alpha),
+      );
     }
 
     return result;

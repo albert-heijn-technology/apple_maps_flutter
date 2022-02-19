@@ -1,5 +1,7 @@
 # apple_maps_flutter
 
+[![codecov](https://codecov.io/gh/LuisThein/apple_maps_flutter/branch/master/graph/badge.svg)](https://codecov.io/gh/LuisThein/apple_maps_flutter)
+
 A Flutter plugin that provides an Apple Maps widget.
 
 The plugin relies on Flutter's mechanism for embedding Android and iOS views. As that mechanism is currently in a developers preview, this plugin should also be considered a developers preview.

@@ -69,8 +69,6 @@ class AppleMapController {
       case 'annotation#onZIndexChanged':
         _appleMapState.onAnnotationZIndexChanged(
             call.arguments['annotationId'], call.arguments['zIndex']);
-        print(
-            'AnnotationId: ${call.arguments['annotationId']}, got zIndex: ${call.arguments['zIndex']}');
         break;
       case 'map#onTap':
         _appleMapState.onTap(LatLng._fromJson(call.arguments['position'])!);
