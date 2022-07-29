@@ -283,6 +283,10 @@ public class AppleMapController: NSObject, FlutterPlatformView {
 extension AppleMapController: MKMapViewDelegate {
     // onIdle
     public func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+        if ((self.mapView.mapContainerView) != nil) {
+            let locationOnMap = self.mapView.region.center
+            self.channel.invokeMethod("camera#onMove", arguments: ["position": ["heading": self.mapView.actualHeading, "target":  [locationOnMap.latitude, locationOnMap.longitude], "pitch": self.mapView.camera.pitch, "zoom": self.mapView.calculatedZoomLevel]])
+        }
         self.channel.invokeMethod("camera#onIdle", arguments: "")
     }
     
