@@ -21,7 +21,7 @@ extension AppleMapController: AnnotationDelegate {
             } else {
                 annotation.selectedProgrammatically = false
             }
-            
+
             if annotation.infoWindowConsumesTapEvents {
                 let tapGestureRecognizer = InfoWindowTapGestureRecognizer(target: self, action: #selector(onCalloutTapped))
                 tapGestureRecognizer.annotationId = annotation.id
@@ -30,7 +30,7 @@ extension AppleMapController: AnnotationDelegate {
             }
         }
     }
-    
+
     public func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         if annotation is MKUserLocation {
             return nil
@@ -39,7 +39,7 @@ extension AppleMapController: AnnotationDelegate {
         }
         return nil
     }
-    
+
     func getAnnotationView(annotation: FlutterAnnotation) -> MKAnnotationView {
         let identifier: String = annotation.id
         var annotationView = self.mapView.dequeueReusableAnnotationView(withIdentifier: identifier)
@@ -166,7 +166,7 @@ extension AppleMapController: AnnotationDelegate {
             }
         }
     }
-    
+
     @objc func onCalloutTapped(infoWindowTap: InfoWindowTapGestureRecognizer) {
         if infoWindowTap.annotationId != nil && self.currentlySelectedAnnotation == infoWindowTap.annotationId! {
             self.channel.invokeMethod("infoWindow#onTap", arguments: ["annotationId": infoWindowTap.annotationId])
@@ -179,7 +179,7 @@ extension AppleMapController: AnnotationDelegate {
     private func getAnnotation(with id: String) -> FlutterAnnotation? {
         return self.mapView.annotations.filter { annotation in return (annotation as? FlutterAnnotation)?.id == id }.first as? FlutterAnnotation
     }
-    
+
     private func annotationExists(with id: String) -> Bool {
         return self.getAnnotation(with: id) != nil
     }
@@ -188,7 +188,7 @@ extension AppleMapController: AnnotationDelegate {
         let annotation: FlutterAnnotation = FlutterAnnotation(fromDictionary: annotationData, registrar: registrar)
         self.addAnnotation(annotation: annotation)
     }
-    
+
     /**
      Checks if an Annotation with the same id exists and removes it before adding if necessary
      - Parameter annotation: the FlutterAnnotation that should be added
@@ -203,7 +203,7 @@ extension AppleMapController: AnnotationDelegate {
         }
         self.mapView.addAnnotation(annotation)
     }
-    
+
     private func getNextAnnotationZIndex() -> Double {
         let mapViewAnnotations = self.mapView.getMapViewAnnotations()
         if mapViewAnnotations.isEmpty {
@@ -211,7 +211,7 @@ extension AppleMapController: AnnotationDelegate {
         }
         return (mapViewAnnotations.last??.zIndex ?? 0) + 1
     }
-    
+
     private func isAnnoationInFront(zIndex: Double) -> Bool {
         return (self.mapView.getMapViewAnnotations().last??.zIndex ?? 0) == zIndex
     }
@@ -224,8 +224,12 @@ extension AppleMapController: AnnotationDelegate {
         } else {
             pinAnnotationView = MKPinAnnotationView.init(annotation: annotation, reuseIdentifier: id)
         }
-        
         pinAnnotationView.layer.zPosition = annotation.zIndex
+
+        if let hueColor: Double = annotation.icon.hueColor {
+            pinAnnotationView.pinTintColor = UIColor.init(hue: hueColor, saturation: 1, brightness: 1, alpha: 1)
+        }
+
         return pinAnnotationView
     }
 
@@ -234,6 +238,11 @@ extension AppleMapController: AnnotationDelegate {
         self.mapView.register(FlutterMarkerAnnotationView.self, forAnnotationViewWithReuseIdentifier: id)
         let markerAnnotationView: FlutterMarkerAnnotationView = self.mapView.dequeueReusableAnnotationView(withIdentifier: id, for: annotation) as! FlutterMarkerAnnotationView
         markerAnnotationView.stickyZPosition = annotation.zIndex
+
+        if let hueColor: Double = annotation.icon.hueColor {
+            markerAnnotationView.markerTintColor = UIColor.init(hue: hueColor, saturation: 1, brightness: 1, alpha: 1)
+        }
+
         return markerAnnotationView
     }
 
@@ -260,7 +269,7 @@ extension AppleMapController: AnnotationDelegate {
     private func getInfoWindowYOffset(annotationView: MKAnnotationView, annotation: FlutterAnnotation) -> CGFloat {
         return annotationView.frame.height * CGFloat(annotation.calloutOffset.y)
     }
-    
+
     private func moveToFront(annotation: FlutterAnnotation) {
         let id: String = annotation.id
         annotation.zIndex = self.getNextAnnotationZIndex()

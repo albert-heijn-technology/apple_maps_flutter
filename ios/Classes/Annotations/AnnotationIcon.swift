@@ -16,13 +16,20 @@ class AnnotationIcon: Equatable {
     var iconType: IconType
     var id: String
     var image: UIImage?
+    var hueColor: Double?
     
     public init(id: String, iconType: IconType) {
         self.iconType = iconType
         self.id = id
     }
     
-    public init(named name: String, id: String, iconScale: CGFloat? = 1.0) {
+    public init(id: String, iconType: IconType, hueColor: Double) {
+        self.iconType = iconType
+        self.id = id
+        self.hueColor = hueColor
+    }
+    
+    public init(withAsset name: String, id: String, iconScale: CGFloat? = 1.0) {
         self.iconType = .CUSTOM_FROM_ASSET
         self.id = id
         if let uiImage: UIImage =  UIImage.init(named: name) {

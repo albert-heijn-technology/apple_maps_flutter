@@ -79,15 +79,31 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
     _annotationIdCounter++;
     final AnnotationId annotationId = AnnotationId(annotationIdVal);
 
+    var bitMapDescriptor;
+
+    switch (iconType) {
+      case 'marker':
+        bitMapDescriptor = BitmapDescriptor.markerAnnotation;
+        break;
+      case 'pin':
+        bitMapDescriptor = BitmapDescriptor.defaultAnnotation;
+        break;
+      case 'customAnnotationFromBytes':
+        bitMapDescriptor = _iconFromBytes;
+        break;
+      case 'markerAnnotationWithHue':
+        bitMapDescriptor = BitmapDescriptor.markerAnnotationWithHue(
+            new Random().nextDouble() * 360);
+        break;
+      case 'defaultAnnotationWithColor':
+        bitMapDescriptor = BitmapDescriptor.defaultAnnotationWithHue(
+            new Random().nextDouble() * 360);
+        break;
+    }
+
     final Annotation annotation = Annotation(
       annotationId: annotationId,
-      icon: iconType == 'marker'
-          ? BitmapDescriptor.markerAnnotation
-          : iconType == 'pin'
-              ? BitmapDescriptor.defaultAnnotation
-              : iconType == 'customAnnotationFromBytes'
-                  ? _iconFromBytes
-                  : _annotationIcon!,
+      icon: bitMapDescriptor,
       position: LatLng(
         center.latitude + sin(_annotationIdCounter * pi / 6.0) / 20.0,
         center.longitude + cos(_annotationIdCounter * pi / 6.0) / 20.0,
@@ -97,7 +113,7 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
           title: annotationIdVal,
           anchor: Offset(0.5, 0.0),
           snippet: '*',
-          onTap: () => print('InfowWindow of id: $annotationId tapped.')),
+          onTap: () => print('InfoWindow with id: $annotationId tapped.')),
       onTap: () {
         _onAnnotationTapped(annotationId);
       },
@@ -258,8 +274,16 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
                   onPressed: () => _add('pin'),
                 ),
                 TextButton(
+                  child: const Text('add defaultWithHue'),
+                  onPressed: () => _add('defaultAnnotationWithColor'),
+                ),
+                TextButton(
                   child: const Text('add markerAnnotation'),
                   onPressed: () => _add('marker'),
+                ),
+                TextButton(
+                  child: const Text('add markerWithHue'),
+                  onPressed: () => _add('markerAnnotationWithHue'),
                 ),
                 TextButton(
                   child: const Text('add customAnnotation'),

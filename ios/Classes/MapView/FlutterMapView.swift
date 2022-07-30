@@ -271,8 +271,6 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
         let flutterAnnotations = self.annotations as? [FlutterAnnotation] ?? []
         let sortedAnnotations = flutterAnnotations.sorted(by: { $0.zIndex  < $1.zIndex })
         return sortedAnnotations
-        
-        
     }
        
     

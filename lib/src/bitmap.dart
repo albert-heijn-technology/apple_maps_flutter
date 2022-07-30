@@ -4,17 +4,41 @@
 
 part of apple_maps_flutter;
 
-enum AnnotationColor {
-  RED,
-  GREEN,
-  PURPLE,
-}
-
 /// Defines a bitmap image. For a annotation, this class can be used to set the
 /// image of the annotation icon. For a ground overlay, it can be used to set the
 /// image to place on the surface of the earth.
 class BitmapDescriptor {
   const BitmapDescriptor._(this._json);
+
+  /// Convenience hue value representing red.
+  static const double hueRed = 0.0;
+
+  /// Convenience hue value representing orange.
+  static const double hueOrange = 30.0;
+
+  /// Convenience hue value representing yellow.
+  static const double hueYellow = 60.0;
+
+  /// Convenience hue value representing green.
+  static const double hueGreen = 120.0;
+
+  /// Convenience hue value representing cyan.
+  static const double hueCyan = 180.0;
+
+  /// Convenience hue value representing azure.
+  static const double hueAzure = 210.0;
+
+  /// Convenience hue value representing blue.
+  static const double hueBlue = 240.0;
+
+  /// Convenience hue value representing violet.
+  static const double hueViolet = 270.0;
+
+  /// Convenience hue value representing magenta.
+  static const double hueMagenta = 300.0;
+
+  /// Convenience hue value representing rose.
+  static const double hueRose = 330.0;
 
   /// Creates a BitmapDescriptor that refers to the default/Pin annotation image.
   static const BitmapDescriptor defaultAnnotation =
@@ -24,18 +48,22 @@ class BitmapDescriptor {
   static const BitmapDescriptor markerAnnotation =
       BitmapDescriptor._(<dynamic>['markerAnnotation']);
 
-  /// Creates a BitmapDescriptor that refers to a colorization of the marker
-  /// annotation image. For convenience, there is a predefined set of [AnnotationColors].
-  /// See e.g. [AnnotationColor.RED].
-  static BitmapDescriptor markerAnnotationWithColor(AnnotationColor color) {
-    return BitmapDescriptor._(<dynamic>['markerAnnotation', color.index]);
+  /// Creates a BitmapDescriptor that refers to a colorization of the default
+  /// marker image. For convenience, there is a predefined set of hue values.
+  /// See e.g. [hueYellow].
+  static BitmapDescriptor markerAnnotationWithHue(double hue) {
+    assert(0.0 <= hue && hue < 360.0);
+    double iosCompatibleHue = hue / 360.0;
+    return BitmapDescriptor._(<dynamic>['markerAnnotation', iosCompatibleHue]);
   }
 
   /// Creates a BitmapDescriptor that refers to a colorization of the default/Pin
-  /// annotation image. For convenience, there is a predefined set of [AnnotationColors].
-  /// See e.g. [AnnotationColor.RED].
-  static BitmapDescriptor defaultAnnotationWithColor(AnnotationColor color) {
-    return BitmapDescriptor._(<dynamic>['defaultAnnotation', color.index]);
+  /// annotation image. For convenience, there is a predefined set of hue values.
+  /// See e.g. [hueCyan].
+  static BitmapDescriptor defaultAnnotationWithHue(double hue) {
+    assert(0.0 <= hue && hue < 360.0);
+    double iosCompatibleHue = hue / 360.0;
+    return BitmapDescriptor._(<dynamic>['defaultAnnotation', iosCompatibleHue]);
   }
 
   /// Creates a [BitmapDescriptor] from an asset image.
