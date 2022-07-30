@@ -1,3 +1,8 @@
+# Changelog
+
+## 1.2.0
+
+* Added a `markerAnnotationWithHue()` and `pinAnnotationWithHue()` method to allow custom marker/pin colors
 ## 1.1.0
 
 * Added Annotation zIndex
