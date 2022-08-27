@@ -9,6 +9,7 @@ import Foundation
 import MapKit
 
 public class AppleMapController: NSObject, FlutterPlatformView {
+    var contentView: UIView
     var mapView: FlutterMapView
     var registrar: FlutterPluginRegistrar
     var channel: FlutterMethodChannel
@@ -24,6 +25,11 @@ public class AppleMapController: NSObject, FlutterPlatformView {
         
         self.mapView = FlutterMapView(channel: channel, options: options)
         self.registrar = registrar
+        
+        // To stop the odd movement of the Apple logo.
+        self.contentView = UIScrollView()
+        self.contentView.addSubview(mapView)
+        mapView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
         
         self.initialCameraPosition = args["initialCameraPosition"]! as! Dictionary<String, Any>
         
@@ -56,7 +62,7 @@ public class AppleMapController: NSObject, FlutterPlatformView {
     }
     
     public func view() -> UIView {
-        return mapView
+        return contentView
     }
     
     private func setMethodCallHandlers() {
