@@ -145,10 +145,10 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
             self.mapType = self.mapTypes[mapType]
         }
 
-        if let mapStyle: Int = options["mapStyle"] as? Int {
+        if let colorScheme: Int = options["colorScheme"] as? Int {
             if #available(iOS 13.0, *) {
-                if mapStyle != 0 {
-                    self.overrideUserInterfaceStyle = UIUserInterfaceStyle(rawValue: mapStyle) ?? .unspecified
+                if colorScheme != 0 {
+                    self.overrideUserInterfaceStyle = UIUserInterfaceStyle(rawValue: colorScheme) ?? .unspecified
                 }
             }
         }
