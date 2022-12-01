@@ -187,7 +187,7 @@ class _AppleMapState extends State<AppleMap> {
   Widget build(BuildContext context) {
     final Map<String, dynamic> creationParams = <String, dynamic>{
       'initialCameraPosition': widget.initialCameraPosition._toMap(),
-      'options': _appleMapOptions.toMap(),
+      'options': _appleMapOptions.toMap(context: context),
       'annotationsToAdd': _serializeAnnotationSet(widget.annotations),
       'polylinesToAdd': _serializePolylineSet(widget.polylines),
       'polygonsToAdd': _serializePolygonSet(widget.polygons),
@@ -387,7 +387,7 @@ class _AppleMapOptions {
 
   final EdgeInsets? padding;
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMap({BuildContext? context}) {
     final Map<String, dynamic> optionsMap = <String, dynamic>{};
 
     void addIfNonNull(String fieldName, dynamic value) {
@@ -396,10 +396,22 @@ class _AppleMapOptions {
       }
     }
 
+    if (context != null) {
+      final systemScheme = Theme.of(context).brightness == Brightness.dark
+          ? MapColorScheme.dark
+          : MapColorScheme.light;
+      addIfNonNull(
+          'colorScheme',
+          colorScheme == MapColorScheme.system
+              ? systemScheme.index
+              : colorScheme?.index);
+    } else {
+      addIfNonNull('colorScheme', colorScheme?.index);
+    }
+
     addIfNonNull('compassEnabled', compassEnabled);
     addIfNonNull('trafficEnabled', trafficEnabled);
     addIfNonNull('mapType', mapType?.index);
-    addIfNonNull('colorScheme', colorScheme?.index);
     addIfNonNull('minMaxZoomPreference', minMaxZoomPreference?._toJson());
     addIfNonNull('rotateGesturesEnabled', rotateGesturesEnabled);
     addIfNonNull('scrollGesturesEnabled', scrollGesturesEnabled);
