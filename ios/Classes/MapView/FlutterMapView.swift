@@ -147,9 +147,7 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
 
         if let colorScheme: Int = options["colorScheme"] as? Int {
             if #available(iOS 13.0, *) {
-                if colorScheme != 0 {
-                    self.overrideUserInterfaceStyle = UIUserInterfaceStyle(rawValue: colorScheme) ?? .unspecified
-                }
+                self.overrideUserInterfaceStyle = UIUserInterfaceStyle(rawValue: colorScheme) ?? .unspecified
             }
         }
         
