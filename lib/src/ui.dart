@@ -19,8 +19,8 @@ enum MapType {
 enum MapColorScheme {
   /// Follow system style
   system,
-  
-  light, 
+
+  light,
   dark,
 }
 
