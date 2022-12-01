@@ -16,6 +16,14 @@ enum MapType {
   hybrid,
 }
 
+enum MapStyle {
+  /// Follow system style
+  system,
+  
+  light, 
+  dark,
+}
+
 enum TrackingMode {
   // the user's location is not followed
   none,

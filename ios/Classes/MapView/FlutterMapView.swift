@@ -20,6 +20,7 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
     var oldBounds: CGRect?
     var options: Dictionary<String, Any>?
     var isMyLocationButtonShowing: Bool? = false
+    var mapStyle: Int? = 0
     
     fileprivate let locationManager: CLLocationManager = CLLocationManager()
     
@@ -143,6 +144,14 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
         
         if let mapType: Int = options["mapType"] as? Int {
             self.mapType = self.mapTypes[mapType]
+        }
+
+        if let mapStyle: Int = options["mapStyle"] as? Int {
+            if #available(iOS 13.0, *) {
+                if mapStyle != 0 {
+                    self.overrideUserInterfaceStyle = UIUserInterfaceStyle(rawValue: mapStyle) ?? .unspecified
+                }
+            }
         }
         
         if let trafficEnabled: Bool = options["trafficEnabled"] as? Bool {
