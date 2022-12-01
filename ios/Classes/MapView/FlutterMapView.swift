@@ -20,7 +20,6 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
     var oldBounds: CGRect?
     var options: Dictionary<String, Any>?
     var isMyLocationButtonShowing: Bool? = false
-    var mapStyle: Int? = 0
     
     fileprivate let locationManager: CLLocationManager = CLLocationManager()
     
