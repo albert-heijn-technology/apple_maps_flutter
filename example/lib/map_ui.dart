@@ -43,6 +43,7 @@ class MapUiBodyState extends State<MapUiBody> {
   bool _myLocationButtonEnabled = true;
   MinMaxZoomPreference _minMaxZoomPreference = MinMaxZoomPreference.unbounded;
   MapType _mapType = MapType.standard;
+  MapColorScheme _colorScheme = MapColorScheme.system;
   bool _rotateGesturesEnabled = true;
   bool _scrollGesturesEnabled = true;
   bool _pitchGesturesEnabled = true;
@@ -96,6 +97,18 @@ class MapUiBodyState extends State<MapUiBody> {
         });
       },
     );
+  }
+
+  Widget _colorSchemeCycler() {
+    final MapColorScheme nextScheme = MapColorScheme
+        .values[(_colorScheme.index + 1) % MapColorScheme.values.length];
+    return TextButton(
+        child: Text('change color scheme to $nextScheme'),
+        onPressed: () {
+          setState(() {
+            _colorScheme = nextScheme;
+          });
+        });
   }
 
   Widget _rotateToggler() {
@@ -170,6 +183,7 @@ class MapUiBodyState extends State<MapUiBody> {
   Widget build(BuildContext context) {
     final AppleMap appleMap = AppleMap(
       onMapCreated: onMapCreated,
+      colorScheme: _colorScheme,
       trackingMode: _trackingMode,
       initialCameraPosition: _kInitialPosition,
       compassEnabled: _compassEnabled,
@@ -207,6 +221,7 @@ class MapUiBodyState extends State<MapUiBody> {
                 children: <Widget>[
                   _compassToggler(),
                   _mapTypeCycler(),
+                  _colorSchemeCycler(),
                   _zoomBoundsToggler(),
                   _rotateToggler(),
                   _scrollToggler(),
