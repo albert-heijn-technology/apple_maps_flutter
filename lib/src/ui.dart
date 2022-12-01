@@ -16,7 +16,7 @@ enum MapType {
   hybrid,
 }
 
-enum MapStyle {
+enum MapColorScheme {
   /// Follow system style
   system,
   
