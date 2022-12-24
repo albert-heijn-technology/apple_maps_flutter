@@ -400,7 +400,6 @@ class _AppleMapOptions {
     addIfNonNull('myLocationEnabled', myLocationEnabled);
     addIfNonNull('myLocationButtonEnabled', myLocationButtonEnabled);
     addIfNonNull('padding', _serializePadding(padding));
-    print('optionsMap: $optionsMap');
     return optionsMap;
   }
 
