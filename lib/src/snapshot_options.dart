@@ -6,18 +6,21 @@ class SnapshotOptions {
     this.showPointsOfInterest = true,
     this.showAnnotations = true,
     this.showOverlays = true,
+    this.mapType = MapType.standard,
   });
 
   final bool showBuildings;
   final bool showPointsOfInterest;
   final bool showAnnotations;
   final bool showOverlays;
+  final MapType mapType;
 
-  dynamic _toMap() => <String, bool>{
+  dynamic _toMap() => <String, dynamic>{
         'showBuildings': showBuildings,
         'showPointsOfInterest': showPointsOfInterest,
         'showAnnotations': showAnnotations,
         'showOverlays': showOverlays,
+        'mapType': mapType.index,
       };
 
   @visibleForTesting
@@ -30,6 +33,7 @@ class SnapshotOptions {
       showPointsOfInterest: json['showPointsOfInterest'],
       showAnnotations: json['showAnnotations'],
       showOverlays: json['showOverlays'],
+      mapType: MapType.values[json['mapType']],
     );
   }
 

@@ -315,6 +315,7 @@ extension AppleMapController {
         snapShotOptions.scale = UIScreen.main.scale
         snapShotOptions.showsBuildings = options.showBuildings
         snapShotOptions.showsPointsOfInterest = options.showPointsOfInterest
+        snapShotOptions.mapType = options.mapType
         
         // Set MKMapSnapShotOptions to MKMapSnapShotter.
         snapShot = MKMapSnapshotter(options: snapShotOptions)
