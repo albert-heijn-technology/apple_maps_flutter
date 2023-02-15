@@ -22,6 +22,14 @@ enum MapType {
   mutedStandard
 }
 
+enum MapStyle {
+  system,
+
+  light,
+
+  dark
+}
+
 enum TrackingMode {
   // the user's location is not followed
   none,

@@ -23,6 +23,7 @@ class AppleMap extends StatefulWidget {
     this.compassEnabled = true,
     this.trafficEnabled = false,
     this.mapType = MapType.standard,
+    this.mapStyle = MapStyle.system,
     this.minMaxZoomPreference = MinMaxZoomPreference.unbounded,
     this.trackingMode = TrackingMode.none,
     this.rotateGesturesEnabled = true,
@@ -57,6 +58,8 @@ class AppleMap extends StatefulWidget {
 
   /// Type of map tiles to be rendered.
   final MapType mapType;
+
+  final MapStyle mapStyle;
 
   /// The mode used to track the user location.
   final TrackingMode trackingMode;
@@ -327,6 +330,7 @@ class _AppleMapOptions {
     this.compassEnabled,
     this.trafficEnabled,
     this.mapType,
+    this.mapStyle,
     this.minMaxZoomPreference,
     this.rotateGesturesEnabled,
     this.scrollGesturesEnabled,
@@ -345,6 +349,7 @@ class _AppleMapOptions {
       mapType: map.mapType,
       minMaxZoomPreference: map.minMaxZoomPreference,
       rotateGesturesEnabled: map.rotateGesturesEnabled,
+      mapStyle: map.mapStyle,
       scrollGesturesEnabled: map.scrollGesturesEnabled,
       pitchGesturesEnabled: map.pitchGesturesEnabled,
       trackingMode: map.trackingMode,
@@ -360,6 +365,8 @@ class _AppleMapOptions {
   final bool? trafficEnabled;
 
   final MapType? mapType;
+
+  final MapStyle? mapStyle;
 
   final MinMaxZoomPreference? minMaxZoomPreference;
 
@@ -391,6 +398,7 @@ class _AppleMapOptions {
     addIfNonNull('compassEnabled', compassEnabled);
     addIfNonNull('trafficEnabled', trafficEnabled);
     addIfNonNull('mapType', mapType?.index);
+    addIfNonNull('mapStyle', mapStyle?.index);
     addIfNonNull('minMaxZoomPreference', minMaxZoomPreference?._toJson());
     addIfNonNull('rotateGesturesEnabled', rotateGesturesEnabled);
     addIfNonNull('scrollGesturesEnabled', scrollGesturesEnabled);

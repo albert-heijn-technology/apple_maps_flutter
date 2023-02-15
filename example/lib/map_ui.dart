@@ -175,6 +175,7 @@ class MapUiBodyState extends State<MapUiBody> {
       compassEnabled: _compassEnabled,
       minMaxZoomPreference: _minMaxZoomPreference,
       mapType: _mapType,
+      mapStyle: MapStyle.system,
       rotateGesturesEnabled: _rotateGesturesEnabled,
       scrollGesturesEnabled: _scrollGesturesEnabled,
       pitchGesturesEnabled: _pitchGesturesEnabled,
