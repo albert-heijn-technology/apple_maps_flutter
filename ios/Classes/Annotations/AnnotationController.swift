@@ -29,6 +29,19 @@ extension AppleMapController: AnnotationDelegate {
                 view.addGestureRecognizer(tapGestureRecognizer)
             }
         }
+        if let annotationView = view as? FlutterAnnotationView {
+            UIView.animate(withDuration: 0.18) {
+                annotationView.imageView.layer.borderColor = UIColor(red: 255/255, green: 191/255, blue: 0/255, alpha: 1.0).cgColor
+            }
+        }
+    }
+
+    public func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
+        if let annotationView = view as? FlutterAnnotationView {
+            UIView.animate(withDuration: 0.18) {
+                annotationView.imageView.layer.borderColor = UIColor.white.cgColor
+            }
+        }
     }
 
     public func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
@@ -65,14 +78,14 @@ extension AppleMapController: AnnotationDelegate {
             return annotationView! as! FlutterAnnotationView
         }
         if annotation.icon.iconType != .MARKER {
-            self.initInfoWindow(annotation: annotation, annotationView: annotationView!)
+            /*self.initInfoWindow(annotation: annotation, annotationView: annotationView!)*/
             if annotation.icon.iconType != .PIN {
                 let x = (0.5 - annotation.anchor.x) * Double(annotationView!.frame.size.width)
                 let y = (0.5 - annotation.anchor.y) * Double(annotationView!.frame.size.height)
                 annotationView!.centerOffset = CGPoint(x: x, y: y)
             }
         }
-        annotationView!.canShowCallout = true
+        annotationView!.canShowCallout = false
         annotationView!.alpha = CGFloat(annotation.alpha ?? 1.00)
         annotationView!.isDraggable = annotation.isDraggable ?? false
 
@@ -271,11 +284,14 @@ extension AppleMapController: AnnotationDelegate {
     }
 
     private func moveToFront(annotation: FlutterAnnotation) {
+        CATransaction.begin()
+        CATransaction.setDisableActions(true);
         let id: String = annotation.id
         annotation.zIndex = self.getNextAnnotationZIndex()
         channel.invokeMethod("annotation#onZIndexChanged", arguments: ["annotationId": id, "zIndex": annotation.zIndex])
         self.addAnnotation(annotation: annotation)
         self.selectAnnotation(with: id)
+        CATransaction.commit()
     }
 }
 

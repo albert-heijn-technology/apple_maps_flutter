@@ -250,109 +250,101 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
   @override
   Widget build(BuildContext context) {
     _createAnnotationImageFromAsset(context, _devicePixelRatio);
-    _getBytesFromAsset('assets/creator.png', 160);
-    return SafeArea(
-      child: Column(
-        children: <Widget>[
-          Expanded(
-            child: AppleMap(
-              onMapCreated: _onMapCreated,
-              initialCameraPosition: const CameraPosition(
-                target: LatLng(-33.852, 151.211),
-                zoom: 11,
-              ),
-              annotations: Set<Annotation>.of(annotations.values),
+    _getBytesFromAsset('assets/creator.jpg', 160);
+    return Column(
+      children: <Widget>[
+        Expanded(
+          child: AppleMap(
+            onMapCreated: _onMapCreated,
+            initialCameraPosition: const CameraPosition(
+              target: LatLng(-33.852, 151.211),
+              zoom: 11,
             ),
+            annotations: Set<Annotation>.of(annotations.values),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Wrap(
-              alignment: WrapAlignment.spaceEvenly,
-              children: [
-                TextButton(
-                  child: const Text('add defaultAnnotation'),
-                  onPressed: () => _add('pin'),
-                ),
-                TextButton(
-                  child: const Text('add defaultWithHue'),
-                  onPressed: () => _add('defaultAnnotationWithColor'),
-                ),
-                TextButton(
-                  child: const Text('add markerAnnotation'),
-                  onPressed: () => _add('marker'),
-                ),
-                TextButton(
-                  child: const Text('add markerWithHue'),
-                  onPressed: () => _add('markerAnnotationWithHue'),
-                ),
-                TextButton(
-                  child: const Text('add customAnnotation'),
-                  onPressed: () => _add('customAnnotation'),
-                ),
-                TextButton(
-                  child: const Text('customAnnotation from bytes'),
-                  onPressed: () => _add('customAnnotationFromBytes'),
-                ),
-                TextButton(
-                  child: const Text('remove'),
-                  onPressed: _remove,
-                ),
-                TextButton(
-                  child: const Text('change info'),
-                  onPressed: _changeInfo,
-                ),
-                TextButton(
-                  child: const Text('infoWindow is shown?s'),
-                  onPressed: _isInfoWindowShown,
-                ),
-                TextButton(
-                  child: const Text('change alpha'),
-                  onPressed: _changeAlpha,
-                ),
-                TextButton(
-                  child: const Text('toggle draggable'),
-                  onPressed: _toggleDraggable,
-                ),
-                TextButton(
-                  child: const Text('change position'),
-                  onPressed: _changePosition,
-                ),
-                TextButton(
-                  child: const Text('toggle visible'),
-                  onPressed: _toggleVisible,
-                ),
-                TextButton(
-                  child: const Text('show infoWindow'),
-                  onPressed: _showInfoWindow,
-                ),
-                TextButton(
-                  child: const Text('hide infoWindow'),
-                  onPressed: _hideInfoWindow,
-                ),
-                TextButton(
-                  child: const Text('change zIndex'),
-                  onPressed: () => _changeZIndex(selectedAnnotationId),
-                ),
-                TextButton(
-                  child: Text('Take a snapshot'),
-                  onPressed: () async {
-                    final imageBytes = await this.controller.takeSnapshot();
-                    setState(() {
-                      _imageBytes = imageBytes;
-                    });
-                  },
-                ),
-                Container(
-                  decoration: BoxDecoration(color: Colors.blueGrey[50]),
-                  height: 180,
-                  child:
-                      _imageBytes != null ? Image.memory(_imageBytes!) : null,
-                ),
-              ],
-            ),
-          )
-        ],
-      ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(0.0),
+          child: Wrap(
+            alignment: WrapAlignment.spaceEvenly,
+            children: [
+              TextButton(
+                child: const Text('add defaultAnnotation'),
+                onPressed: () => _add('pin'),
+              ),
+              TextButton(
+                child: const Text('add defaultWithHue'),
+                onPressed: () => _add('defaultAnnotationWithColor'),
+              ),
+              TextButton(
+                child: const Text('add markerAnnotation'),
+                onPressed: () => _add('marker'),
+              ),
+              TextButton(
+                child: const Text('add markerWithHue'),
+                onPressed: () => _add('markerAnnotationWithHue'),
+              ),
+              TextButton(
+                child: const Text('add customAnnotation'),
+                onPressed: () => _add('customAnnotation'),
+              ),
+              TextButton(
+                child: const Text('customAnnotation from bytes'),
+                onPressed: () => _add('customAnnotationFromBytes'),
+              ),
+              TextButton(
+                child: const Text('remove'),
+                onPressed: _remove,
+              ),
+              TextButton(
+                child: const Text('change info'),
+                onPressed: _changeInfo,
+              ),
+              TextButton(
+                child: const Text('infoWindow is shown?s'),
+                onPressed: _isInfoWindowShown,
+              ),
+              TextButton(
+                child: const Text('change alpha'),
+                onPressed: _changeAlpha,
+              ),
+              TextButton(
+                child: const Text('toggle draggable'),
+                onPressed: _toggleDraggable,
+              ),
+              TextButton(
+                child: const Text('change position'),
+                onPressed: _changePosition,
+              ),
+              TextButton(
+                child: const Text('toggle visible'),
+                onPressed: _toggleVisible,
+              ),
+              TextButton(
+                child: const Text('show infoWindow'),
+                onPressed: _showInfoWindow,
+              ),
+              TextButton(
+                child: const Text('hide infoWindow'),
+                onPressed: _hideInfoWindow,
+              ),
+              TextButton(
+                child: const Text('change zIndex'),
+                onPressed: () => _changeZIndex(selectedAnnotationId),
+              ),
+              TextButton(
+                child: Text('Take a snapshot'),
+                onPressed: () async {
+                  final imageBytes = await this.controller.takeSnapshot();
+                  setState(() {
+                    _imageBytes = imageBytes;
+                  });
+                },
+              ),
+            ],
+          ),
+        )
+      ],
     );
   }
 }
