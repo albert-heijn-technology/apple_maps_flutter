@@ -38,6 +38,8 @@ class FlutterAnnotationView: MKAnnotationView {
         self.imageView.layer.masksToBounds = true
         self.imageView.layer.borderWidth = 2.0
         self.imageView.layer.borderColor = UIColor.white.cgColor
+        self.imageView.contentMode = .scaleAspectFill
+        self.imageView.clipsToBounds = true
         containerView.addSubview(self.imageView)
 
         // Add container view to annotation view

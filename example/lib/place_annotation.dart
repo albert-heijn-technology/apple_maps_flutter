@@ -5,9 +5,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'dart:typed_data';
-import 'dart:ui';
 import 'dart:ui' as ui;
-
 import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -250,7 +248,7 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
   @override
   Widget build(BuildContext context) {
     _createAnnotationImageFromAsset(context, _devicePixelRatio);
-    _getBytesFromAsset('assets/creator.jpg', 160);
+    _getBytesFromAsset('assets/creator.jpeg', 160);
     return Column(
       children: <Widget>[
         Expanded(
