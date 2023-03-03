@@ -12,6 +12,18 @@ extension AppleMapController: AnnotationDelegate {
 
     public func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView)  {
         if let annotation: FlutterAnnotation = view.annotation as? FlutterAnnotation  {
+            // Get the annotation's coordinate
+            let coordinate = CLLocationCoordinate2D(latitude: annotation.coordinate.latitude - mapView.region.span.latitudeDelta * 0.001 , longitude: annotation.coordinate.longitude)
+            
+            // Set the desired zoom level using a span value
+            let span = MKCoordinateSpan(latitudeDelta: 0.002, longitudeDelta: 0.002)
+            
+            // Create a region centered on the selected annotation with the desired zoom level
+            let region = MKCoordinateRegion(center: coordinate, span: span)
+            
+            // Set the visible region of the map to the new region with animation
+            mapView.setRegion(region, animated: true)
+            
             self.currentlySelectedAnnotation = annotation.id
             if !annotation.selectedProgrammatically {
                 if !self.isAnnoationInFront(zIndex: annotation.zIndex) {
