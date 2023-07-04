@@ -9,10 +9,8 @@ import Foundation
 import MapKit
 
 extension AppleMapController: AnnotationDelegate {
-
     public func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView)  {
-        if let annotation: FlutterAnnotation = view.annotation as? FlutterAnnotation  {
-            
+        if let annotation: FlutterAnnotation = view.annotation as? FlutterAnnotation  {            
             // Set the desired zoom level using a span value
             let span = MKCoordinateSpan(latitudeDelta: 0.002, longitudeDelta: 0.002)
 
@@ -43,16 +41,20 @@ extension AppleMapController: AnnotationDelegate {
             }
         }
         if let annotationView = view as? FlutterAnnotationView {
-            UIView.animate(withDuration: 0.18) {
-                annotationView.imageView.layer.borderColor = UIColor(red: 255/255, green: 191/255, blue: 0/255, alpha: 1.0).cgColor
-            }
+            if let annotation: FlutterAnnotation = view.annotation as? FlutterAnnotation {
+                UIView.animate(withDuration: 0.18) {
+                    annotationView.imageView.layer.borderColor = (annotation as? FlutterAnnotation)!.selectedBorderColor!
+                }
+            }   
         }
     }
 
     public func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
         if let annotationView = view as? FlutterAnnotationView {
-            UIView.animate(withDuration: 0.18) {
-                annotationView.imageView.layer.borderColor = UIColor.white.cgColor
+            if let annotation: FlutterAnnotation = view.annotation as? FlutterAnnotation {
+                UIView.animate(withDuration: 0.18) {
+                    annotationView.imageView.layer.borderColor = (annotation as? FlutterAnnotation)!.borderColor!
+                }
             }
         }
     }
@@ -75,6 +77,7 @@ extension AppleMapController: AnnotationDelegate {
                 annotationView = getMarkerAnnotationView(annotation: annotation, id: identifier)
             } else if annotation.icon.iconType == .CUSTOM_FROM_ASSET || annotation.icon.iconType == .CUSTOM_FROM_BYTES {
                 annotationView = getCustomAnnotationView(annotation: annotation, id: identifier)
+                (annotationView as? FlutterAnnotationView)!.imageView.layer.borderColor = annotation.borderColor
             } else {
                 annotationView = getPinAnnotationView(annotation: annotation, id: identifier)
             }

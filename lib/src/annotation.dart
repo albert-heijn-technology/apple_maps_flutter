@@ -143,19 +143,21 @@ class Annotation {
   /// * has no info window text; [infoWindowText] is `InfoWindowText.noText`
   /// * is positioned at 0, 0; [position] is `LatLng(0.0, 0.0)`
   /// * is visible; [visible] is true
-  Annotation({
-    required this.annotationId,
-    this.alpha = 1.0,
-    this.anchor = const Offset(0.5, 1.0),
-    this.draggable = false,
-    this.icon = BitmapDescriptor.defaultAnnotation,
-    this.infoWindow = InfoWindow.noText,
-    this.position = const LatLng(0.0, 0.0),
-    this.onTap,
-    this.visible = true,
-    this.zIndex = -1,
-    this.onDragEnd,
-  }) : assert(0.0 <= alpha && alpha <= 1.0);
+  Annotation(
+      {required this.annotationId,
+      this.alpha = 1.0,
+      this.anchor = const Offset(0.5, 1.0),
+      this.draggable = false,
+      this.icon = BitmapDescriptor.defaultAnnotation,
+      this.infoWindow = InfoWindow.noText,
+      this.position = const LatLng(0.0, 0.0),
+      this.onTap,
+      this.visible = true,
+      this.zIndex = -1,
+      this.onDragEnd,
+      this.borderColor = Colors.white,
+      this.selectedBorderColor = Colors.blueAccent})
+      : assert(0.0 <= alpha && alpha <= 1.0);
 
   /// Uniquely identifies a [Annotation].
   final AnnotationId annotationId;
@@ -192,6 +194,10 @@ class Annotation {
   /// True if the annotation is visible.
   final bool visible;
 
+  final Color borderColor;
+
+  final Color selectedBorderColor;
+
   final ValueChanged<LatLng>? onDragEnd;
 
   /// The z-index of the annotation, used to determine relative drawing order of
@@ -203,32 +209,34 @@ class Annotation {
 
   /// Creates a new [Annotation] object whose values are the same as this instance,
   /// unless overwritten by the specified parameters.
-  Annotation copyWith({
-    double? alphaParam,
-    Offset? anchorParam,
-    bool? consumeTapEventsParam,
-    bool? draggableParam,
-    BitmapDescriptor? iconParam,
-    InfoWindow? infoWindowParam,
-    LatLng? positionParam,
-    bool? visibleParam,
-    double? zIndexParam,
-    VoidCallback? onTapParam,
-    ValueChanged<LatLng>? onDragEndParam,
-  }) {
+  Annotation copyWith(
+      {double? alphaParam,
+      Offset? anchorParam,
+      bool? consumeTapEventsParam,
+      bool? draggableParam,
+      BitmapDescriptor? iconParam,
+      InfoWindow? infoWindowParam,
+      LatLng? positionParam,
+      bool? visibleParam,
+      double? zIndexParam,
+      VoidCallback? onTapParam,
+      ValueChanged<LatLng>? onDragEndParam,
+      Color? borderColorParam,
+      Color? selectedBorderColorParam}) {
     return Annotation(
-      annotationId: annotationId,
-      anchor: anchorParam ?? anchor,
-      alpha: alphaParam ?? alpha,
-      draggable: draggableParam ?? draggable,
-      icon: iconParam ?? icon,
-      infoWindow: infoWindowParam ?? infoWindow,
-      position: positionParam ?? position,
-      onTap: onTapParam ?? onTap,
-      visible: visibleParam ?? visible,
-      zIndex: zIndexParam ?? zIndex,
-      onDragEnd: onDragEndParam ?? onDragEnd,
-    );
+        annotationId: annotationId,
+        anchor: anchorParam ?? anchor,
+        alpha: alphaParam ?? alpha,
+        draggable: draggableParam ?? draggable,
+        icon: iconParam ?? icon,
+        infoWindow: infoWindowParam ?? infoWindow,
+        position: positionParam ?? position,
+        onTap: onTapParam ?? onTap,
+        visible: visibleParam ?? visible,
+        zIndex: zIndexParam ?? zIndex,
+        onDragEnd: onDragEndParam ?? onDragEnd,
+        borderColor: borderColorParam ?? borderColor,
+        selectedBorderColor: selectedBorderColorParam ?? selectedBorderColor);
   }
 
   Map<String, dynamic> _toJson() {
@@ -249,6 +257,10 @@ class Annotation {
     addIfPresent('visible', visible);
     addIfPresent('position', position._toJson());
     addIfPresent('zIndex', zIndex);
+    addIfPresent('borderColor',
+        '#${(borderColor.value & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}ff');
+    addIfPresent('selectedBorderColor',
+        '#${(selectedBorderColor.value & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}ff');
     return json;
   }
 
@@ -265,7 +277,9 @@ class Annotation {
         infoWindow == typedOther.infoWindow &&
         position == typedOther.position &&
         visible == typedOther.visible &&
-        zIndex == typedOther.zIndex;
+        zIndex == typedOther.zIndex &&
+        borderColor == typedOther.borderColor &&
+        selectedBorderColor == typedOther.selectedBorderColor;
   }
 
   @override
@@ -275,7 +289,7 @@ class Annotation {
   String toString() {
     return 'Annotation{annotationId: $annotationId, alpha: $alpha, draggable: $draggable, '
         'icon: $icon, infoWindow: $infoWindow, position: $position ,visible: $visible, '
-        'onTap: $onTap}, zIndex: $zIndex, onTap: $onTap}';
+        'onTap: $onTap}, zIndex: $zIndex, onTap: $onTap, borderColor: #${(borderColor.value & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}ff, selectedBorderColor: #${(selectedBorderColor.value & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}ff}';
   }
 }
 
