@@ -26,6 +26,9 @@ class FlutterAnnotation: NSObject, MKAnnotation {
     var selectedProgrammatically: Bool = false
     var borderColor: CGColor!
     var selectedBorderColor: CGColor!
+    var borderWidth: Double!
+    var dotWidth: Double!
+    var iconOffset: Double!
     
     public init(fromDictionary annotationData: Dictionary<String, Any>, registrar: FlutterPluginRegistrar) {
         let position: Array<Double> = annotationData["position"] as! Array<Double>
@@ -41,6 +44,9 @@ class FlutterAnnotation: NSObject, MKAnnotation {
         self.isDraggable = annotationData["draggable"] as? Bool
         self.borderColor = UIColor(hex: (annotationData["borderColor"] as? String)!)!.cgColor
         self.selectedBorderColor = UIColor(hex: (annotationData["selectedBorderColor"] as? String)!)!.cgColor
+        self.borderWidth = annotationData["borderWidth"] as? Double
+        self.dotWidth = annotationData["dotWidth"] as? Double
+        self.iconOffset = annotationData["iconOffset"] as? Double
         if let zIndex = annotationData["zIndex"] as? Double {
             self.zIndex = zIndex
         }
@@ -83,7 +89,7 @@ class FlutterAnnotation: NSObject, MKAnnotation {
     }
     
     static func == (lhs: FlutterAnnotation, rhs: FlutterAnnotation) -> Bool {
-        return lhs.id == rhs.id && lhs.title == rhs.title && lhs.subtitle == rhs.subtitle && lhs.image == rhs.image && lhs.alpha == rhs.alpha && lhs.isDraggable == rhs.isDraggable && lhs.wasDragged == rhs.wasDragged && lhs.isVisible == rhs.isVisible && lhs.borderColor == rhs.borderColor && lhs.selectedBorderColor == rhs.selectedBorderColor && lhs.icon == rhs.icon && lhs.coordinate.latitude == rhs.coordinate.latitude && lhs.coordinate.longitude == rhs.coordinate.longitude && lhs.infoWindowConsumesTapEvents == rhs.infoWindowConsumesTapEvents && lhs.anchor == rhs.anchor && lhs.calloutOffset == rhs.calloutOffset && lhs.coordinate.latitude == rhs.coordinate.latitude && lhs.coordinate.longitude == rhs.coordinate.longitude && lhs.zIndex == rhs.zIndex
+        return lhs.id == rhs.id && lhs.title == rhs.title && lhs.subtitle == rhs.subtitle && lhs.image == rhs.image && lhs.alpha == rhs.alpha && lhs.isDraggable == rhs.isDraggable && lhs.wasDragged == rhs.wasDragged && lhs.isVisible == rhs.isVisible && lhs.borderColor == rhs.borderColor && lhs.selectedBorderColor == rhs.selectedBorderColor && lhs.borderWidth == rhs.borderWidth && lhs.dotWidth == rhs.dotWidth && lhs.iconOffset == rhs.iconOffset && lhs.icon == rhs.icon && lhs.coordinate.latitude == rhs.coordinate.latitude && lhs.coordinate.longitude == rhs.coordinate.longitude && lhs.infoWindowConsumesTapEvents == rhs.infoWindowConsumesTapEvents && lhs.anchor == rhs.anchor && lhs.calloutOffset == rhs.calloutOffset && lhs.coordinate.latitude == rhs.coordinate.latitude && lhs.coordinate.longitude == rhs.coordinate.longitude && lhs.zIndex == rhs.zIndex
     }
     
     static func != (lhs: FlutterAnnotation, rhs: FlutterAnnotation) -> Bool {

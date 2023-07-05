@@ -156,7 +156,10 @@ class Annotation {
       this.zIndex = -1,
       this.onDragEnd,
       this.borderColor = Colors.white,
-      this.selectedBorderColor = Colors.blueAccent})
+      this.selectedBorderColor = Colors.blueAccent,
+      this.borderWidth = 2.0,
+      this.dotWidth = 5.5,
+      this.iconOffset = 6.5})
       : assert(0.0 <= alpha && alpha <= 1.0);
 
   /// Uniquely identifies a [Annotation].
@@ -198,6 +201,12 @@ class Annotation {
 
   final Color selectedBorderColor;
 
+  final double borderWidth;
+
+  final double dotWidth;
+
+  final double iconOffset;
+
   final ValueChanged<LatLng>? onDragEnd;
 
   /// The z-index of the annotation, used to determine relative drawing order of
@@ -222,7 +231,10 @@ class Annotation {
       VoidCallback? onTapParam,
       ValueChanged<LatLng>? onDragEndParam,
       Color? borderColorParam,
-      Color? selectedBorderColorParam}) {
+      Color? selectedBorderColorParam,
+      double? borderWidthParam,
+      double? dotWidthParam,
+      double? iconOffsetParam}) {
     return Annotation(
         annotationId: annotationId,
         anchor: anchorParam ?? anchor,
@@ -236,7 +248,10 @@ class Annotation {
         zIndex: zIndexParam ?? zIndex,
         onDragEnd: onDragEndParam ?? onDragEnd,
         borderColor: borderColorParam ?? borderColor,
-        selectedBorderColor: selectedBorderColorParam ?? selectedBorderColor);
+        selectedBorderColor: selectedBorderColorParam ?? selectedBorderColor,
+        borderWidth: borderWidthParam ?? borderWidth,
+        dotWidth: dotWidthParam ?? dotWidth,
+        iconOffset: iconOffsetParam ?? iconOffset);
   }
 
   Map<String, dynamic> _toJson() {
@@ -261,6 +276,9 @@ class Annotation {
         '#${(borderColor.value & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}ff');
     addIfPresent('selectedBorderColor',
         '#${(selectedBorderColor.value & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}ff');
+    addIfPresent('borderWidth', borderWidth);
+    addIfPresent('dotWidth', dotWidth);
+    addIfPresent('iconOffset', iconOffset);
     return json;
   }
 
@@ -279,7 +297,10 @@ class Annotation {
         visible == typedOther.visible &&
         zIndex == typedOther.zIndex &&
         borderColor == typedOther.borderColor &&
-        selectedBorderColor == typedOther.selectedBorderColor;
+        selectedBorderColor == typedOther.selectedBorderColor &&
+        borderWidth == typedOther.borderWidth &&
+        dotWidth == typedOther.dotWidth &&
+        iconOffset == typedOther.iconOffset;
   }
 
   @override
@@ -289,7 +310,7 @@ class Annotation {
   String toString() {
     return 'Annotation{annotationId: $annotationId, alpha: $alpha, draggable: $draggable, '
         'icon: $icon, infoWindow: $infoWindow, position: $position ,visible: $visible, '
-        'onTap: $onTap}, zIndex: $zIndex, onTap: $onTap, borderColor: #${(borderColor.value & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}ff, selectedBorderColor: #${(selectedBorderColor.value & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}ff}';
+        'onTap: $onTap}, zIndex: $zIndex, onTap: $onTap, borderColor: #${(borderColor.value & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}ff, selectedBorderColor: #${(selectedBorderColor.value & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}ff}, borderWidth: $borderWidth, dotWidth: $dotWidth, iconOffset: $iconOffset';
   }
 }
 

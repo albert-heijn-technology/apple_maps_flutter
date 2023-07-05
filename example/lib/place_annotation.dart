@@ -100,8 +100,11 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
     }
 
     final Annotation annotation = Annotation(
-      borderColor: Colors.red,
-      selectedBorderColor: Colors.blue,
+      borderColor: Colors.white,
+      selectedBorderColor: Colors.purple,
+      borderWidth: 3,
+      iconOffset: 7,
+      dotWidth: 6,
       annotationId: annotationId,
       icon: bitMapDescriptor,
       position: LatLng(

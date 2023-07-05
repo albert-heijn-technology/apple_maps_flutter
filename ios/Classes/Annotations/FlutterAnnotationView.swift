@@ -17,10 +17,12 @@ protocol ZPositionableAnnotation {
 
 class FlutterAnnotationView: MKAnnotationView {
     public var imageView: UIImageView!
+    public var dotSize = CGSize(width: 7.5, height: 7.5)
+    public var dotView: UIView! = UIView()
+
 
     override init(annotation: MKAnnotation?, reuseIdentifier: String?) {
         super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)
-
         self.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
 
         // Create container view with shadow
@@ -33,10 +35,10 @@ class FlutterAnnotationView: MKAnnotationView {
         containerView.layer.shadowOpacity = 0.4
 
         // Create and add image view to container view
-        self.imageView = UIImageView(frame: CGRect(x: 0, y: -6, width: 50, height: 50))
+        self.imageView = UIImageView(frame: CGRect(x: 0, y: -6.5, width: 50, height: 50))
         self.imageView.layer.cornerRadius = 25.0
         self.imageView.layer.masksToBounds = true
-        self.imageView.layer.borderWidth = 2.0
+        self.imageView.layer.borderWidth = 4.0
         self.imageView.layer.borderColor = UIColor.white.cgColor
         self.imageView.contentMode = .scaleAspectFill
         self.imageView.clipsToBounds = true
@@ -45,9 +47,9 @@ class FlutterAnnotationView: MKAnnotationView {
         // Add container view to annotation view
         self.addSubview(containerView)
 
+        dotView.frame = CGRect(origin: CGPoint(x: (self.imageView.bounds.width - dotSize.width) / 2, y: (self.imageView.bounds.height - dotSize.height) / 2 + 25.0), size: dotSize)
+
         // Create and add dot view to container view
-        let dotSize = CGSize(width: 5.5, height: 5.5)
-        let dotView = UIView(frame: CGRect(origin: CGPoint(x: (self.imageView.bounds.width - dotSize.width) / 2, y: (self.imageView.bounds.height - dotSize.height) / 2 + 25.0), size: dotSize))
         dotView.backgroundColor = .white
         dotView.layer.cornerRadius = dotSize.width / 2
         dotView.layer.masksToBounds = false

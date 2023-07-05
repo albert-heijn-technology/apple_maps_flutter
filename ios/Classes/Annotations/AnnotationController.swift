@@ -44,6 +44,8 @@ extension AppleMapController: AnnotationDelegate {
             if let annotation: FlutterAnnotation = view.annotation as? FlutterAnnotation {
                 UIView.animate(withDuration: 0.18) {
                     annotationView.imageView.layer.borderColor = (annotation as? FlutterAnnotation)!.selectedBorderColor!
+                    annotationView.dotView.backgroundColor = UIColor(cgColor: annotation.selectedBorderColor!)
+
                 }
             }   
         }
@@ -54,6 +56,7 @@ extension AppleMapController: AnnotationDelegate {
             if let annotation: FlutterAnnotation = view.annotation as? FlutterAnnotation {
                 UIView.animate(withDuration: 0.18) {
                     annotationView.imageView.layer.borderColor = (annotation as? FlutterAnnotation)!.borderColor!
+                    annotationView.dotView.backgroundColor = UIColor(cgColor: annotation.borderColor!)
                 }
             }
         }
@@ -78,6 +81,12 @@ extension AppleMapController: AnnotationDelegate {
             } else if annotation.icon.iconType == .CUSTOM_FROM_ASSET || annotation.icon.iconType == .CUSTOM_FROM_BYTES {
                 annotationView = getCustomAnnotationView(annotation: annotation, id: identifier)
                 (annotationView as? FlutterAnnotationView)!.imageView.layer.borderColor = annotation.borderColor
+                (annotationView as? FlutterAnnotationView)!.imageView.layer.borderWidth = annotation.borderWidth
+                (annotationView as? FlutterAnnotationView)!.imageView.frame = CGRect(x: 0, y: -annotation.iconOffset, width: 50, height: 50)
+                (annotationView as? FlutterAnnotationView)!.dotView.backgroundColor = UIColor(cgColor: annotation.borderColor)
+                (annotationView as? FlutterAnnotationView)!.dotView.frame.origin = CGPoint(x: ((annotationView as? FlutterAnnotationView)!.imageView.bounds.width - annotation.dotWidth) / 2, y: ((annotationView as? FlutterAnnotationView)!.imageView.bounds.height - annotation.dotWidth) / 2 + 25.0)
+                (annotationView as? FlutterAnnotationView)!.dotView.frame.size = CGSize(width: annotation.dotWidth, height: annotation.dotWidth)
+                (annotationView as? FlutterAnnotationView)!.dotView.layer.cornerRadius = annotation.dotWidth / 2
             } else {
                 annotationView = getPinAnnotationView(annotation: annotation, id: identifier)
             }
