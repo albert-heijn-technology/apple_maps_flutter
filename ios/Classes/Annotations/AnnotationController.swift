@@ -87,6 +87,8 @@ extension AppleMapController: AnnotationDelegate {
                 (annotationView as? FlutterAnnotationView)!.dotView.frame.origin = CGPoint(x: ((annotationView as? FlutterAnnotationView)!.imageView.bounds.width - annotation.dotWidth) / 2, y: ((annotationView as? FlutterAnnotationView)!.imageView.bounds.height - annotation.dotWidth) / 2 + 25.0)
                 (annotationView as? FlutterAnnotationView)!.dotView.frame.size = CGSize(width: annotation.dotWidth, height: annotation.dotWidth)
                 (annotationView as? FlutterAnnotationView)!.dotView.layer.cornerRadius = annotation.dotWidth / 2
+                (annotationView as? FlutterAnnotationView)!.containerView.layer.shadowOpacity = annotation.shadowOpacity
+                (annotationView as? FlutterAnnotationView)!.dotView.layer.shadowOpacity = annotation.shadowOpacity
             } else {
                 annotationView = getPinAnnotationView(annotation: annotation, id: identifier)
             }

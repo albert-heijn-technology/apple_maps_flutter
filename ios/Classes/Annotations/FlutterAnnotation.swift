@@ -29,6 +29,7 @@ class FlutterAnnotation: NSObject, MKAnnotation {
     var borderWidth: Double!
     var dotWidth: Double!
     var iconOffset: Double!
+    var shadowOpacity: Float!
     
     public init(fromDictionary annotationData: Dictionary<String, Any>, registrar: FlutterPluginRegistrar) {
         let position: Array<Double> = annotationData["position"] as! Array<Double>
@@ -47,6 +48,7 @@ class FlutterAnnotation: NSObject, MKAnnotation {
         self.borderWidth = annotationData["borderWidth"] as? Double
         self.dotWidth = annotationData["dotWidth"] as? Double
         self.iconOffset = annotationData["iconOffset"] as? Double
+        self.shadowOpacity = annotationData["shadowOpacity"] as? Float
         if let zIndex = annotationData["zIndex"] as? Double {
             self.zIndex = zIndex
         }

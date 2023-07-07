@@ -159,6 +159,7 @@ class Annotation {
       this.selectedBorderColor = Colors.blueAccent,
       this.borderWidth = 2.0,
       this.dotWidth = 5.5,
+      this.shadowOpacity = 0.5,
       this.iconOffset = 6.5})
       : assert(0.0 <= alpha && alpha <= 1.0);
 
@@ -207,6 +208,8 @@ class Annotation {
 
   final double iconOffset;
 
+  final double shadowOpacity;
+
   final ValueChanged<LatLng>? onDragEnd;
 
   /// The z-index of the annotation, used to determine relative drawing order of
@@ -234,7 +237,8 @@ class Annotation {
       Color? selectedBorderColorParam,
       double? borderWidthParam,
       double? dotWidthParam,
-      double? iconOffsetParam}) {
+      double? iconOffsetParam,
+      double? shadowOpacityParam}) {
     return Annotation(
         annotationId: annotationId,
         anchor: anchorParam ?? anchor,
@@ -251,7 +255,8 @@ class Annotation {
         selectedBorderColor: selectedBorderColorParam ?? selectedBorderColor,
         borderWidth: borderWidthParam ?? borderWidth,
         dotWidth: dotWidthParam ?? dotWidth,
-        iconOffset: iconOffsetParam ?? iconOffset);
+        iconOffset: iconOffsetParam ?? iconOffset,
+        shadowOpacity: shadowOpacityParam ?? shadowOpacity);
   }
 
   Map<String, dynamic> _toJson() {
@@ -279,6 +284,7 @@ class Annotation {
     addIfPresent('borderWidth', borderWidth);
     addIfPresent('dotWidth', dotWidth);
     addIfPresent('iconOffset', iconOffset);
+    addIfPresent('shadowOpacity', shadowOpacity);
     return json;
   }
 
@@ -300,7 +306,8 @@ class Annotation {
         selectedBorderColor == typedOther.selectedBorderColor &&
         borderWidth == typedOther.borderWidth &&
         dotWidth == typedOther.dotWidth &&
-        iconOffset == typedOther.iconOffset;
+        iconOffset == typedOther.iconOffset &&
+        shadowOpacity == typedOther.shadowOpacity;
   }
 
   @override
@@ -310,7 +317,7 @@ class Annotation {
   String toString() {
     return 'Annotation{annotationId: $annotationId, alpha: $alpha, draggable: $draggable, '
         'icon: $icon, infoWindow: $infoWindow, position: $position ,visible: $visible, '
-        'onTap: $onTap}, zIndex: $zIndex, onTap: $onTap, borderColor: #${(borderColor.value & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}ff, selectedBorderColor: #${(selectedBorderColor.value & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}ff}, borderWidth: $borderWidth, dotWidth: $dotWidth, iconOffset: $iconOffset';
+        'onTap: $onTap}, zIndex: $zIndex, onTap: $onTap, borderColor: #${(borderColor.value & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}ff, selectedBorderColor: #${(selectedBorderColor.value & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}ff}, borderWidth: $borderWidth, dotWidth: $dotWidth, iconOffset: $iconOffset, shadowOpacity: $shadowOpacity';
   }
 }
 

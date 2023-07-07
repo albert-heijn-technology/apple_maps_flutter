@@ -19,6 +19,7 @@ class FlutterAnnotationView: MKAnnotationView {
     public var imageView: UIImageView!
     public var dotSize = CGSize(width: 7.5, height: 7.5)
     public var dotView: UIView! = UIView()
+    public var containerView: UIView! = UIView()
 
 
     override init(annotation: MKAnnotation?, reuseIdentifier: String?) {
@@ -26,7 +27,7 @@ class FlutterAnnotationView: MKAnnotationView {
         self.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
 
         // Create container view with shadow
-        let containerView = UIView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+        containerView.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
         containerView.backgroundColor = .clear
         containerView.layer.cornerRadius = 25.0
         containerView.layer.shadowColor = UIColor.black.cgColor
@@ -54,7 +55,7 @@ class FlutterAnnotationView: MKAnnotationView {
         dotView.layer.cornerRadius = dotSize.width / 2
         dotView.layer.masksToBounds = false
         dotView.layer.shadowColor = UIColor.black.cgColor
-        dotView.layer.shadowOpacity = 0.6
+        dotView.layer.shadowOpacity = 0
         dotView.layer.shadowOffset = CGSize(width: 0, height: 0)
         dotView.layer.shadowRadius = 4
         containerView.addSubview(dotView)

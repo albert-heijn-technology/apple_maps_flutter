@@ -103,6 +103,7 @@ class PlaceAnnotationBodyState extends State<PlaceAnnotationBody> {
       borderColor: Colors.white,
       selectedBorderColor: Colors.purple,
       borderWidth: 3,
+      shadowOpacity: 0,
       iconOffset: 7,
       dotWidth: 6,
       annotationId: annotationId,
