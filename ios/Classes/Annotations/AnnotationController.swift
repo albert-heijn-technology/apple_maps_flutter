@@ -94,7 +94,7 @@ extension AppleMapController: AnnotationDelegate {
                 let newAnnotation = FlutterAnnotation.init(fromDictionary: annotationData, registrar: registrar)
                 if annotationToChange != newAnnotation {
                     if !annotationToChange.wasDragged {
-                        addAnnotation(annotation: newAnnotation)
+                        updateAnnotation(annotation: newAnnotation)
                     } else {
                         annotationToChange.wasDragged = false
                     }
@@ -202,6 +202,16 @@ extension AppleMapController: AnnotationDelegate {
             channel.invokeMethod("annotation#onZIndexChanged", arguments: ["annotationId": annotation.id!, "zIndex": annotation.zIndex])
         }
         self.mapView.addAnnotation(annotation)
+    }
+
+    private func updateAnnotation(annotation: FlutterAnnotation) {
+        if self.annotationExists(with: annotation.id) {
+            UIView.animate(withDuration: 0.32, animations: {
+                let oldAnnotation = self.getAnnotation(with: annotation.id)
+                oldAnnotation?.coordinate = annotation.coordinate
+                oldAnnotation?.title = annotation.title
+            })
+        }
     }
 
     private func getNextAnnotationZIndex() -> Double {

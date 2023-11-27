@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.0
+
+* Animate marker position changes instead of removing and re-adding
 ## 1.2.0
 
 * Added a `markerAnnotationWithHue()` and `pinAnnotationWithHue()` method to allow custom marker/pin colors
