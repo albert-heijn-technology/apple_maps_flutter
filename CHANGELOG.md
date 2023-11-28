@@ -1,4 +1,6 @@
 # Changelog
+## 1.2.1
+* Fix Fatal error: Attempted to read an unowned reference but the object was already deallocated
 
 ## 1.2.0
 
