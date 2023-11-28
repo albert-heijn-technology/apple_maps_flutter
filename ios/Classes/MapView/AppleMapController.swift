@@ -322,15 +322,22 @@ extension AppleMapController {
         snapShot?.cancel()
         
         if #available(iOS 10.0, *) {
-            snapShot?.start { [unowned self] snapshot, error in
+            snapShot?.start { [weak self] snapshot, error in
+                guard let self = self else {
+                    return
+                }
+                
                 guard let snapshot = snapshot, error == nil else {
                     onCompletion(nil, error)
                     return
                 }
-
-                let image = UIGraphicsImageRenderer(size: self.snapShotOptions.size).image { context in
+                
+                let image = UIGraphicsImageRenderer(size: self.snapShotOptions.size).image { [weak self] context in
+                    guard let self = self else {
+                        return
+                    }
                     snapshot.image.draw(at: .zero)
-                    let rect = snapShotOptions.mapRect
+                    let rect = self.snapShotOptions.mapRect
                     if options.showAnnotations {
                         for annotation in self.mapView.getMapViewAnnotations() {
                             self.drawAnnotations(annotation: annotation, point: snapshot.point(for: annotation!.coordinate))
