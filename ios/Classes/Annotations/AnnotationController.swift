@@ -205,22 +205,19 @@ extension AppleMapController: AnnotationDelegate {
     }
 
     private func updateAnnotation(annotation: FlutterAnnotation) {
-        if self.annotationExists(with: annotation.id) {
-            let oldAnnotation = self.getAnnotation(with: annotation.id)
-            
-
+        if let oldAnnotation = self.getAnnotation(with: annotation.id) {
             UIView.animate(withDuration: 0.32, animations: {
-                oldAnnotation?.coordinate = annotation.coordinate
-                oldAnnotation?.zIndex = annotation.zIndex
-                oldAnnotation?.anchor = annotation.anchor
-                oldAnnotation?.alpha = annotation.alpha
-                oldAnnotation?.isVisible = annotation.isVisible
-                oldAnnotation?.title = annotation.title
-                oldAnnotation?.subtitle = annotation.subtitle
+                oldAnnotation.coordinate = annotation.coordinate
+                oldAnnotation.zIndex = annotation.zIndex
+                oldAnnotation.anchor = annotation.anchor
+                oldAnnotation.alpha = annotation.alpha
+                oldAnnotation.isVisible = annotation.isVisible
+                oldAnnotation.title = annotation.title
+                oldAnnotation.subtitle = annotation.subtitle
             })
             
             // Update the annotation view with the new image
-            if let view = self.mapView.view(for: oldAnnotation!) {
+            if let view = self.mapView.view(for: oldAnnotation) {
                 let newAnnotationView = getAnnotationView(annotation: annotation)
                 view.image = newAnnotationView.image
             }
