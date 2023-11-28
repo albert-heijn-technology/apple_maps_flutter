@@ -14,7 +14,7 @@ extension AppleMapController: AnnotationDelegate {
         if let annotation: FlutterAnnotation = view.annotation as? FlutterAnnotation  {
             self.currentlySelectedAnnotation = annotation.id
             if !annotation.selectedProgrammatically {
-                if !self.isAnnoationInFront(zIndex: annotation.zIndex) {
+                if !self.isAnnotationInFront(zIndex: annotation.zIndex) {
                     self.moveToFront(annotation: annotation)
                 }
                 self.onAnnotationClick(annotation: annotation)
@@ -235,7 +235,7 @@ extension AppleMapController: AnnotationDelegate {
         return (mapViewAnnotations.last??.zIndex ?? 0) + 1
     }
 
-    private func isAnnoationInFront(zIndex: Double) -> Bool {
+    private func isAnnotationInFront(zIndex: Double) -> Bool {
         return (self.mapView.getMapViewAnnotations().last??.zIndex ?? 0) == zIndex
     }
 
