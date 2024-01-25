@@ -1,17 +1,21 @@
 # Changelog
-## 1.2.1
-* Fix Fatal error: Attempted to read an unowned reference but the object was already deallocated
 
 ## 1.3.0
 
 * Animate marker position changes instead of removing and re-adding
+* Fix Fatal error: Attempted to read an unowned reference but the object was already deallocated
+* Fixed an issue where onCameraMove was not invoked by double-tapping
+* Added insetsLayoutMarginsFromSafeArea
+
 ## 1.2.0
 
 * Added a `markerAnnotationWithHue()` and `pinAnnotationWithHue()` method to allow custom marker/pin colors
+
 ## 1.1.0
 
 * Added Annotation zIndex
 * Added posibility to take snapshots of the map
+
 ## 1.0.3
 
 * Fixes an issue where mapController.moveCamera would animate the camera transition
