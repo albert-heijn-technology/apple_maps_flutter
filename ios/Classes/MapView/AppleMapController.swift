@@ -48,13 +48,6 @@ public class AppleMapController: NSObject, FlutterPlatformView {
         }
     }
     
-    deinit {
-        self.removeAllAnnotations()
-        self.removeAllCircles()
-        self.removeAllPolygons()
-        self.removeAllPolylines()
-    }
-    
     public func view() -> UIView {
         return mapView
     }
