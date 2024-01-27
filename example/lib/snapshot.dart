@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 
 const CameraPosition _kInitialPosition =
-    CameraPosition(target: LatLng(-33.852, 151.211), zoom: 11.0);
+    CameraPosition(target: LatLng(-33.852, 151.211), zoom: 2.0);
 
 class SnapshotPage extends ExamplePage {
   SnapshotPage()
@@ -44,12 +44,16 @@ class _SnapshotBodyState extends State<_SnapshotBody> {
             child: AppleMap(
               onMapCreated: onMapCreated,
               initialCameraPosition: _kInitialPosition,
+              mapType: MapType.hybridFlyover,
             ),
           ),
           TextButton(
             child: Text('Take a snapshot'),
             onPressed: () async {
-              final imageBytes = await _mapController?.takeSnapshot();
+              final imageBytes =
+                  await _mapController?.takeSnapshot(SnapshotOptions(
+                mapType: MapType.hybridFlyover,
+              ));
               setState(() {
                 _imageBytes = imageBytes;
               });
