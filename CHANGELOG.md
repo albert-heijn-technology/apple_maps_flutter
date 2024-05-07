@@ -1,4 +1,7 @@
 # Changelog
+## 1.3.0
+
+* Added geodesic polyline support 
 
 ## 1.3.0
 
