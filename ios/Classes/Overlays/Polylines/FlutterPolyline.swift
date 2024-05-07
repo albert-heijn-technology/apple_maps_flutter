@@ -14,6 +14,7 @@ class FlutterPolyline: MKPolyline {
     var width: CGFloat?
     var isVisible: Bool?
     var id: String?
+    var isGeodesic: Bool? 
     var capType: CGLineCap?
     var pattern: [NSNumber]?
     var lineJoin: CGLineJoin?
@@ -76,6 +77,7 @@ class FlutterPolyline: MKPolyline {
         self.color = JsonConversions.convertColor(data: polylineData["color"] as! NSNumber)
         self.isConsumingTapEvents = polylineData["consumeTapEvents"] as? Bool
         self.width = polylineData["width"] as? CGFloat
+        self.isGeodesic = polylineData["geodesic"] as? Bool
         self.id = polylineData["polylineId"] as? String
         self.isVisible = polylineData["visible"] as? Bool
         self.pattern = self.linePatternToArray(patternData: linePattern, lineWidth: self.width)
@@ -138,7 +140,7 @@ class FlutterPolyline: MKPolyline {
     
     static func == (lhs: FlutterPolyline, rhs: FlutterPolyline) -> Bool {
         return lhs.color == rhs.color && lhs.isConsumingTapEvents == rhs.isConsumingTapEvents && lhs.width ==  rhs.width
-            && lhs.isVisible == rhs.isVisible && lhs.capType == rhs.capType && lhs.pattern == rhs.pattern && lhs.lineJoin == rhs.lineJoin && rhs.zIndex == lhs.zIndex && lhs.coordinate.latitude == rhs.coordinate.latitude && lhs.coordinate.longitude == rhs.coordinate.longitude
+            && lhs.isVisible == rhs.isVisible && lhs.isGeodesic == rhs.isGeodesic && lhs.capType == rhs.capType && lhs.pattern == rhs.pattern && lhs.lineJoin == rhs.lineJoin && rhs.zIndex == lhs.zIndex && lhs.coordinate.latitude == rhs.coordinate.latitude && lhs.coordinate.longitude == rhs.coordinate.longitude
     }
     
     static func != (lhs: FlutterPolyline, rhs: FlutterPolyline) -> Bool {

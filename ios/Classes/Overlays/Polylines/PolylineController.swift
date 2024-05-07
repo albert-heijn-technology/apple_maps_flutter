@@ -15,7 +15,15 @@ extension AppleMapController: PolylineDelegate {
         guard let polyline = overlay as? MKPolyline else {
            return MKOverlayRenderer()
         }
-        let polylineRenderer = MKPolylineRenderer(overlay: polyline)
+
+        let polylineRenderer = {
+            if let flutterPolyline: FlutterPolyline = overlay as? FlutterPolyline, (flutterPolyline.isGeodesic ?? false) {
+                let geodesicPolyline = MKGeodesicPolyline(points: polyline.points(), count: polyline.pointCount)
+                return MKPolylineRenderer(overlay: geodesicPolyline)
+            } else {
+                return MKPolylineRenderer(overlay: overlay)
+            }
+        }()
 
         if let flutterPolyline: FlutterPolyline = overlay as? FlutterPolyline {
             if flutterPolyline.isVisible! {
@@ -29,6 +37,7 @@ extension AppleMapController: PolylineDelegate {
                 polylineRenderer.lineWidth = 0.0
             }
         }
+
         return polylineRenderer
     }
 
