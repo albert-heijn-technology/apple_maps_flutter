@@ -87,7 +87,7 @@ class _PolygonUpdates {
 
   @override
   int get hashCode =>
-      hashValues(polygonsToAdd, polygonIdsToRemove, polygonsToChange);
+      Object.hash(polygonsToAdd, polygonIdsToRemove, polygonsToChange);
 
   @override
   String toString() {
