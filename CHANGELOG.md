@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.0
+
+* Migrates from `ui.hash*` to `Object.hash*`
+
 ## 1.3.0
 
 * Animate marker position changes instead of removing and re-adding
