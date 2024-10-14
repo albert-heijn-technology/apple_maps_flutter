@@ -25,7 +25,7 @@ extension AppleMapController: AnnotationDelegate {
             
             self.currentlySelectedAnnotation = annotation.id
             if !annotation.selectedProgrammatically {
-                if !self.isAnnoationInFront(zIndex: annotation.zIndex) {
+                if !self.isAnnotationInFront(zIndex: annotation.zIndex) {
                     self.moveToFront(annotation: annotation)
                 }
                 self.onAnnotationClick(annotation: annotation)
@@ -134,7 +134,7 @@ extension AppleMapController: AnnotationDelegate {
                 let newAnnotation = FlutterAnnotation.init(fromDictionary: annotationData, registrar: registrar)
                 if annotationToChange != newAnnotation {
                     if !annotationToChange.wasDragged {
-                        addAnnotation(annotation: newAnnotation)
+                        updateAnnotation(annotation: newAnnotation)
                     } else {
                         annotationToChange.wasDragged = false
                     }
@@ -244,6 +244,26 @@ extension AppleMapController: AnnotationDelegate {
         self.mapView.addAnnotation(annotation)
     }
 
+    private func updateAnnotation(annotation: FlutterAnnotation) {
+        if let oldAnnotation = self.getAnnotation(with: annotation.id) {
+            UIView.animate(withDuration: 0.32, animations: {
+                oldAnnotation.coordinate = annotation.coordinate
+                oldAnnotation.zIndex = annotation.zIndex
+                oldAnnotation.anchor = annotation.anchor
+                oldAnnotation.alpha = annotation.alpha
+                oldAnnotation.isVisible = annotation.isVisible
+                oldAnnotation.title = annotation.title
+                oldAnnotation.subtitle = annotation.subtitle
+            })
+            
+            // Update the annotation view with the new image
+            if let view = self.mapView.view(for: oldAnnotation) {
+                let newAnnotationView = getAnnotationView(annotation: annotation)
+                view.image = newAnnotationView.image
+            }
+        }
+    }
+
     private func getNextAnnotationZIndex() -> Double {
         let mapViewAnnotations = self.mapView.getMapViewAnnotations()
         if mapViewAnnotations.isEmpty {
@@ -252,7 +272,7 @@ extension AppleMapController: AnnotationDelegate {
         return (mapViewAnnotations.last??.zIndex ?? 0) + 1
     }
 
-    private func isAnnoationInFront(zIndex: Double) -> Bool {
+    private func isAnnotationInFront(zIndex: Double) -> Bool {
         return (self.mapView.getMapViewAnnotations().last??.zIndex ?? 0) == zIndex
     }
 

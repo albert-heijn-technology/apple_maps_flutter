@@ -29,6 +29,7 @@ class ScrollingMapBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
+      bottom: false,
       child: ListView(
         children: <Widget>[
           Card(
@@ -99,6 +100,7 @@ class ScrollingMapBody extends StatelessWidget {
                             () => ScaleGestureRecognizer(),
                           ),
                         ].toSet(),
+                        insetsLayoutMarginsFromSafeArea: false,
                       ),
                     ),
                   ),

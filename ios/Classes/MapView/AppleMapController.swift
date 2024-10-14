@@ -9,6 +9,7 @@ import Foundation
 import MapKit
 
 public class AppleMapController: NSObject, FlutterPlatformView {
+    var contentView: UIView
     var mapView: FlutterMapView
     var registrar: FlutterPluginRegistrar
     var channel: FlutterMethodChannel
@@ -24,6 +25,11 @@ public class AppleMapController: NSObject, FlutterPlatformView {
         
         self.mapView = FlutterMapView(channel: channel, options: options)
         self.registrar = registrar
+        
+        // To stop the odd movement of the Apple logo.
+        self.contentView = UIScrollView()
+        self.contentView.addSubview(mapView)
+        mapView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
         
         self.initialCameraPosition = args["initialCameraPosition"]! as! Dictionary<String, Any>
         
@@ -48,15 +54,8 @@ public class AppleMapController: NSObject, FlutterPlatformView {
         }
     }
     
-    deinit {
-        self.removeAllAnnotations()
-        self.removeAllCircles()
-        self.removeAllPolygons()
-        self.removeAllPolylines()
-    }
-    
     public func view() -> UIView {
-        return mapView
+        return contentView
     }
     
     private func setMethodCallHandlers() {
@@ -323,15 +322,22 @@ extension AppleMapController {
         snapShot?.cancel()
         
         if #available(iOS 10.0, *) {
-            snapShot?.start { [unowned self] snapshot, error in
+            snapShot?.start { [weak self] snapshot, error in
+                guard let self = self else {
+                    return
+                }
+                
                 guard let snapshot = snapshot, error == nil else {
                     onCompletion(nil, error)
                     return
                 }
-
-                let image = UIGraphicsImageRenderer(size: self.snapShotOptions.size).image { context in
+                
+                let image = UIGraphicsImageRenderer(size: self.snapShotOptions.size).image { [weak self] context in
+                    guard let self = self else {
+                        return
+                    }
                     snapshot.image.draw(at: .zero)
-                    let rect = snapShotOptions.mapRect
+                    let rect = self.snapShotOptions.mapRect
                     if options.showAnnotations {
                         for annotation in self.mapView.getMapViewAnnotations() {
                             self.drawAnnotations(annotation: annotation, point: snapshot.point(for: annotation!.coordinate))
