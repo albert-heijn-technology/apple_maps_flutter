@@ -23,6 +23,7 @@ class AppleMap extends StatefulWidget {
     this.compassEnabled = true,
     this.trafficEnabled = false,
     this.mapType = MapType.standard,
+    this.colorScheme = MapColorScheme.system,
     this.minMaxZoomPreference = MinMaxZoomPreference.unbounded,
     this.trackingMode = TrackingMode.none,
     this.rotateGesturesEnabled = true,
@@ -58,6 +59,9 @@ class AppleMap extends StatefulWidget {
 
   /// Type of map tiles to be rendered.
   final MapType mapType;
+
+  /// Color scheme for the standard map to use.
+  final MapColorScheme colorScheme;
 
   /// The mode used to track the user location.
   final TrackingMode trackingMode;
@@ -188,7 +192,7 @@ class _AppleMapState extends State<AppleMap> {
   Widget build(BuildContext context) {
     final Map<String, dynamic> creationParams = <String, dynamic>{
       'initialCameraPosition': widget.initialCameraPosition._toMap(),
-      'options': _appleMapOptions.toMap(),
+      'options': _appleMapOptions.toMap(context: context),
       'annotationsToAdd': _serializeAnnotationSet(widget.annotations),
       'polylinesToAdd': _serializePolylineSet(widget.polylines),
       'polygonsToAdd': _serializePolygonSet(widget.polygons),
@@ -332,6 +336,7 @@ class _AppleMapOptions {
     this.compassEnabled,
     this.trafficEnabled,
     this.mapType,
+    this.colorScheme,
     this.minMaxZoomPreference,
     this.rotateGesturesEnabled,
     this.scrollGesturesEnabled,
@@ -349,6 +354,7 @@ class _AppleMapOptions {
       compassEnabled: map.compassEnabled,
       trafficEnabled: map.trafficEnabled,
       mapType: map.mapType,
+      colorScheme: map.colorScheme,
       minMaxZoomPreference: map.minMaxZoomPreference,
       rotateGesturesEnabled: map.rotateGesturesEnabled,
       scrollGesturesEnabled: map.scrollGesturesEnabled,
@@ -367,6 +373,8 @@ class _AppleMapOptions {
   final bool? trafficEnabled;
 
   final MapType? mapType;
+
+  final MapColorScheme? colorScheme;
 
   final MinMaxZoomPreference? minMaxZoomPreference;
 
@@ -388,13 +396,26 @@ class _AppleMapOptions {
 
   final bool? insetsLayoutMarginsFromSafeArea;
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMap({BuildContext? context}) {
     final Map<String, dynamic> optionsMap = <String, dynamic>{};
 
     void addIfNonNull(String fieldName, dynamic value) {
       if (value != null) {
         optionsMap[fieldName] = value;
       }
+    }
+
+    if (context != null) {
+      final systemScheme = Theme.of(context).brightness == Brightness.dark
+          ? MapColorScheme.dark
+          : MapColorScheme.light;
+      addIfNonNull(
+          'colorScheme',
+          colorScheme == MapColorScheme.system
+              ? systemScheme.index
+              : colorScheme?.index);
+    } else {
+      addIfNonNull('colorScheme', colorScheme?.index);
     }
 
     addIfNonNull('compassEnabled', compassEnabled);

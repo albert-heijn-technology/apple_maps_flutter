@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.0
+
+* Add option to set a `colorScheme` for the map (system, light, dark)
+
 ## 1.3.0
 
 * Animate marker position changes instead of removing and re-adding
