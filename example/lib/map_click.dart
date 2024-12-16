@@ -4,7 +4,6 @@
 
 import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 import 'page.dart';
 
@@ -30,11 +29,11 @@ class _MapClickBody extends StatefulWidget {
 }
 
 class _MapClickBodyState extends State<_MapClickBody> {
-  _MapClickBodyState();
-
   AppleMapController? mapController;
+
   LatLng? _lastTap;
   LatLng? _lastLongPress;
+  _MapClickBodyState();
 
   @override
   Widget build(BuildContext context) {

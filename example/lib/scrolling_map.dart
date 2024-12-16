@@ -8,23 +8,13 @@ import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 import 'page.dart';
 
-class ScrollingMapPage extends ExamplePage {
-  ScrollingMapPage() : super(const Icon(Icons.map), 'Scrolling map');
-
-  @override
-  Widget build(BuildContext context) {
-    return const ScrollingMapBody();
-  }
-}
-
 class ScrollingMapBody extends StatelessWidget {
-  const ScrollingMapBody();
-
   final LatLng center = const LatLng(32.080664, 34.9563837);
+
+  const ScrollingMapBody();
 
   @override
   Widget build(BuildContext context) {
@@ -111,5 +101,14 @@ class ScrollingMapBody extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class ScrollingMapPage extends ExamplePage {
+  ScrollingMapPage() : super(const Icon(Icons.map), 'Scrolling map');
+
+  @override
+  Widget build(BuildContext context) {
+    return const ScrollingMapBody();
   }
 }

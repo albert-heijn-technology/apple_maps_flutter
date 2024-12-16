@@ -8,6 +8,11 @@ part of apple_maps_flutter;
 ///
 /// Used in [AppleMapController] when the map is updated.
 class _PolylineUpdates {
+  late Set<Polyline> polylinesToAdd;
+
+  late Set<PolylineId> polylineIdsToRemove;
+  late Set<Polyline> polylinesToChange;
+
   /// Computes [_PolylineUpdates] given previous and current [Polyline]s.
   _PolylineUpdates.from(Set<Polyline>? previous, Set<Polyline>? current) {
     if (previous == null) {
@@ -48,9 +53,26 @@ class _PolylineUpdates {
     polylinesToChange = _polylinesToChange;
   }
 
-  late Set<Polyline> polylinesToAdd;
-  late Set<PolylineId> polylineIdsToRemove;
-  late Set<Polyline> polylinesToChange;
+  @override
+  int get hashCode =>
+      Object.hash(polylinesToAdd, polylineIdsToRemove, polylinesToChange);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! _PolylineUpdates) return false;
+    final _PolylineUpdates typedOther = other;
+    return setEquals(polylinesToAdd, typedOther.polylinesToAdd) &&
+        setEquals(polylineIdsToRemove, typedOther.polylineIdsToRemove) &&
+        setEquals(polylinesToChange, typedOther.polylinesToChange);
+  }
+
+  @override
+  String toString() {
+    return '_PolylineUpdates{polylinesToAdd: $polylinesToAdd, '
+        'polylineIdsToRemove: $polylineIdsToRemove, '
+        'polylinesToChange: $polylinesToChange}';
+  }
 
   Map<String, dynamic> _toMap() {
     final Map<String, dynamic> updateMap = <String, dynamic>{};
@@ -67,26 +89,5 @@ class _PolylineUpdates {
         polylineIdsToRemove.map<dynamic>((PolylineId m) => m.value).toList());
 
     return updateMap;
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other is! _PolylineUpdates) return false;
-    final _PolylineUpdates typedOther = other;
-    return setEquals(polylinesToAdd, typedOther.polylinesToAdd) &&
-        setEquals(polylineIdsToRemove, typedOther.polylineIdsToRemove) &&
-        setEquals(polylinesToChange, typedOther.polylinesToChange);
-  }
-
-  @override
-  int get hashCode =>
-      hashValues(polylinesToAdd, polylineIdsToRemove, polylinesToChange);
-
-  @override
-  String toString() {
-    return '_PolylineUpdates{polylinesToAdd: $polylinesToAdd, '
-        'polylineIdsToRemove: $polylineIdsToRemove, '
-        'polylinesToChange: $polylinesToChange}';
   }
 }

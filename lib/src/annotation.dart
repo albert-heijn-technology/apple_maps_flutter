@@ -4,6 +4,16 @@
 
 part of apple_maps_flutter;
 
+Map<AnnotationId, Annotation> _keyByAnnotationId(
+    Iterable<Annotation>? annotations) {
+  if (annotations == null) {
+    return <AnnotationId, Annotation>{};
+  }
+  return Map<AnnotationId, Annotation>.fromEntries(annotations.map(
+      (Annotation annotation) => MapEntry<AnnotationId, Annotation>(
+          annotation.annotationId, annotation)));
+}
+
 dynamic _offsetToJson(Offset? offset) {
   if (offset == null) {
     return null;
@@ -11,117 +21,14 @@ dynamic _offsetToJson(Offset? offset) {
   return <dynamic>[offset.dx, offset.dy];
 }
 
-/// Text labels for a [Annotation] info window.
-class InfoWindow {
-  const InfoWindow({
-    this.title,
-    this.snippet,
-    this.anchor = const Offset(0.5, 0.0),
-    this.onTap,
-  });
-
-  /// Text labels specifying that no text is to be displayed.
-  static const InfoWindow noText = InfoWindow();
-
-  /// Text displayed in an info window when the user taps the annotation.
-  ///
-  /// A null value means no title.
-  final String? title;
-
-  /// Additional text displayed below the [title].
-  ///
-  /// A null value means no additional text.
-  final String? snippet;
-
-  /// The icon image point that will be the anchor of the info window when
-  /// displayed.
-  ///
-  /// The image point is specified in normalized coordinates: An anchor of
-  /// (0.0, 0.0) means the top left corner of the image. An anchor
-  /// of (1.0, 1.0) means the bottom right corner of the image.
-  final Offset anchor;
-
-  /// onTap callback for this [InfoWindow].
-  final VoidCallback? onTap;
-
-  /// Creates a new [InfoWindow] object whose values are the same as this instance,
-  /// unless overwritten by the specified parameters.
-  InfoWindow copyWith({
-    String? titleParam,
-    String? snippetParam,
-    Offset? anchorParam,
-    VoidCallback? onTapParam,
-  }) {
-    return InfoWindow(
-      title: titleParam ?? title,
-      snippet: snippetParam ?? snippet,
-      anchor: anchorParam ?? anchor,
-      onTap: onTapParam ?? onTap,
-    );
+List<Map<String, dynamic>>? _serializeAnnotationSet(
+    Set<Annotation>? annotations) {
+  if (annotations == null) {
+    return null;
   }
-
-  dynamic _toJson() {
-    final Map<String, dynamic> json = <String, dynamic>{};
-
-    void addIfPresent(String fieldName, dynamic value) {
-      if (value != null) {
-        json[fieldName] = value;
-      }
-    }
-
-    addIfPresent('title', title);
-    addIfPresent('snippet', snippet);
-    addIfPresent('anchor', _offsetToJson(anchor));
-    addIfPresent('consumesTapEvents', onTap != null);
-
-    return json;
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other is! InfoWindow) return false;
-    final InfoWindow typedOther = other;
-    return title == typedOther.title &&
-        snippet == typedOther.snippet &&
-        anchor == typedOther.anchor &&
-        onTap == typedOther.onTap;
-  }
-
-  @override
-  int get hashCode => hashValues(title.hashCode, snippet, anchor);
-
-  @override
-  String toString() {
-    return 'InfoWindow{title: $title, snippet: $snippet, anchor: $anchor, consumesTapEvents: ${onTap != null}}';
-  }
-}
-
-/// Uniquely identifies a [Annotation] among [AppleMap] annotations.
-///
-/// This does not have to be globally unique, only unique among the list.
-@immutable
-class AnnotationId {
-  AnnotationId(this.value);
-
-  /// value of the [AnnotationId].
-  final String value;
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other is! AnnotationId) return false;
-    final AnnotationId typedOther = other;
-    return value == typedOther.value;
-  }
-
-  @override
-  int get hashCode => value.hashCode;
-
-  @override
-  String toString() {
-    return 'AnnotationId{value: $value}';
-  }
+  return annotations
+      .map<Map<String, dynamic>>((Annotation m) => m._toJson())
+      .toList();
 }
 
 /// Marks a geographical location on the map.
@@ -131,32 +38,6 @@ class AnnotationId {
 /// due to map rotations, tilting, or zooming.
 @immutable
 class Annotation {
-  /// Creates a set of annotation configuration options.
-  ///
-  /// Default annotation options.
-  ///
-  /// Specifies a annotation that
-  /// * is fully opaque; [alpha] is 1.0
-  /// * has default tap handling; [consumeTapEvents] is false
-  /// * is stationary; [draggable] is false
-  /// * has a default icon; [icon] is default Pin Annotation
-  /// * has no info window text; [infoWindowText] is `InfoWindowText.noText`
-  /// * is positioned at 0, 0; [position] is `LatLng(0.0, 0.0)`
-  /// * is visible; [visible] is true
-  Annotation({
-    required this.annotationId,
-    this.alpha = 1.0,
-    this.anchor = const Offset(0.5, 1.0),
-    this.draggable = false,
-    this.icon = BitmapDescriptor.defaultAnnotation,
-    this.infoWindow = InfoWindow.noText,
-    this.position = const LatLng(0.0, 0.0),
-    this.onTap,
-    this.visible = true,
-    this.zIndex = -1,
-    this.onDragEnd,
-  }) : assert(0.0 <= alpha && alpha <= 1.0);
-
   /// Uniquely identifies a [Annotation].
   final AnnotationId annotationId;
 
@@ -201,6 +82,51 @@ class Annotation {
   /// earlier, and thus appearing to be closer to the surface of the Earth.
   double zIndex;
 
+  /// Creates a set of annotation configuration options.
+  ///
+  /// Default annotation options.
+  ///
+  /// Specifies a annotation that
+  /// * is fully opaque; [alpha] is 1.0
+  /// * has default tap handling; [consumeTapEvents] is false
+  /// * is stationary; [draggable] is false
+  /// * has a default icon; [icon] is default Pin Annotation
+  /// * has no info window text; [infoWindowText] is `InfoWindowText.noText`
+  /// * is positioned at 0, 0; [position] is `LatLng(0.0, 0.0)`
+  /// * is visible; [visible] is true
+  Annotation({
+    required this.annotationId,
+    this.alpha = 1.0,
+    this.anchor = const Offset(0.5, 1.0),
+    this.draggable = false,
+    this.icon = BitmapDescriptor.defaultAnnotation,
+    this.infoWindow = InfoWindow.noText,
+    this.position = const LatLng(0.0, 0.0),
+    this.onTap,
+    this.visible = true,
+    this.zIndex = -1,
+    this.onDragEnd,
+  }) : assert(0.0 <= alpha && alpha <= 1.0);
+
+  @override
+  int get hashCode => annotationId.hashCode;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! Annotation) return false;
+    final Annotation typedOther = other;
+    return annotationId == typedOther.annotationId &&
+        alpha == typedOther.alpha &&
+        anchor == typedOther.anchor &&
+        draggable == typedOther.draggable &&
+        icon == typedOther.icon &&
+        infoWindow == typedOther.infoWindow &&
+        position == typedOther.position &&
+        visible == typedOther.visible &&
+        zIndex == typedOther.zIndex;
+  }
+
   /// Creates a new [Annotation] object whose values are the same as this instance,
   /// unless overwritten by the specified parameters.
   Annotation copyWith({
@@ -231,6 +157,13 @@ class Annotation {
     );
   }
 
+  @override
+  String toString() {
+    return 'Annotation{annotationId: $annotationId, alpha: $alpha, draggable: $draggable, '
+        'icon: $icon, infoWindow: $infoWindow, position: $position ,visible: $visible, '
+        'onTap: $onTap}, zIndex: $zIndex, onTap: $onTap}';
+  }
+
   Map<String, dynamic> _toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
 
@@ -251,50 +184,117 @@ class Annotation {
     addIfPresent('zIndex', zIndex);
     return json;
   }
+}
+
+/// Uniquely identifies a [Annotation] among [AppleMap] annotations.
+///
+/// This does not have to be globally unique, only unique among the list.
+@immutable
+class AnnotationId {
+  /// value of the [AnnotationId].
+  final String value;
+
+  AnnotationId(this.value);
+
+  @override
+  int get hashCode => value.hashCode;
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    if (other is! Annotation) return false;
-    final Annotation typedOther = other;
-    return annotationId == typedOther.annotationId &&
-        alpha == typedOther.alpha &&
-        anchor == typedOther.anchor &&
-        draggable == typedOther.draggable &&
-        icon == typedOther.icon &&
-        infoWindow == typedOther.infoWindow &&
-        position == typedOther.position &&
-        visible == typedOther.visible &&
-        zIndex == typedOther.zIndex;
+    if (other is! AnnotationId) return false;
+    final AnnotationId typedOther = other;
+    return value == typedOther.value;
   }
-
-  @override
-  int get hashCode => annotationId.hashCode;
 
   @override
   String toString() {
-    return 'Annotation{annotationId: $annotationId, alpha: $alpha, draggable: $draggable, '
-        'icon: $icon, infoWindow: $infoWindow, position: $position ,visible: $visible, '
-        'onTap: $onTap}, zIndex: $zIndex, onTap: $onTap}';
+    return 'AnnotationId{value: $value}';
   }
 }
 
-Map<AnnotationId, Annotation> _keyByAnnotationId(
-    Iterable<Annotation>? annotations) {
-  if (annotations == null) {
-    return <AnnotationId, Annotation>{};
-  }
-  return Map<AnnotationId, Annotation>.fromEntries(annotations.map(
-      (Annotation annotation) => MapEntry<AnnotationId, Annotation>(
-          annotation.annotationId, annotation)));
-}
+/// Text labels for a [Annotation] info window.
+class InfoWindow {
+  /// Text labels specifying that no text is to be displayed.
+  static const InfoWindow noText = InfoWindow();
 
-List<Map<String, dynamic>>? _serializeAnnotationSet(
-    Set<Annotation>? annotations) {
-  if (annotations == null) {
-    return null;
+  /// Text displayed in an info window when the user taps the annotation.
+  ///
+  /// A null value means no title.
+  final String? title;
+
+  /// Additional text displayed below the [title].
+  ///
+  /// A null value means no additional text.
+  final String? snippet;
+
+  /// The icon image point that will be the anchor of the info window when
+  /// displayed.
+  ///
+  /// The image point is specified in normalized coordinates: An anchor of
+  /// (0.0, 0.0) means the top left corner of the image. An anchor
+  /// of (1.0, 1.0) means the bottom right corner of the image.
+  final Offset anchor;
+
+  /// onTap callback for this [InfoWindow].
+  final VoidCallback? onTap;
+
+  const InfoWindow({
+    this.title,
+    this.snippet,
+    this.anchor = const Offset(0.5, 0.0),
+    this.onTap,
+  });
+
+  @override
+  int get hashCode => Object.hash(title.hashCode, snippet, anchor);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! InfoWindow) return false;
+    final InfoWindow typedOther = other;
+    return title == typedOther.title &&
+        snippet == typedOther.snippet &&
+        anchor == typedOther.anchor &&
+        onTap == typedOther.onTap;
   }
-  return annotations
-      .map<Map<String, dynamic>>((Annotation m) => m._toJson())
-      .toList();
+
+  /// Creates a new [InfoWindow] object whose values are the same as this instance,
+  /// unless overwritten by the specified parameters.
+  InfoWindow copyWith({
+    String? titleParam,
+    String? snippetParam,
+    Offset? anchorParam,
+    VoidCallback? onTapParam,
+  }) {
+    return InfoWindow(
+      title: titleParam ?? title,
+      snippet: snippetParam ?? snippet,
+      anchor: anchorParam ?? anchor,
+      onTap: onTapParam ?? onTap,
+    );
+  }
+
+  @override
+  String toString() {
+    return 'InfoWindow{title: $title, snippet: $snippet, anchor: $anchor, consumesTapEvents: ${onTap != null}}';
+  }
+
+  dynamic _toJson() {
+    final Map<String, dynamic> json = <String, dynamic>{};
+
+    void addIfPresent(String fieldName, dynamic value) {
+      if (value != null) {
+        json[fieldName] = value;
+      }
+    }
+
+    addIfPresent('title', title);
+    addIfPresent('snippet', snippet);
+    addIfPresent('anchor', _offsetToJson(anchor));
+    addIfPresent('consumesTapEvents', onTap != null);
+
+    return json;
+  }
 }

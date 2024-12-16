@@ -8,6 +8,11 @@ part of apple_maps_flutter;
 ///
 /// Used in [AppleMapController] when the map is updated.
 class _PolygonUpdates {
+  late Set<Polygon> polygonsToAdd;
+
+  late Set<PolygonId> polygonIdsToRemove;
+  late Set<Polygon> polygonsToChange;
+
   /// Computes [_PolygonUpdates] given previous and current [Polygon]s.
   _PolygonUpdates.from(Set<Polygon>? previous, Set<Polygon>? current) {
     if (previous == null) {
@@ -54,9 +59,26 @@ class _PolygonUpdates {
     polygonsToChange = _polygonsToChange;
   }
 
-  late Set<Polygon> polygonsToAdd;
-  late Set<PolygonId> polygonIdsToRemove;
-  late Set<Polygon> polygonsToChange;
+  @override
+  int get hashCode =>
+      Object.hash(polygonsToAdd, polygonIdsToRemove, polygonsToChange);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! _PolygonUpdates) return false;
+    final _PolygonUpdates typedOther = other;
+    return setEquals(polygonsToAdd, typedOther.polygonsToAdd) &&
+        setEquals(polygonIdsToRemove, typedOther.polygonIdsToRemove) &&
+        setEquals(polygonsToChange, typedOther.polygonsToChange);
+  }
+
+  @override
+  String toString() {
+    return '_PolygonUpdates{polygonsToAdd: $polygonsToAdd, '
+        'polygonIdsToRemove: $polygonIdsToRemove, '
+        'polygonsToChange: $polygonsToChange}';
+  }
 
   Map<String, dynamic> _toMap() {
     final Map<String, dynamic> updateMap = <String, dynamic>{};
@@ -73,26 +95,5 @@ class _PolygonUpdates {
         polygonIdsToRemove.map<dynamic>((PolygonId m) => m.value).toList());
 
     return updateMap;
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other is! _PolygonUpdates) return false;
-    final _PolygonUpdates typedOther = other;
-    return setEquals(polygonsToAdd, typedOther.polygonsToAdd) &&
-        setEquals(polygonIdsToRemove, typedOther.polygonIdsToRemove) &&
-        setEquals(polygonsToChange, typedOther.polygonsToChange);
-  }
-
-  @override
-  int get hashCode =>
-      hashValues(polygonsToAdd, polygonIdsToRemove, polygonsToChange);
-
-  @override
-  String toString() {
-    return '_PolygonUpdates{polygonsToAdd: $polygonsToAdd, '
-        'polygonIdsToRemove: $polygonIdsToRemove, '
-        'polygonsToChange: $polygonsToChange}';
   }
 }

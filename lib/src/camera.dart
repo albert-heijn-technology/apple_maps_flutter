@@ -8,13 +8,6 @@ part of apple_maps_flutter;
 /// shown in the map view. Aggregates the camera's [target] geographical
 /// location, its [zoom] level, [pitch] angle, and [heading].
 class CameraPosition {
-  const CameraPosition({
-    required this.target,
-    this.heading = 0.0,
-    this.pitch = 0.0,
-    this.zoom = 0,
-  });
-
   /// The camera's bearing in degrees, measured clockwise from north.
   ///
   /// A bearing of 0.0, the default, means the camera points north.
@@ -41,6 +34,31 @@ class CameraPosition {
   /// will be silently clamped to the supported range.
   final double zoom;
 
+  const CameraPosition({
+    required this.target,
+    this.heading = 0.0,
+    this.pitch = 0.0,
+    this.zoom = 0,
+  });
+
+  @override
+  int get hashCode => Object.hash(heading, target, pitch, zoom);
+
+  @override
+  bool operator ==(dynamic other) {
+    if (identical(this, other)) return true;
+    if (runtimeType != other.runtimeType) return false;
+    final CameraPosition typedOther = other;
+    return heading == typedOther.heading &&
+        target == typedOther.target &&
+        pitch == typedOther.pitch &&
+        zoom == typedOther.zoom;
+  }
+
+  @override
+  String toString() =>
+      'CameraPosition(bearing: $heading, target: $target, tilt: $pitch, zoom: $zoom)';
+
   dynamic _toMap() => <String, dynamic>{
         'target': target._toJson(),
         'heading': heading,
@@ -60,30 +78,16 @@ class CameraPosition {
       zoom: json['zoom'],
     );
   }
-
-  @override
-  bool operator ==(dynamic other) {
-    if (identical(this, other)) return true;
-    if (runtimeType != other.runtimeType) return false;
-    final CameraPosition typedOther = other;
-    return heading == typedOther.heading &&
-        target == typedOther.target &&
-        pitch == typedOther.pitch &&
-        zoom == typedOther.zoom;
-  }
-
-  @override
-  int get hashCode => hashValues(heading, target, pitch, zoom);
-
-  @override
-  String toString() =>
-      'CameraPosition(bearing: $heading, target: $target, tilt: $pitch, zoom: $zoom)';
 }
 
 /// Defines a camera move, supporting absolute moves as well as moves relative
 /// the current position.
 class CameraUpdate {
+  final dynamic _json;
+
   CameraUpdate._(this._json);
+
+  dynamic _toJson() => _json;
 
   /// Returns a camera update that moves the camera to the specified position.
   static CameraUpdate newCameraPosition(CameraPosition cameraPosition) {
@@ -98,14 +102,6 @@ class CameraUpdate {
     return CameraUpdate._(<dynamic>['newLatLng', latLng._toJson()]);
   }
 
-  /// Returns a camera update that moves the camera target to the specified
-  /// geographical location and zoom level.
-  static CameraUpdate newLatLngZoom(LatLng latLng, double zoom) {
-    return CameraUpdate._(
-      <dynamic>['newLatLngZoom', latLng._toJson(), zoom],
-    );
-  }
-
   /// Returns a camera update that transforms the camera so that the specified
   /// geographical bounding box is centered in the map view at the greatest
   /// possible zoom level. A non-zero [padding] insets the bounding box from the
@@ -116,6 +112,14 @@ class CameraUpdate {
       bounds._toJson(),
       padding,
     ]);
+  }
+
+  /// Returns a camera update that moves the camera target to the specified
+  /// geographical location and zoom level.
+  static CameraUpdate newLatLngZoom(LatLng latLng, double zoom) {
+    return CameraUpdate._(
+      <dynamic>['newLatLngZoom', latLng._toJson(), zoom],
+    );
   }
 
   /// Returns a camera update that modifies the camera zoom level by the
@@ -153,8 +157,4 @@ class CameraUpdate {
   static CameraUpdate zoomTo(double zoom) {
     return CameraUpdate._(<dynamic>['zoomTo', zoom]);
   }
-
-  final dynamic _json;
-
-  dynamic _toJson() => _json;
 }

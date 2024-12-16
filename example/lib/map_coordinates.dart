@@ -4,7 +4,6 @@
 
 import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 import 'page.dart';
 
@@ -30,13 +29,13 @@ class _MapCoordinatesBody extends StatefulWidget {
 }
 
 class _MapCoordinatesBodyState extends State<_MapCoordinatesBody> {
-  _MapCoordinatesBodyState();
-
   AppleMapController? mapController;
+
   LatLngBounds _visibleRegion = LatLngBounds(
     southwest: const LatLng(0, 0),
     northeast: const LatLng(0, 0),
   );
+  _MapCoordinatesBodyState();
 
   @override
   Widget build(BuildContext context) {
