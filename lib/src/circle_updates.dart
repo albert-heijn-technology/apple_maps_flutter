@@ -87,7 +87,7 @@ class _CircleUpdates {
 
   @override
   int get hashCode =>
-      hashValues(circlesToAdd, circleIdsToRemove, circlesToChange);
+      Object.hash(circlesToAdd, circleIdsToRemove, circlesToChange);
 
   @override
   String toString() {
