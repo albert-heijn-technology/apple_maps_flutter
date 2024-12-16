@@ -6,6 +6,12 @@ part of apple_maps_flutter;
 
 /// A pair of latitude and longitude coordinates, stored as degrees.
 class LatLng {
+  /// The latitude in degrees between -90.0 and 90.0, both inclusive.
+  final double latitude;
+
+  /// The longitude in degrees between -180.0 (inclusive) and 180.0 (exclusive).
+  final double longitude;
+
   /// Creates a geographical location specified in degrees [latitude] and
   /// [longitude].
   ///
@@ -18,11 +24,16 @@ class LatLng {
             (latitude < -90.0 ? -90.0 : (90.0 < latitude ? 90.0 : latitude)),
         longitude = (longitude + 180.0) % 360.0 - 180.0;
 
-  /// The latitude in degrees between -90.0 and 90.0, both inclusive.
-  final double latitude;
+  @override
+  int get hashCode => Object.hash(latitude, longitude);
 
-  /// The longitude in degrees between -180.0 (inclusive) and 180.0 (exclusive).
-  final double longitude;
+  @override
+  bool operator ==(Object o) {
+    return o is LatLng && o.latitude == latitude && o.longitude == longitude;
+  }
+
+  @override
+  String toString() => '$runtimeType($latitude, $longitude)';
 
   dynamic _toJson() {
     return <double>[latitude, longitude];
@@ -34,17 +45,6 @@ class LatLng {
     }
     return LatLng(json[0], json[1]);
   }
-
-  @override
-  String toString() => '$runtimeType($latitude, $longitude)';
-
-  @override
-  bool operator ==(Object o) {
-    return o is LatLng && o.latitude == latitude && o.longitude == longitude;
-  }
-
-  @override
-  int get hashCode => hashValues(latitude, longitude);
 }
 
 /// A latitude/longitude aligned rectangle.
@@ -56,6 +56,12 @@ class LatLng {
 /// * lng ∈ [-180, `northeast.longitude`] ∪ [`southwest.longitude`, 180[,
 ///   if `northeast.longitude` < `southwest.longitude`
 class LatLngBounds {
+  /// The southwest corner of the rectangle.
+  final LatLng southwest;
+
+  /// The northeast corner of the rectangle.
+  final LatLng northeast;
+
   /// Creates geographical bounding box with the specified corners.
   ///
   /// The latitude of the southwest corner cannot be larger than the
@@ -63,16 +69,25 @@ class LatLngBounds {
   LatLngBounds({required this.southwest, required this.northeast})
       : assert(southwest.latitude <= northeast.latitude);
 
-  /// The southwest corner of the rectangle.
-  final LatLng southwest;
+  @override
+  int get hashCode => Object.hash(southwest, northeast);
 
-  /// The northeast corner of the rectangle.
-  final LatLng northeast;
+  @override
+  bool operator ==(Object o) {
+    return o is LatLngBounds &&
+        o.southwest == southwest &&
+        o.northeast == northeast;
+  }
 
   /// Returns whether this rectangle contains the given [LatLng].
   bool contains(LatLng point) {
     return _containsLatitude(point.latitude) &&
         _containsLongitude(point.longitude);
+  }
+
+  @override
+  String toString() {
+    return '$runtimeType($southwest, $northeast)';
   }
 
   bool _containsLatitude(double lat) {
@@ -87,6 +102,11 @@ class LatLngBounds {
     }
   }
 
+  /// Converts this object to something serializable in JSON.
+  dynamic _toJson() {
+    return <dynamic>[southwest._toJson(), northeast._toJson()];
+  }
+
   @visibleForTesting
   static LatLngBounds? fromList(dynamic json) {
     if (json == null) {
@@ -97,24 +117,4 @@ class LatLngBounds {
       northeast: LatLng._fromJson(json[1])!,
     );
   }
-
-  @override
-  String toString() {
-    return '$runtimeType($southwest, $northeast)';
-  }
-
-  @override
-  bool operator ==(Object o) {
-    return o is LatLngBounds &&
-        o.southwest == southwest &&
-        o.northeast == northeast;
-  }
-
-  /// Converts this object to something serializable in JSON.
-  dynamic _toJson() {
-    return <dynamic>[southwest._toJson(), northeast._toJson()];
-  }
-
-  @override
-  int get hashCode => hashValues(southwest, northeast);
 }

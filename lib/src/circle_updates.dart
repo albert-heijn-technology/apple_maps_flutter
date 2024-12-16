@@ -8,6 +8,11 @@ part of apple_maps_flutter;
 ///
 /// Used in [AppleMapController] when the map is updated.
 class _CircleUpdates {
+  late Set<Circle> circlesToAdd;
+
+  late Set<CircleId> circleIdsToRemove;
+  late Set<Circle> circlesToChange;
+
   /// Computes [_CircleUpdates] given previous and current [Circle]s.
   _CircleUpdates.from(Set<Circle>? previous, Set<Circle>? current) {
     if (previous == null) {
@@ -54,9 +59,26 @@ class _CircleUpdates {
     circlesToChange = _circlesToChange;
   }
 
-  late Set<Circle> circlesToAdd;
-  late Set<CircleId> circleIdsToRemove;
-  late Set<Circle> circlesToChange;
+  @override
+  int get hashCode =>
+      Object.hash(circlesToAdd, circleIdsToRemove, circlesToChange);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! _CircleUpdates) return false;
+    final _CircleUpdates typedOther = other;
+    return setEquals(circlesToAdd, typedOther.circlesToAdd) &&
+        setEquals(circleIdsToRemove, typedOther.circleIdsToRemove) &&
+        setEquals(circlesToChange, typedOther.circlesToChange);
+  }
+
+  @override
+  String toString() {
+    return '_CircleUpdates{circlesToAdd: $circlesToAdd, '
+        'circleIdsToRemove: $circleIdsToRemove, '
+        'circlesToChange: $circlesToChange}';
+  }
 
   Map<String, dynamic> _toMap() {
     final Map<String, dynamic> updateMap = <String, dynamic>{};
@@ -73,26 +95,5 @@ class _CircleUpdates {
         circleIdsToRemove.map<dynamic>((CircleId m) => m.value).toList());
 
     return updateMap;
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other is! _CircleUpdates) return false;
-    final _CircleUpdates typedOther = other;
-    return setEquals(circlesToAdd, typedOther.circlesToAdd) &&
-        setEquals(circleIdsToRemove, typedOther.circleIdsToRemove) &&
-        setEquals(circlesToChange, typedOther.circlesToChange);
-  }
-
-  @override
-  int get hashCode =>
-      hashValues(circlesToAdd, circleIdsToRemove, circlesToChange);
-
-  @override
-  String toString() {
-    return '_CircleUpdates{circlesToAdd: $circlesToAdd, '
-        'circleIdsToRemove: $circleIdsToRemove, '
-        'circlesToChange: $circlesToChange}';
   }
 }

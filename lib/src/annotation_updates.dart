@@ -8,6 +8,11 @@ part of apple_maps_flutter;
 ///
 /// Used in [AppleMapController] when the map is updated.
 class _AnnotationUpdates {
+  late Set<Annotation> annotationsToAdd;
+
+  late Set<AnnotationId> annotationIdsToRemove;
+  late Set<Annotation> annotationsToChange;
+
   /// Computes [_AnnotationUpdates] given previous and current [Annotation]s.
   _AnnotationUpdates.from(Set<Annotation>? previous, Set<Annotation>? current) {
     if (previous == null) {
@@ -50,9 +55,26 @@ class _AnnotationUpdates {
     annotationsToChange = _annotationsToChange;
   }
 
-  late Set<Annotation> annotationsToAdd;
-  late Set<AnnotationId> annotationIdsToRemove;
-  late Set<Annotation> annotationsToChange;
+  @override
+  int get hashCode =>
+      Object.hash(annotationsToAdd, annotationIdsToRemove, annotationsToChange);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! _AnnotationUpdates) return false;
+    final _AnnotationUpdates typedOther = other;
+    return setEquals(annotationsToAdd, typedOther.annotationsToAdd) &&
+        setEquals(annotationIdsToRemove, typedOther.annotationIdsToRemove) &&
+        setEquals(annotationsToChange, typedOther.annotationsToChange);
+  }
+
+  @override
+  String toString() {
+    return '_AnnotationUpdates{annotationsToAdd: $annotationsToAdd, '
+        'annotationIdsToRemove: $annotationIdsToRemove, '
+        'annotationsToChange: $annotationsToChange}';
+  }
 
   Map<String, dynamic> _toMap() {
     final Map<String, dynamic> updateMap = <String, dynamic>{};
@@ -73,26 +95,5 @@ class _AnnotationUpdates {
             .toList());
 
     return updateMap;
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other is! _AnnotationUpdates) return false;
-    final _AnnotationUpdates typedOther = other;
-    return setEquals(annotationsToAdd, typedOther.annotationsToAdd) &&
-        setEquals(annotationIdsToRemove, typedOther.annotationIdsToRemove) &&
-        setEquals(annotationsToChange, typedOther.annotationsToChange);
-  }
-
-  @override
-  int get hashCode =>
-      hashValues(annotationsToAdd, annotationIdsToRemove, annotationsToChange);
-
-  @override
-  String toString() {
-    return '_AnnotationUpdates{annotationsToAdd: $annotationsToAdd, '
-        'annotationIdsToRemove: $annotationIdsToRemove, '
-        'annotationsToChange: $annotationsToChange}';
   }
 }
