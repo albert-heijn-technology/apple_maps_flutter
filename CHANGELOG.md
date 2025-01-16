@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.0
+
+*  Added three new map types: `MapType.satelliteFlyover`, `MapType.hybridFlyover`, and `MapType.mutedStandard`
+
 ## 1.3.0
 
 * Animate marker position changes instead of removing and re-adding
