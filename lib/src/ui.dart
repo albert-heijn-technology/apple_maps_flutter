@@ -14,6 +14,15 @@ enum MapType {
 
   /// Hybrid tiles (satellite images with some labels/overlays)
   hybrid,
+
+  /// Satellite flyover tiles (aerial photos)
+  satelliteFlyover,
+
+  /// Hybrid flyover tiles (satellite images with some labels/overlays)
+  hybridFlyover,
+
+  /// Muted standard tiles (traffic and labels, subtle terrain information)
+  mutedStandard,
 }
 
 enum TrackingMode {
