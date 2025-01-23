@@ -73,7 +73,7 @@ class CameraPosition {
   }
 
   @override
-  int get hashCode => hashValues(heading, target, pitch, zoom);
+  int get hashCode => Object.hash(heading, target, pitch, zoom);
 
   @override
   String toString() =>
